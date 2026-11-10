@@ -24,7 +24,6 @@
 
   function salpicar(evento) {
     const caja = agua.getBoundingClientRect();
-    // Un click de teclado tiene detail=0: usa el centro, sin exigir puntero.
     motor?.salpicar(evento.detail ? evento.clientX-caja.left : null,
       evento.detail ? evento.clientY-caja.top : null);
   }
@@ -62,7 +61,6 @@
   canvas { display:block; inline-size:100%; block-size:100%; max-inline-size:none; pointer-events:none; }
   .respaldo { position:absolute; inset:25% auto auto 40%; inline-size:20%; block-size:50%; }
   .pista { display:block; margin-block-start:.35rem; color:var(--ink-secondary); font-size:var(--texto-xs); }
-  /* Icono de reproductor, cara de 26 px dentro de un objetivo táctil de 44 px. */
   .pausa { position:absolute; inset-block-start:4px; inset-inline-end:4px; inline-size:44px; block-size:44px;
     display:grid; place-items:center; padding:0; border:0; background:transparent; color:var(--ink-primary); cursor:pointer; }
   .pausa::before { content:''; position:absolute; inset:9px; border:1px solid var(--trazo); border-radius:50%; background:var(--surface-paper); }

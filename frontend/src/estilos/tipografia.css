@@ -1,54 +1,12 @@
-/* Escala tipográfica.
-
-   Tamaños, altura de línea y anchos de lectura.
-
-   La escala se declara en `rem` y NUNCA en `px`, porque WCAG 1.4.4 exige
-   que el texto se pueda ampliar al 200 % sin perder contenido, y un tamaño
-   en píxeles ignora la preferencia del navegador.
-
-
-   */
 
 :root {
   --fuente-texto: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --fuente-mono:  ui-monospace, 'Cascadia Code', 'Source Code Pro', monospace;
 
-  /* ── La manuscrita, y por qué NO es la fuente predominante ─────────────
-
-     El lenguaje de cuaderno pide una manuscrita como fuente principal —
-     navegación, botones, títulos, campos, tablas—. Aquí se usa SOLO para
-     anotaciones: ayudas, notas al margen, avisos y la marca. Es una
-     desviación deliberada y tiene dos motivos, los dos comprobables:
-
-     1. ESTO ES UN TUTOR DE CÁLCULO. En una manuscrita, `x`, `×` y `∙` se
-        parecen, y `l`, `1` e `I` se confunden. Una interfaz de matemática
-        que hace ambigua la notación falla en lo único que no puede fallar.
-
-     2. NO ESTÁ GARANTIZADA. No se declara ninguna fuente descargada: la
-        pila de abajo es de familias que YA están instaladas en cada
-        sistema, así que en Windows sale «Ink Free», en macOS «Bradley
-        Hand», en iOS «Noteworthy» — y en Android no hay ninguna y cae en
-        la de texto. Si la manuscrita cargara la interfaz entera, un
-        teléfono Android vería un diseño distinto del que se aprobó.
-
-     Usada solo en anotaciones, su ausencia no rompe nada: la anotación
-     sigue leyéndose, en otra letra. Ese es el criterio para decidir dónde
-     puede aparecer, y está escrito en `13-Lenguaje-de-Diseno.md` §4.
-
-     Para GARANTIZARLA haría falta alojar los archivos de fuente en el
-     repositorio. Es una decisión abierta, no un olvido. */
 
   --fuente-manuscrita: 'Caveat', 'Patrick Hand', 'Ink Free', 'Bradley Hand',
                        'Noteworthy', 'Segoe Script', var(--fuente-texto);
 
-  /* ── Espaciado ────────────────────────────────────────────────────────
-     El lenguaje pide que todo respire. La escala existe para que «respirar»
-     deje de ser una opinión por componente.
-
-     MIGRACIÓN PARCIAL, Y SE DICE: los componentes anteriores al 2026-08-16
-     siguen con sus valores en `rem` escritos a mano. Se convierten a medida
-     que se tocan, no en una pasada masiva — una migración de sesenta
-     archivos que nadie mira es donde se cuelan los descuadres. */
 
   --espacio-xs: 0.25rem;
   --espacio-sm: 0.5rem;
@@ -57,7 +15,6 @@
   --espacio-xl: 2rem;
   --espacio-2xl: 3rem;
 
-  /* Escala. El paso es 1.2 sobre 1rem. */
   --texto-xs:   0.75rem;
   --texto-sm:   0.875rem;
   --texto-base: 1rem;
@@ -70,8 +27,6 @@
   --interlinea-normal:   1.6;
   --interlinea-suelta:   1.8;
 
-  /* Ancho de lectura. Entre 45 y 75 caracteres es donde la lectura no se
-     fatiga; se elige el centro de ese rango. */
   --ancho-lectura: 62ch;
 }
 

@@ -1,4 +1,4 @@
-<!-- Jerarquía editorial del contenido docente, sin añadir afirmaciones nuevas. -->
+
 <script>
   import EnlaceAConcepto from '../../comun/concepto/EnlaceAConcepto.svelte';
   import TextoDeConcepto from '../../comun/concepto/TextoDeConcepto.svelte';

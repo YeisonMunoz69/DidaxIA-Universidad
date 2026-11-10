@@ -1,21 +1,4 @@
-<!--
-DD-12 / EQ-033 · El estudiante solicita entrar con el código.
 
-Escribir el código no cambia la matrícula: crea una solicitud que debe aprobar
-el docente de la clase destino o un investigador. Sólo puede existir una clase
-vigente y, durante un cambio pendiente, la actual se conserva.
-
-EL CÓDIGO NO ES UNA CREDENCIAL, y esta pantalla no puede sugerir lo contrario.
-Identifica una agrupación; no autentica a nadie. Por eso aquí no se pide
-contraseña, no se habla de «acceso» y el fallo no dice «código incorrecto» como
-si fuera un intento de entrar: dice que no hay ninguna clase con ese código, que
-es lo que de verdad ocurrió.
-
-
-Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
-Origen de esta pieza: OE3-Implementacion/09-Aportes-de-la-Consulta-Docente.md
-
--->
 <script>
   import CargadorCubo from '../../comun/base/CargadorCubo.svelte';
   import { onMount } from 'svelte';
@@ -36,7 +19,6 @@ Origen de esta pieza: OE3-Implementacion/09-Aportes-de-la-Consulta-Docente.md
   let cargando = $state(true);
   let uniendo = $state(false);
   let fallo = $state(null);
-  /** El código no existe. NO es un fallo de red, y no se pinta como tal. */
   let sinClase = $state('');
   let recien = $state(null);
   let aprobada = $state(null);
@@ -82,9 +64,6 @@ Origen de esta pieza: OE3-Implementacion/09-Aportes-de-la-Consulta-Docente.md
       if (!siguePendiente && claseVigente?.id === esperaba.clase_destino?.id) {
         aprobada = claseVigente;
         recien = null;
-        // La matrícula forma parte del acceso calculado del estudiante. Sin
-        // refrescarlo, la pantalla ya enseñaba la clase aprobada pero la guarda
-        // global continuaba creyendo que faltaba, hasta una recarga completa.
         await sesion.refrescarAcceso();
         if (activa) navegar('/consentimiento');
       }
@@ -134,10 +113,6 @@ Origen de esta pieza: OE3-Implementacion/09-Aportes-de-la-Consulta-Docente.md
     activa = true;
     cargar();
 
-    // La aprobación ocurre en la sesión del docente/investigador. Mientras
-    // haya una petición pendiente se consulta cada cuatro segundos y, además,
-    // al regresar a la pestaña. No se recarga la página ni se pierden el foco
-    // o el texto que la persona estuviera escribiendo.
     const comprobarPendiente = () => {
       if (pendiente) actualizarEstado();
     };
@@ -186,7 +161,7 @@ Origen de esta pieza: OE3-Implementacion/09-Aportes-de-la-Consulta-Docente.md
   {:else}
   <div class="grid-principal">
 
-    <!-- Tarjeta del formulario para unirse -->
+
     <section class="tarjeta-formulario">
       <div class="cabecera-tarjeta">
         <Icono nombre="ancla" medida={18} />
@@ -210,11 +185,7 @@ Origen de esta pieza: OE3-Implementacion/09-Aportes-de-la-Consulta-Docente.md
         </div>
 
         <div class="fila-boton">
-          <!-- Sin icono: el texto ya dice lo que hace en los dos estados,
-               y el «check» en reposo se leía como un adorno suelto —«el
-               churito»— más que como parte del botón. Mismo criterio que
-               `docente/rutas/ContextoCurricular.svelte` y el modal de
-               `MisClases.svelte`. -->
+
           <Boton tipo="submit" deshabilitado={uniendo || !codigo.trim() || Boolean(pendiente)}>
             {uniendo ? 'Enviando…' : actual ? 'Solicitar cambio' : 'Solicitar ingreso'}
           </Boton>
@@ -260,7 +231,7 @@ Origen de esta pieza: OE3-Implementacion/09-Aportes-de-la-Consulta-Docente.md
       {/if}
     </section>
 
-    <!-- Tarjeta de clases en las que está inscrito -->
+
     <section class="tarjeta-clases">
       <div class="cabecera-tarjeta">
         <Icono nombre="grupo" medida={18} />
@@ -312,25 +283,7 @@ Origen de esta pieza: OE3-Implementacion/09-Aportes-de-la-Consulta-Docente.md
 </div>
 
 <style>
-  /* La tarjeta «inicia sesión para…» vive en `comun/estado/
-     BloqueoAutenticacion.svelte` desde el 2026-08-22 — este archivo era
-     una de las tres copias que la motivaron. */
 
-  /*
-    Bug real, mismo patrón que ya se encontró y corrigió en el árbol de
-    docente (`ColaDeSupervision.svelte` y hermanas, 2026-08-22): esta
-    sección nunca puso `overflow-y: auto` en ningún nivel, así que con
-    veinte clases inscritas la lista se cortaba a media tarjeta —sin
-    ninguna barra de scroll que lo delatara— dentro de `<main
-    id="contenido">`, que trae `overflow: hidden` de `Aplicacion.svelte`.
-    Confirmado en el navegador el 2026-08-22 con `getBoundingClientRect`.
-
-    El scroll vive en `.unirse-desplazable`, a ancho completo, y no en
-    `.vista-unirse`: mismo arreglo que
-    `docente/rutas/ColaDeSupervision.svelte::.cola-desplazable` —ver su
-    comentario— para que la barra de scroll quede pegada al borde real de
-    la ventana.
-  */
   .unirse-desplazable {
     flex: 1;
     min-block-size: 0;
@@ -343,12 +296,6 @@ Origen de esta pieza: OE3-Implementacion/09-Aportes-de-la-Consulta-Docente.md
     flex-direction: column;
     gap: var(--espacio-lg);
     padding: var(--espacio-xl) var(--espacio-lg);
-    /* `68rem` y no `52rem`: reportado que las tarjetas de esta pantalla
-       «no ocupan mucho» espacio y que una lista de clases más larga no
-       tendría mucho margen antes del scroll. El carril de estudiante
-       sigue existiendo aquí —a diferencia del árbol de docente, no se
-       quitó—, así que el ancho disponible es menor y el aumento es más
-       moderado que en las pantallas de docente (52 → 68rem, no → 78rem). */
     max-inline-size: min(68rem, 100%);
     margin-inline: auto;
     animation: entrarVista 0.3s cubic-bezier(0.22, 1, 0.36, 1);
@@ -407,7 +354,6 @@ Origen de esta pieza: OE3-Implementacion/09-Aportes-de-la-Consulta-Docente.md
     }
   }
 
-  /* Tarjetas base con diseño papel y elevación suave */
   .tarjeta-formulario,
   .tarjeta-clases {
     display: flex;
@@ -533,17 +479,6 @@ Origen de esta pieza: OE3-Implementacion/09-Aportes-de-la-Consulta-Docente.md
 
   .continuar-registro { display: flex; justify-content: flex-end; }
 
-  /*
-    Lista de clases matriculadas · con tope y scroll propio.
-
-    Sin esto, la lista crecía con el número de clases hasta empujar toda la
-    tarjeta —y con ella la página entera, vía `.unirse-desplazable`— cada
-    vez más abajo: reportado tras sembrar una cuenta con varias clases
-    reales. `18rem` es lo que ocupan cuatro o cinco `.item-clase` —mismo
-    criterio de tope que ya usa `estudiante/rutas/Conceptos.svelte::
-    .lista-conceptos`—, y de ahí en adelante scrollea sola sin arrastrar el
-    resto de la pantalla.
-  */
   .lista-clases {
     display: flex;
     flex-direction: column;
@@ -619,7 +554,6 @@ Origen de esta pieza: OE3-Implementacion/09-Aportes-de-la-Consulta-Docente.md
     font-weight: 600;
   }
 
-  /* Estados de carga y vacío */
 
   .estado-vacio {
     display: flex;

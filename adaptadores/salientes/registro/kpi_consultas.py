@@ -1,40 +1,3 @@
-"""
-kpi_consultas.py — El SQL del catálogo KPI v1.1, y sólo el SQL
-================================================================
-
-Este módulo devuelve **materia prima**: filas y escalares. No decide estados, no
-divide y no redacta nada. Esa separación es deliberada y tiene dos motivos.
-
-**Se puede revisar.** Quien audita una cifra necesita leer la consulta sin que
-la lógica de «cuándo una muestra es insuficiente» esté entretejida con el
-`GROUP BY`. Aquí está el `SELECT`; en `kpi_armado.py`, la aritmética; en
-`dominio/kpi/medidas.py`, la regla.
-
-**Se puede probar sin base.** El armado recibe diccionarios, así que la mitad
-que decide estados se prueba con filas escritas a mano y la mitad que consulta
-se prueba contra PostgreSQL real. Con todo junto, comprobar «una muestra de
-cuatro no se publica» habría exigido sembrar cuatro estudiantes.
-
-Por qué varias consultas devuelven filas por estudiante en vez de agregados
---------------------------------------------------------------------------------
-Porque medianas, percentiles y ventanas de retorno se leen mejor en Python que
-en un `percentile_cont` anidado dentro de tres CTE, y porque la población que
-recorren está acotada por la matrícula: un curso son decenas y la institución
-del piloto, centenares.
-
-⚠️ El límite se declara en vez de descubrirse: si la matrícula creciera a
-decenas de miles, estas consultas traerían una fila por persona y habría que
-mover la agregación al motor. Hoy no compensa pagar esa complejidad.
-
-Qué excluye TODO lo de este módulo
--------------------------------------------
-El contexto `consulta_profesional` (`EQ-031`) y los turnos anteriores a la
-matrícula de la persona. Las dos exclusiones viven en `_TURNOS`, una sola vez,
-para que ningún indicador pueda olvidarse de una.
-
-
-"""
-
 from __future__ import annotations
 
 from typing import Any
@@ -42,8 +5,7 @@ from typing import Any
 from dominio.kpi.definiciones import MUESTRA_MINIMA, ZONA_HORARIA
 from dominio.modelo.telemetria import ORIGEN_DE, TipoDeEvento
 
-#: La población elegible, con sus filtros. `{condicion}` la compone
-#: `alcance_sql()`; nunca lleva un valor interpolado, sólo cláusulas constantes.
+
 _POBLACION = """
 matriculas AS (
     SELECT m.estudiante, m.clase, m.desde, m.hasta,
@@ -70,12 +32,7 @@ poblacion AS (
 )
 """
 
-#: Un turno lógico con todo lo observable de sus dos voces.
-#:
-#: `educativo` usa `BOOL_AND` y no `BOOL_OR`: un turno cuyas dos voces no
-#: coincidan en contexto no se cuenta como educativo. No debería ocurrir —el
-#: filtro 12 escribe el mismo contexto en las dos— y si ocurriera, contarlo
-#: sería agregar media conversación profesional.
+
 _TURNOS = """
 turnos AS (
     SELECT h.identificador_sujeto AS estudiante,
@@ -115,17 +72,6 @@ validos AS (
 
 
 def alcance_sql(clase: str | None, actor_docente: str | None, filtros: dict) -> tuple[str, list]:
-    """La condición de la población y sus parámetros.
-
-    Devuelve SQL con marcadores `%s` y la lista de valores. Ningún valor se
-    interpola en el texto: lo que se concatena son cláusulas constantes, que es
-    la única forma segura de componer un `WHERE` variable.
-
-    `actor_docente` **no** es un filtro más. Cuando llega, la condición exige
-    que la clase sea suya, y esa exigencia viaja dentro de la misma consulta que
-    lee los datos: comprobarla antes, en otra llamada, dejaría entre la
-    comprobación y la lectura el hueco que `autorizacion_sql.py` documenta.
-    """
     condiciones: list[str] = ["TRUE"]
     parametros: list = []
     if clase:
@@ -148,14 +94,7 @@ def alcance_sql(clase: str | None, actor_docente: str | None, filtros: dict) -> 
         parametros.append(int(filtros["semestre"]))
     return " AND ".join(condiciones), parametros
 
-
 def filtros_de_turno_sql(filtros: dict) -> tuple[str, list]:
-    """Restricciones observables de un turno, sin interpolar valores.
-
-    Se aplican sobre las dos voces ``h``. Las subconsultas correlacionadas
-    evitan el error de filtrar sólo la voz del sistema y perder la del
-    estudiante, lo que invalidaría el turno completo.
-    """
     condiciones = ["TRUE"]
     parametros: list = []
     if filtros.get("concepto"):
@@ -182,19 +121,12 @@ def filtros_de_turno_sql(filtros: dict) -> tuple[str, list]:
                        AND et.identificador_sujeto = h.identificador_sujeto
                        AND et.turno = h.turno
                        AND et.{columna} = %s
-                )"""  # noqa: S608 — columna sale de la tupla cerrada
+                )"""
             )
             parametros.append(filtros[nombre])
     return " AND ".join(condiciones), parametros
 
-
 class ConsultasKPI:
-    """Las nueve lecturas del catálogo, sobre un cursor de quien llama.
-
-    Recibe el cursor y no abre nada: todas tienen que caber en la misma
-    transacción que la auditoría de la lectura institucional, o la constancia y
-    lo leído podrían confirmarse por separado.
-    """
 
     def __init__(
         self, cur: Any, condicion: str, alcance: list, periodo: tuple,
@@ -209,8 +141,6 @@ class ConsultasKPI:
             self._filtros
         )
 
-    # ── Composición ──────────────────────────────────────────────────────────
-
     @property
     def _base(self) -> str:
         return (
@@ -220,7 +150,7 @@ class ConsultasKPI:
 
     def _ejecutar(self, cola: str, extra: list | None = None) -> list[tuple]:
         self._cur.execute(
-            self._base + cola,  # noqa: S608 — sólo cláusulas constantes concatenadas
+            self._base + cola,
             [
                 *self._alcance,
                 self._periodo[1],
@@ -232,14 +162,7 @@ class ConsultasKPI:
         )
         return self._cur.fetchall()
 
-    # ── 1 · Población y actividad, una fila por estudiante ──────────────────
-
     def continuacion(self) -> dict:
-        """Una oportunidad por hilo, 24 h completas y sin duplicar matrículas.
-
-        Solo usa datos dentro del corte. Censura también los positivos cuya
-        ventana aún no termina: evita privilegiar éxitos recientes.
-        """
         filas = self._ejecutar(
             """
             , unicos AS (
@@ -269,11 +192,6 @@ class ConsultasKPI:
         return dict(elegibles=int(n), continuadas=int(x), censuradas=int(censuradas))
 
     def sin_retorno_7d(self) -> dict:
-        """Hilos sin otro turno educativo en siete días tras su primera respuesta.
-
-        La ventana se cierra dentro del corte. Un hilo sin regreso puede haber
-        terminado satisfactoriamente; esta consulta no infiere la intención.
-        """
         filas = self._ejecutar(
             """
             , unicos AS (
@@ -304,11 +222,6 @@ class ConsultasKPI:
         return dict(elegibles=int(n), sin_retorno=int(x), censuradas=int(censuradas))
 
     def referencias_conceptuales(self) -> dict:
-        """Turnos completos cuya respuesta enlazó un concepto del material.
-
-        `historial_concepto` es emitida para páginas del banco ancladas en los
-        fragmentos citados. Es exposición de material, no intento ni dominio.
-        """
         fila = self._ejecutar(
             """
             SELECT COUNT(*),
@@ -325,8 +238,7 @@ class ConsultasKPI:
         return {"elegibles": int(fila[0]), "con_referencia": int(fila[1])}
 
     def indicios_lexicos(self) -> dict:
-        """El texto se consume localmente y nunca integra el contrato de salida."""
-        from dominio.modelo.indicios_observables import resumir_lenguaje  # noqa: PLC0415
+        from dominio.modelo.indicios_observables import resumir_lenguaje
 
         filas = self._ejecutar(
             """
@@ -352,7 +264,6 @@ class ConsultasKPI:
         return resumir_lenguaje(fila[0] for fila in filas)
 
     def trazas_anteproyecto(self) -> list[dict]:
-        """Referencias a trazas de turnos completos, dentro del mismo alcance."""
         filas = self._ejecutar(
             """
             SELECT v.estudiante, v.sesion, v.turno, MIN(r.ruta_archivo), MIN(v.momento)
@@ -370,7 +281,6 @@ class ConsultasKPI:
                 for estudiante, sesion, turno, ruta, momento in filas]
 
     def mensajes_observables(self) -> list[dict]:
-        """Texto privado y claves para ordenar pares; no sale al contrato API."""
         filas = self._ejecutar(
             """
             SELECT DISTINCT h.identificador_sujeto, h.identificador_sesion,
@@ -398,7 +308,6 @@ class ConsultasKPI:
                 for sujeto, sesion, turno, momento, texto in filas]
 
     def textos_indicios(self) -> list[tuple[str, str]]:
-        """Mensajes con productor afectivo histórico, sin exponer texto al API."""
         filas = self._ejecutar(
             """
             SELECT DISTINCT h.identificador_sujeto, h.id, h.contenido
@@ -417,8 +326,7 @@ class ConsultasKPI:
         return [(estudiante, contenido) for estudiante, _, contenido in filas]
 
     def factores_hibridos(self) -> list[dict]:
-        """Lecturas y contexto anterior del mismo hilo; ningún texto se publica."""
-        from dominio.modelo.factores_conductuales import VERSION  # noqa: PLC0415
+        from dominio.modelo.factores_conductuales import VERSION
 
         filas = self._ejecutar(
             """
@@ -457,13 +365,6 @@ class ConsultasKPI:
                 for ident,sujeto,sesion,turno,momento,texto,lectura,trazas,ruta,origen,fecha_analisis,tutor,anterior in filas]
 
     def actividad_por_estudiante(self) -> list[dict]:
-        """Turnos, sesiones, días locales activos y primera/última actividad.
-
-        No recibe el final del periodo: las ventanas de retorno y de actividad
-        semanal las decide el armado, que ya tiene el contexto. Recibirlo aquí
-        dejaba un campo repetido en cada fila que nadie leía, y un dato duplicado
-        es un dato que puede discrepar.
-        """
         filas = self._ejecutar(
             f"""
             , turnos_historicos AS (
@@ -527,10 +428,7 @@ class ConsultasKPI:
             for f in filas
         ]
 
-    # ── 2 · Conversaciones ──────────────────────────────────────────────────
-
     def conversaciones(self) -> list[dict]:
-        """Una fila por sesión con turnos válidos, para profundidad e intervalos."""
         filas = self._ejecutar(
             """
             SELECT estudiante, sesion, COUNT(*) AS turnos,
@@ -545,10 +443,7 @@ class ConsultasKPI:
             for f in filas
         ]
 
-    # ── 3 · Recuperación documental ─────────────────────────────────────────
-
     def recuperacion(self) -> dict:
-        """Turnos elegibles y su relación con el material recuperado."""
         fila = self._ejecutar(
             """
             SELECT COUNT(*) AS elegibles,
@@ -566,7 +461,6 @@ class ConsultasKPI:
         }
 
     def material(self) -> dict:
-        """Diversidad y concentración: fragmentos, obras y reparto de apariciones."""
         filas = self._ejecutar(
             """
             SELECT m.fragmento, m.obra, COUNT(*) AS apariciones
@@ -589,10 +483,7 @@ class ConsultasKPI:
             "apariciones_top5": sum(apariciones[:5]),
         }
 
-    # ── 4 · Bloques verificables ────────────────────────────────────────────
-
     def bloques(self) -> dict:
-        """Sólo los de tipo «notacion»: los únicos que pueden sellarse verificados."""
         fila = self._ejecutar(
             """
             SELECT COUNT(*) AS verificables,
@@ -608,10 +499,7 @@ class ConsultasKPI:
         )[0]
         return {"verificables": int(fila[0]), "verificados": int(fila[1])}
 
-    # ── 5 · Escalamiento de ayuda ───────────────────────────────────────────
-
     def niveles(self) -> dict:
-        """Turnos con nivel registrado y cuántos pasaron del sondeo."""
         fila = self._ejecutar(
             """
             SELECT COUNT(*) FILTER (WHERE COALESCE(nivel, '') <> '') AS con_nivel,
@@ -626,16 +514,7 @@ class ConsultasKPI:
             "sin_nivel": int(fila[2]),
         }
 
-    # ── 6 · Supervisión ─────────────────────────────────────────────────────
-
     def supervision(self, clases: list[str], periodo: tuple) -> dict:
-        """La cola dentro del alcance. Sin clases visibles, no hay nada que contar.
-
-        `clases` se pasa explícito y no se deriva aquí porque el alcance de la
-        cola es por clase, no por estudiante: un elemento sin estudiante
-        atribuido —los anteriores a la migración 19— sigue perteneciendo a su
-        clase, y contarlos exige mirar la columna que sí tienen.
-        """
         if not clases:
             return {
                 "revisados": 0, "aprobados": 0, "editados": 0, "rechazados": 0,
@@ -654,9 +533,7 @@ class ConsultasKPI:
             (clases, hasta),
         )
         filas = self._cur.fetchall()
-        # Una decisión pertenece al periodo en que se resolvió, aunque hubiera
-        # llegado antes. La carga pendiente es una fotografía al cierre, por lo
-        # que incluye lo recibido antes de ``desde`` que seguía abierto.
+
         resueltos = [
             f for f in filas
             if f[2] is not None and desde <= f[2] < hasta
@@ -682,10 +559,7 @@ class ConsultasKPI:
             "horas": horas,
         }
 
-    # ── 7 · Clases del alcance ──────────────────────────────────────────────
-
     def clases(self) -> list[dict]:
-        """Una fila por clase, con su docente, su tamaño y su contexto curricular."""
         filas = self._ejecutar(
             """
             SELECT mat.clase,
@@ -713,15 +587,7 @@ class ConsultasKPI:
             for f in filas
         ]
 
-    # ── 8 · Versiones observadas ────────────────────────────────────────────
-
     def versiones(self, clases: list[str], periodo: tuple) -> list[dict]:
-        """Qué corpus y qué modelo respondieron, según `evento_telemetria`.
-
-        Sólo eventos de contexto educativo: `EQ-031` excluye el uso profesional
-        de los agregados, y la columna está en la fila justamente para poder
-        aplicarlo sin volver a preguntar por el rol de nadie.
-        """
         if not clases:
             return []
         desde, hasta = periodo
@@ -745,14 +611,6 @@ class ConsultasKPI:
         ]
 
     def cobertura_por_corpus(self, clases: list[str], periodo: tuple) -> list[dict]:
-        """Cobertura observada por versión de corpus, de la más reciente atrás.
-
-        Sale de `evento_telemetria` y no de `historial_material` porque la
-        versión de corpus **sólo** existe en el evento: el material recuperado
-        no sabe bajo qué edición del corpus se recuperó. Por eso la cobertura de
-        este indicador usa `procedencia` —lo que la respuesta declaró— y no la
-        presencia de material, y su definición lo dice así en el catálogo.
-        """
         if not clases:
             return []
         desde, hasta = periodo
@@ -785,13 +643,6 @@ class ConsultasKPI:
         ]
 
     def apertura_de_fuentes(self) -> dict:
-        """Respuestas con material cuyo panel de fuentes se abrió.
-
-        Se cuenta cada turno una sola vez aunque la persona abra el panel más
-        de una vez. El alcance sale de `validos`; el evento se correlaciona por
-        sujeto y turno, por lo que una referencia de clase ausente no amplía la
-        población y una referencia distinta tampoco cruza cursos.
-        """
         filas = self._ejecutar(
             """
             SELECT COUNT(*) FILTER (WHERE v.con_material),
@@ -815,11 +666,6 @@ class ConsultasKPI:
         return {"elegibles": int(fila[0]), "abiertas": int(fila[1])}
 
     def autocorreccion(self) -> dict:
-        """Candidatos detectados y confirmados explícitamente por turno.
-
-        La confirmación se correlaciona con un candidato del mismo sujeto y
-        turno. Un reintento no duplica por la clave idempotente de telemetría.
-        """
         filas = self._ejecutar(
             """
             SELECT COUNT(*) FILTER (
@@ -859,21 +705,13 @@ class ConsultasKPI:
         fila = filas[0] if filas else (0, 0)
         return {"detectadas": int(fila[0]), "confirmadas": int(fila[1])}
 
-    # ── 9 · Calidad de telemetría ──────────────────────────────────────────
-
     def calidad_de_telemetria(
         self,
         clases: list[str],
         estudiantes: list[str],
         periodo: tuple,
     ) -> dict:
-        """Completitud y demora de los hechos atribuibles al alcance.
 
-        Los eventos con clase se acotan directamente. Los que carecen de ella
-        sólo se incluyen cuando su sujeto pertenece a la población autorizada;
-        así la propia ausencia de clase continúa siendo observable sin abrir el
-        alcance de un docente ni mezclar hechos institucionales sin atribución.
-        """
         if not clases and not estudiantes:
             return {
                 "eventos": 0, "sin_clase": 0, "sin_concepto": 0,
@@ -1039,10 +877,7 @@ class ConsultasKPI:
         ]
         return calidad
 
-    # ── 10 · Completitud de perfiles docentes ───────────────────────────────
-
     def docentes(self) -> dict:
-        """Cuántos docentes del alcance tienen nombre y facultad declarados."""
         filas = self._ejecutar(
             """
             SELECT DISTINCT c.creador,

@@ -1,5 +1,3 @@
-"""Lee sólo los archivos de registro autorizados por la consulta SQL."""
-
 from __future__ import annotations
 
 import json
@@ -13,8 +11,7 @@ def _ruta_local(referencia: dict, raiz: Path) -> Path | None:
     ruta_cruda, turno = referencia.get("ruta"), referencia.get("turno")
     if not isinstance(ruta_cruda, str) or not isinstance(turno, str):
         return None
-    # El productor escribe un archivo por turno. Un traslado Linux→Windows o
-    # cambio de raíz no debe exigir modificar las filas históricas de la BD.
+
     if not re.fullmatch(r"[A-Za-z0-9_-]{1,128}", turno):
         return None
     partes = PurePosixPath(ruta_cruda.replace("\\", "/")).parts
@@ -22,7 +19,6 @@ def _ruta_local(referencia: dict, raiz: Path) -> Path | None:
         return None
     ruta = (raiz / f"{turno}.json").resolve()
     return ruta if ruta.is_relative_to(raiz) else None
-
 
 def leer_trazas(referencias: list[dict], *, raiz_trazas: Path | None = None) -> tuple[list[dict], int]:
     registros = []

@@ -1,5 +1,3 @@
-"""Generación determinista del informe institucional de KPI."""
-
 from __future__ import annotations
 
 import json
@@ -41,7 +39,6 @@ VERSION_PLANTILLA = "informe-kpi-1.6"
 
 
 def _canonico(valor: object) -> object:
-    """Normaliza colecciones sin significado posicional antes de presentarlas."""
     if isinstance(valor, dict):
         return {
             str(clave): ([_canonico(item) for item in valor[clave]]
@@ -57,9 +54,8 @@ def _canonico(valor: object) -> object:
         )
     return valor
 
-
 def _fuentes() -> tuple[str, str]:
-    import reportlab  # noqa: PLC0415
+    import reportlab
 
     raiz = Path(reportlab.__file__).resolve().parent / "fonts"
     normal, negrita = raiz / "Vera.ttf", raiz / "VeraBd.ttf"
@@ -69,7 +65,6 @@ def _fuentes() -> tuple[str, str]:
             pdfmetrics.registerFont(TTFont("DidaxIA-Bold", negrita))
         return "DidaxIA", "DidaxIA-Bold"
     return "Helvetica", "Helvetica-Bold"
-
 
 def _estilos():
     normal, negrita = _fuentes()
@@ -94,7 +89,6 @@ def _estilos():
     ))
     return base, normal, negrita
 
-
 def _pie(canvas, doc) -> None:
     canvas.saveState()
     normal, _ = _fuentes()
@@ -103,7 +97,6 @@ def _pie(canvas, doc) -> None:
     canvas.drawString(1.7 * cm, 1.05 * cm, f"DidaxIA · {VERSION_PLANTILLA}")
     canvas.drawRightString(A4[0] - 1.7 * cm, 1.05 * cm, f"Página {doc.page}")
     canvas.restoreState()
-
 
 def _tabla(filas, anchos=None) -> Table:
     normal, negrita = _fuentes()
@@ -136,9 +129,7 @@ def _tabla(filas, anchos=None) -> Table:
     ]))
     return tabla
 
-
 def _tabla_ficha(filas) -> Table:
-    """Campos explicativos en dos columnas, legibles incluso al partir página."""
     normal, negrita = _fuentes()
     etiqueta = ParagraphStyle(
         "EtiquetaFichaKPI", fontName=negrita, fontSize=7.5, leading=10,
@@ -166,9 +157,7 @@ def _tabla_ficha(filas) -> Table:
     ]))
     return tabla
 
-
 def _tabla_catalogo(indicadores) -> LongTable:
-    """Catálogo multipágina con código ancho y cabecera repetida."""
     normal, negrita = _fuentes()
     celda = ParagraphStyle(
         "CeldaCatalogoKPI", fontName=normal, fontSize=6.7, leading=8.6,
@@ -204,7 +193,6 @@ def _tabla_catalogo(indicadores) -> LongTable:
     ]))
     return tabla
 
-
 def _grafica_productores(datos: dict):
     cobertura = datos.get("calidad", {}).get("telemetria", {}).get(
         "cobertura_por_productor", []
@@ -218,9 +206,7 @@ def _grafica_productores(datos: dict):
         ("Sin eventos en el periodo", pendientes),
     ])
 
-
 def _visible(valor: object) -> str:
-    """Ausencia visible, nunca la representación técnica ``None``."""
     if valor is None or valor == "":
         return "—"
     normalizado = _canonico(valor)
@@ -228,11 +214,8 @@ def _visible(valor: object) -> str:
         return json.dumps(normalizado, ensure_ascii=False, sort_keys=True)
     return str(normalizado)
 
-
 def _seguro(valor: object) -> str:
-    """Texto escapado sin marcas Markdown que ReportLab no interpreta."""
     return escape(_visible(valor).replace("**", "").replace("`", ""))
-
 
 def _seleccionar(datos: dict, tipo: str, codigo: str) -> list[dict]:
     indicadores = sorted(
@@ -249,7 +232,6 @@ def _seleccionar(datos: dict, tipo: str, codigo: str) -> list[dict]:
     if not indicadores:
         raise ValueError("el informe no contiene indicadores con valor en este periodo")
     return indicadores
-
 
 def _composicion(item: dict, estilos) -> list:
     if item.get("estado") != "disponible":
@@ -273,16 +255,13 @@ def _composicion(item: dict, estilos) -> list:
         Spacer(1, .2 * cm),
     ])]
 
-
 def _distribucion_observada(item: dict) -> list:
     if item.get("estado") != "disponible" or item.get("valor") is None:
         return []
     dibujo = intervalo_cuartiles(item.get("detalle", {}), item["valor"], item.get("unidad", ""))
     return [dibujo, Spacer(1, .2 * cm)] if dibujo is not None else []
 
-
 def _metodologia(item: dict, estilos) -> list:
-    """Mismo contrato pedagógico que el diálogo; sin mostrar LaTeX crudo."""
     metodo = item.get("metodologia")
     if not metodo:
         return []
@@ -307,7 +286,6 @@ def _metodologia(item: dict, estilos) -> list:
     if metodo.get("prototipo"):
         bloques.append(Paragraph(_seguro(metodo["fundamento"]), estilos["Aviso"]))
     return bloques
-
 
 def _panorama_observado(indicadores: list[dict], tipo: str, estilos) -> list:
     if tipo not in {"completo", "seleccion"}:
@@ -335,9 +313,7 @@ def _panorama_observado(indicadores: list[dict], tipo: str, estilos) -> list:
         Spacer(1, .25 * cm),
     ]
 
-
 def generar_informe_kpi(datos: dict, *, tipo: str, codigo: str = "") -> bytes:
-    """Crea un PDF autosuficiente desde el contrato explicable de KPI."""
     estilos, _, _ = _estilos()
     indicadores = _seleccionar(datos, tipo, codigo)
 
@@ -412,7 +388,7 @@ def generar_informe_kpi(datos: dict, *, tipo: str, codigo: str = "") -> bytes:
         Paragraph("Resultados", estilos["Heading1"]),
     ])
     from adaptadores.salientes.informes.explicacion_factores import (
-        explicar_factores,  # noqa: PLC0415
+        explicar_factores,
     )
 
     historia.extend(explicar_factores(indicadores, estilos))

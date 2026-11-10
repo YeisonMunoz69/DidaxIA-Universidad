@@ -1,13 +1,4 @@
-<!--
-La región que pinta una ruta ya resuelta.
 
-`Aplicacion.svelte` conserva la sesión, las guardas y el estado del marco. Esta
-pieza solo representa uno de cuatro resultados: sincronización, dirección
-inexistente, función pendiente o componente cargado. Separarlos evita que la
-coordinación reactiva del armazón crezca cada vez que cambia un estado visual.
-
-
--->
 <script>
   import CargadorCubo from '../base/CargadorCubo.svelte';
   import Boton from '../base/Boton.svelte';
@@ -22,16 +13,11 @@ coordinación reactiva del armazón crezca cada vez que cambia un estado visual.
     destino = '/',
     consulta = '',
     arbol = 'estudiante',
-    /** `inicioDe(sesion.rol)`, ya resuelto por quien nos usa · C2B. Ver la
-        misma prop en `CabeceraGlobal.svelte` para el porqué. */
     inicio = '/',
     ir,
-    /** Recupera los assets de la versión vigente, también tras un despliegue. */
     recargar = () => globalThis.location?.reload()
   } = $props();
 
-  // Una promesa estable por ruta: pausa, tema y demás cambios del
-  // armazón no vuelven a descargar ni a montar una pantalla ya abierta.
   const carga = $derived.by(() => {
     if (!sincronizada || !ruta?.cargar || ruta.pendiente) return null;
     const cargar = ruta.cargar;
@@ -39,16 +25,11 @@ coordinación reactiva del armazón crezca cada vez que cambia un estado visual.
   });
 
   function falloDeCarga(error) {
-    // Vite también descarga CSS al abrir una ruta: su fallo es Error, no el
-    // TypeError de import(). Usa sin-red sólo si el navegador confirma Offline.
     return describir(globalThis.navigator?.onLine === false
       ? new FalloDeRed('sin-red', { causa: error }) : error);
   }
 
   function reintentarCarga() {
-    // El import/preload fallido puede quedar retenido en la página. Una
-    // recarga solicitada por la persona renueva JS y CSS; nunca se recarga
-    // automáticamente ni mientras el navegador confirma Offline.
     if (globalThis.navigator?.onLine === false) return;
     recargar();
   }
@@ -80,8 +61,7 @@ coordinación reactiva del armazón crezca cada vez que cambia un estado visual.
       </div>
     </section>
   {:else if ruta.cargar}
-    <!-- Desmontar la ruta anterior antes de entregarle la consulta del destino.
-         Evita registrar una visita en ella y otra al montar la nueva pantalla. -->
+
     {#key ruta.camino}
     {#await carga}
       <CargadorCubo mensaje={`Cargando ${ruta.titulo}…`} pantallaCompleta />

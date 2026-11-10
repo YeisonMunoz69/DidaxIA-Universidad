@@ -1,11 +1,3 @@
-"""Presentación tipográfica de afirmaciones ya comprobadas por el CAS.
-
-El texto formal de la afirmación permanece intacto para la verificación y
-para la alternativa accesible. Solo el bloque visual pasa a LaTeX de SymPy;
-KaTeX no debe adivinar que ``lim x->0`` es un operador o que una barra dentro
-de paréntesis representa una fracción completa.
-"""
-
 from __future__ import annotations
 
 import re
@@ -40,7 +32,6 @@ class _NotacionDeRegla(LatexPrinter):
             return rf"{expr.expr.expr.func}'\left({self._print(expr.point[0])}\right)"
         return super()._print_Subs(expr)
 
-
 def _latex_de_lado(texto: str) -> str:
     texto = texto.strip()
     if texto == "no existe":
@@ -65,9 +56,7 @@ def _latex_de_lado(texto: str) -> str:
         )
     return sp.latex(analizar(texto, evaluar=False))
 
-
 def latex_de_afirmacion(izquierda: str, relacion: str, derecha: str) -> str:
-    """Devuelve notación válida o conserva el original si no puede analizarse."""
     original = f"{izquierda} {relacion} {derecha}"
     if relacion != "=":
         return original

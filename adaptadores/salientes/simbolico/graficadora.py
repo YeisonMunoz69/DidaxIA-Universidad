@@ -1,10 +1,3 @@
-"""Traducción controlada de curvas para la graficadora de consulta.
-
-La entrada se analiza con el mismo guardián del tutor; el navegador nunca
-convierte texto libre en código. Un límite dibuja su función original y guarda
-el destino como referencia, no como un valor supuesto de la función.
-"""
-
 from __future__ import annotations
 
 import math
@@ -20,21 +13,15 @@ from adaptadores.salientes.simbolico.presentacion import expr_to_js
 
 VARIABLES = frozenset("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZθ")
 TIPOS = frozenset({"funcion", "derivada", "limite"})
-MAX_FUNCION_CARACTERES = 2000  # LaTeX editorial: el guardián común limita la forma normalizada.
+MAX_FUNCION_CARACTERES = 2000
 MAX_FUNCION_OPERACIONES = 160
 
 
 def preparar_curvas(solicitudes: list[dict], *, estudiar_dominio=False) -> list[dict]:
-    """Hasta cuatro curvas; el estudio opcional se solicita desde el proceso acotado.
-
-    Las llamadas existentes del tutor conservan su preparación ligera. La ruta
-    de la graficadora usa preparar_curvas_acotadas y pide el estudio explícito.
-    """
     if not isinstance(solicitudes, list) or not 1 <= len(solicitudes) <= 4:
         raise ValueError("elige entre una y cuatro funciones")
 
     return [_preparar_una(solicitud, indice, estudiar_dominio) for indice, solicitud in enumerate(solicitudes, 1)]
-
 
 def _destino_de(solicitud: dict, variable: str) -> tuple[str, float | None]:
     destino = str(solicitud.get("destino") or "").strip()
@@ -46,7 +33,6 @@ def _destino_de(solicitud: dict, variable: str) -> tuple[str, float | None]:
         if math.isfinite(candidato):
             return destino, candidato
     return destino, None
-
 
 def _entrada_grafica(fuente, tipo, variable, solicitud):
     entrada = fuente.strip('$').strip()
@@ -76,7 +62,6 @@ def _entrada_grafica(fuente, tipo, variable, solicitud):
         entrada = re.sub(r'^\\frac\{d\}\{d' + re.escape(variable) + r'\}\s*', '', entrada)
     return normalizar_funcion_grafica(entrada)
 
-
 def _resultado_limite(expresion, simbolo, punto, direccion, dominio):
     if numero_real(punto) is not None:
         evidencia = next(p for p in dominio['puntos'] if p['x'] == numero_real(punto))
@@ -87,7 +72,6 @@ def _resultado_limite(expresion, simbolo, punto, direccion, dominio):
         return {'valor': numero_real(valor), 'estado': str(valor), 'direccion': direccion}
     except (ValueError, NotImplementedError):
         return {'valor': None, 'estado': 'no_verificable', 'direccion': direccion}
-
 
 def _preparar_una(solicitud: dict, indice: int, estudiar_dominio: bool) -> dict:
     if not isinstance(solicitud, dict):
@@ -117,8 +101,7 @@ def _preparar_una(solicitud: dict, indice: int, estudiar_dominio: bool) -> dict:
         if dibujable.has(sp.Derivative, sp.DiracDelta):
             raise ValueError('la derivada no tiene una representación ordinaria verificable')
         js = expr_to_js(dibujable.xreplace({simbolo: sp.Symbol("x")}))
-        # xreplace reconstruye el árbol y puede cancelar x/x. Renombrar sólo
-        # la variable en el JS impreso conserva cada operación del original.
+
         original_js = re.sub(r'\b' + re.escape(variable) + r'\b', 'x', expr_to_js(original))
         punto, direccion = analizar_destino_del_limite(destino, variable) if destino else (None, None)
         dominio = informacion_dominio(original, dibujable, simbolo, destino=punto, derivada=tipo == 'derivada') if estudiar_dominio else {'puntos': [], 'alcance': 'No se realizó el análisis opcional de puntos especiales; se conserva el evaluador original.'}
@@ -127,7 +110,7 @@ def _preparar_una(solicitud: dict, indice: int, estudiar_dominio: bool) -> dict:
             resultado_limite = _resultado_limite(expresion, simbolo, punto, direccion, dominio)
         if not js:
             raise ValueError("no se puede representar en el plano")
-    except Exception as error:  # noqa: BLE001
+    except Exception as error:
         raise ValueError(f"función {indice}: {error}") from error
 
     return {

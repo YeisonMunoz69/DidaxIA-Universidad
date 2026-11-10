@@ -1,35 +1,4 @@
-<!--
-La ficha de un fragmento del corpus · `/fuentes/F-252` · `EQ-013`.
 
-QUÉ SE VE CUANDO LA OBRA NO ESTÁ AUTORIZADA, Y POR QUÉ SE VE ALGO
-------------------------------------------------------------------
-Se ve la ficha bibliográfica completa —obra, autoría, página, cómo se capturó,
-qué se verificó de su matemática— y **no** el pasaje. `FUENTES.md` lo autoriza
-expresamente: *«Los metadatos bibliográficos y la explicación de procedencia sí
-pueden mostrarse»*. Lo que la puerta de publicación gobierna es el contenido.
-
-Enseñar la ficha no es un consuelo: es lo que permite que el estudiante vaya a
-la biblioteca y encuentre el pasaje por su cuenta, que era el objetivo de
-`EQ-013` antes de que hubiera lector ninguno.
-
-EL ESTADO NO SE ADIVINA DEL CÓDIGO HTTP
------------------------------------------
-El backend responde con un `motivo` en clave estable. Esta pantalla lo traduce
-a una explicación; **no analiza el texto del mensaje** y no colapsa causas
-distintas en «algo salió mal». Un `403` por falta de autorización y un `404`
-por archivo ausente son dos hechos que el equipo arregla de dos maneras.
-
-EL RETORNO SE VALIDA
-----------------------
-`?volver=` es el único parámetro que esta pantalla lee, y `destinoDeRetorno()`
-lo comprueba contra la tabla de rutas antes de usarlo. Sin eso, un enlace
-`?volver=https://sitio-falso` pondría un botón «Volver a la conversación» que
-lleva fuera, con la credibilidad de estar dentro.
-
-
-Lenguaje declarado en OE3-Implementacion/13-Lenguaje-de-Diseno.md
-
--->
 <script>
   import CargadorCubo from '../../comun/base/CargadorCubo.svelte';
   import Boton from '../../comun/base/Boton.svelte';
@@ -45,7 +14,6 @@ Lenguaje declarado en OE3-Implementacion/13-Lenguaje-de-Diseno.md
   } from '../../nucleo/fuentes/navegacion.js';
 
   let {
-    /** Inyectables para poder montar la pantalla en una prueba sin navegador. */
     caminoActual = globalThis.location?.pathname ?? '',
     consultaActual = globalThis.location?.search ?? '',
     cargar = pedirFragmento
@@ -62,7 +30,6 @@ Lenguaje declarado en OE3-Implementacion/13-Lenguaje-de-Diseno.md
   let explicacion = $state('');
   let modoLector = $state(true);
 
-  /** Lo que se le dice a una persona por cada motivo del contrato. */
   const EXPLICACION = {
     fragmento_inexistente:
       'No hay material del curso con ese identificador. Puede que el enlace esté mal escrito.',
@@ -89,8 +56,6 @@ Lenguaje declarado en OE3-Implementacion/13-Lenguaje-de-Diseno.md
       return;
     }
     if (!esFragmento(id)) {
-      // Se rechaza sin gastar una petición. No es autorización —eso lo hace el
-      // servidor— sino no preguntar por algo que se sabe mal escrito.
       estado = 'no-encontrado';
       motivo = 'fragmento_inexistente';
       explicacion = EXPLICACION.fragmento_inexistente;
@@ -228,27 +193,10 @@ Lenguaje declarado en OE3-Implementacion/13-Lenguaje-de-Diseno.md
   .fuente h2 { margin-block: 1rem .7rem; }
   .modo-lector :global(.mesa) { padding: 0; border-radius: 0; }
   .fuente {
-    /* ⚠️ **`width: 100%` NO SOBRA junto a `max-width`.**
-       El armazón monta la ruta dentro de un contenedor flex en columna, y ahí
-       `margin: 0 auto` **anula el estiramiento**: el artículo pasa a medir su
-       contenido acotado por `max-width`, es decir 68ch ≈ 587 px, y los conserva
-       aunque el teléfono tenga 390. `main` recorta con `overflow-x: hidden`, de
-       modo que el documento no se desplazaba —la comprobación de desbordamiento
-       decía 0 px— y aun así un tercio del lector quedaba fuera de la pantalla.
-       Medido en Chromium a 390 y 360 px; jsdom no maqueta y no podía verlo. */
     width: 100%;
     max-width: 82rem;
     margin: 0 auto;
     padding: var(--espacio-sm) var(--espacio-md) var(--espacio-md);
-    /* ⚠️ **`min-width: 0` NO ES DECORATIVO.**
-       El armazón monta la ruta dentro de un contenedor flex, y un elemento
-       flex trae `min-width: auto`: no encoge por debajo del ancho mínimo de su
-       contenido. Con una tabla de cinco columnas, este artículo crecía a
-       575 px dentro de un teléfono de 390 y `main` —que tiene
-       `overflow-x: hidden`— recortaba la mitad derecha del lector. El
-       documento no se desplazaba, así que la comprobación de desbordamiento
-       decía 0 px y el fallo pasaba desapercibido. Lo destapó medir el
-       rectángulo de la tabla en Chromium; jsdom no maqueta y no podía verlo. */
     min-width: 0;
     block-size: 100%;
     min-block-size: 0;
@@ -312,8 +260,6 @@ Lenguaje declarado en OE3-Implementacion/13-Lenguaje-de-Diseno.md
     gap: var(--espacio-sm);
   }
 
-  /* En 360 px la etiqueta y su valor se apilan: dos columnas dejarían el valor
-     en una tira de cuatro caracteres. */
   @media (max-width: 32rem) {
     .ficha div {
       grid-template-columns: 1fr;

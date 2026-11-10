@@ -1,29 +1,3 @@
-/**
- * La información pública de privacidad · `D0` §10.2 y §10.6.
- *
- * ⚠️ **NO SUSTITUYE EL PROTOCOLO NI EL CONSENTIMIENTO VERSIONADO.**
- * `ESTADO-ACTUAL.md` §10.9 deja pendientes cuatro cosas que esos instrumentos
- * necesita y que aquí **no se inventan**: quién es el responsable del
- * tratamiento, qué dependencia lo asume, por qué canal se ejercen los derechos
- * y cuál es el plazo de retención aprobado. Donde falta el dato, el texto dice
- * que falta.
- *
- * ⚠️ **NI UNA CATEGORÍA DE DATO QUE EL SISTEMA NO TRATE.** Las siete que se
- * enumeran salen del inventario de persistencia (§2.3) y del recorrido ya
- * construido: identidad de Google, perfil con edad exacta, eventos de
- * consentimiento y asentimiento, conversaciones, métricas, evidencia del
- * representante y registros técnicos. Añadir una octava «por si acaso» sería
- * pedir autorización para algo que nadie decidió hacer.
- *
- * ES CONTENIDO Y NO MARCADO, A PROPÓSITO
- * ----------------------------------------
- * Los tres documentos tienen la misma estructura —secciones con título,
- * párrafos y listas— y un solo componente los pinta
- * (`piezas/DocumentoPublico.svelte`). Así el texto se revisa como texto: quien
- * lo corrija después de la respuesta institucional no tiene que leer Svelte, y
- * cambiar una frase no puede romper la maquetación de las otras dos páginas.
- *
- */
 import { AUTORES, INSTITUCION, MARCA } from './proyecto.js';
 
 export const PRIVACIDAD = Object.freeze({

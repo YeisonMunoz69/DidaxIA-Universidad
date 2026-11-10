@@ -1,62 +1,3 @@
-"""
-gobierno.py — Supresión solicitada, retención, propuestas, roles e inventario
-===========================================================================
-
-La parte **reversible y auditable** del gobierno de datos de `EQ-022`/`EQ-023`,
-por API.
-
-⚠️ Aquí no se borra nada, y es el límite del hito
-------------------------------------------------------------
-No hay ninguna ruta que elimine ni anonimice. `POST /api/datos/supresion` abre un
-**trámite**; `DELETE` sobre él lo cancela. Lo que ocurre cuando el plazo vence lo
-decide el cierre V-B, porque cambiar el sujeto técnico de una conversación sólo
-la seudonimiza —su texto puede llevar dentro nombres y correos— y llamar anónimo
-a eso sería falso.
-
-`GET /api/datos/inventario` responde qué **alcanzaría** una supresión: tablas,
-conteos y qué queda fuera del alcance de una cascada de hoy. Conteos, nunca
-contenidos: un inventario que imprimiera lo que va a borrar sería una exportación
-disfrazada.
-
-⚠️ La reautenticación no llega en el cuerpo · hito R3
-------------------------------------------------------------
-`POST /api/datos/supresion` recibía `reautenticada_en` del cliente y lo
-contrastaba con el reloj del servidor, declarándolo *«no es una comprobación
-fuerte»*. No lo era en absoluto: cualquiera que llame al API escribe la fecha que
-quiera, así que la condición de `EQ-022` no existía. Ahora la prueba la acredita
-`POST /api/sesion/reautenticar` con un `id_token` del mismo sujeto y vive del
-lado servidor; esta ruta **la consume** y no lee ninguna fecha del cuerpo.
-
-⚠️ Dos aprobaciones son dos peticiones autenticadas · hito R5
-------------------------------------------------------------
-`POST /api/datos/retencion` pedía `aprobada_por` en el cuerpo y daba la política
-por aprobada. Eso no es una segunda aprobación: es el primer administrador
-escribiendo el nombre del segundo. Ahora esa ruta **propone** —deja una propuesta
-pendiente— y `POST /api/gobierno/propuestas/{id}/aprobar` la aprueba desde otra
-sesión, de otra persona. Aprobación, efecto y auditoría se confirman en una sola
-transacción dentro del repositorio.
-
-⚠️ La auditoría ya no es «best effort» · hito R5
-------------------------------------------------------------
-`_auditar()` capturaba el fallo y seguía, con el argumento de que *«la operación
-YA está registrada»*. Eso es exactamente lo que `EQ-023` no admite: una operación
-auditable que informa éxito sin auditoría. La constancia la escriben ahora los
-repositorios **dentro de la transacción** de la operación; si falla, la operación
-no ocurre. La función desapareció, y con ella la posibilidad de volver a usarla.
-
-Lo que sigue sin decidir el sistema
---------------------------------------
-- **Si el aviso sale.** `PuertoNotificacion`, que desde `D2` puede ser Resend o
-  el adaptador que anota sin enviar, según lo que haya configurado. `EQ-024`: el
-  canal no decide el trámite. Lo que sí se hace es **representar** su resultado
-  —`aviso_enviado`— en vez de fingir un envío.
-- **Quién es el primer investigador.** Ninguna ruta crea un administrador donde
-  no hay ninguno: `POST /api/gobierno/roles` exige uno vigente. La primera
-  asignación es una operación deliberada del equipo contra la base.
-
-
-"""
-
 from __future__ import annotations
 
 import hashlib
@@ -91,7 +32,7 @@ from dominio.puertos.almacen import (
     ReferenciaDesconocida,
 )
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from adaptadores.entrantes.http.rutas.puerta_de_supresion import PuertaDeSupresion
     from dominio.puertos.gobierno import (
         PuertoAuditoria,
@@ -104,15 +45,9 @@ if TYPE_CHECKING:  # pragma: no cover
     from dominio.puertos.invitaciones import PuertoInvitaciones
     from dominio.puertos.roles import PuertoAsignacionDeRoles
 
-#: `EQ-022` · el asunto del aviso al correo institucional. Sin datos dentro y sin
-#: el nombre de nadie: un asunto se lee en la bandeja antes de abrir el correo.
 _ASUNTO_SUPRESION = "Solicitud de eliminación de datos recibida"
 
-#: El texto del aviso. `D2` lo fija aquí y no en el adaptador porque **es del
-#: caso de uso**: qué se le cuenta a la persona sobre su trámite no lo decide el
-#: transporte. Lo mínimo para entender el hecho y una remisión a la aplicación
-#: autenticada; ni plazos copiados, ni identificadores, ni datos de la solicitud
-#: —que ya están en la pantalla y cambian si hay extensión—.
+
 _CUERPO_SUPRESION = (
     "Recibimos tu solicitud de eliminación de datos y quedó registrada.\n\n"
     "Puedes consultar su estado, sus plazos y cancelarla dentro del plazo "
@@ -120,31 +55,15 @@ _CUERPO_SUPRESION = (
     "Si no fuiste tú, entra y cancélala."
 )
 
-#: Cómo se deriva la clave de idempotencia del aviso de supresión (`D2`).
-#:
-#: De `solicitud.secuencia`, que es el identificador que asignó PostgreSQL a la
-#: fila **ya confirmada**, y nunca del correo: dos personas distintas producen
-#: dos claves distintas porque son dos filas, no porque sean dos correos. Es
-#: estable —un reintento del mismo trámite da la misma clave— y corta, muy por
-#: debajo de los 256 caracteres que Resend admite.
+
 _CLAVE_SUPRESION = "supresion-solicitada/{secuencia}"
 
-#: Qué operación propone `POST /api/datos/retencion`. El nombre lo valida el
-#: dominio (`OPERACIONES_CON_DOBLE_APROBACION`); aquí sólo se nombra.
+
 _OPERACION_RETENCION = "retencion.fijar"
 
 
 @dataclass(frozen=True)
 class RepositoriosDeGobierno:
-    """Los siete puertos de este recorrido, agrupados por composición.
-
-    Mismo criterio que `rutas/consentimiento.py`: campos nombrados y tipados en
-    vez de siete posiciones intercambiables.
-
-    `propuestas` admite `None` **sólo** para no romper a quien componga sin la
-    migración 12; sin él, las rutas de doble aprobación responden mantenimiento
-    en vez de aprobar sin propuesta, que sería el defecto de vuelta.
-    """
 
     supresiones: PuertoSolicitudesDeSupresion
     retencion: PuertoRetencion
@@ -156,9 +75,7 @@ class RepositoriosDeGobierno:
     identidades: object | None = None
     invitaciones: PuertoInvitaciones | None = None
 
-
 def _solicitud_como_json(solicitud) -> dict:
-    """El trámite tal como lo ve su titular. Sin datos de nadie más."""
     return {
         "estado": solicitud.estado.value,
         "solicitada_en": solicitud.solicitada_en.isoformat(),
@@ -172,14 +89,7 @@ def _solicitud_como_json(solicitud) -> dict:
         "cerrada_en": solicitud.cerrada_en.isoformat() if solicitud.cerrada_en else None,
     }
 
-
 def _propuesta_como_json(propuesta) -> dict:
-    """Lo que identifica una propuesta y permite comprobar qué se aprobó.
-
-    `huella` viaja en las dos respuestas —al proponer y al aprobar— para que el
-    segundo administrador pueda confirmar que aprueba lo mismo que se propuso sin
-    tener que comparar el contenido campo a campo.
-    """
     return {
         "id": propuesta.secuencia,
         "operacion": propuesta.operacion,
@@ -193,7 +103,6 @@ def _propuesta_como_json(propuesta) -> dict:
         "aprobada_por": propuesta.aprobada_por,
         "aprobada_en": propuesta.aprobada_en.isoformat() if propuesta.aprobada_en else None,
     }
-
 
 def crear_router(
     sesiones: Sesiones,
@@ -225,44 +134,15 @@ def crear_router(
         }
 
     def _congelada(sujeto: str) -> JSONResponse | None:
-        """La negativa si el ACTOR tiene su propio trámite abierto, o `None`.
-
-        ⚠️ **No se aplica a las tres rutas del propio trámite.** Consultar la
-        solicitud, cancelarla y ver la retención vigente son precisamente lo que
-        `ESTADO-ACTUAL.md` §10.2 conserva durante la supresión: ponerles esta
-        puerta habría dejado a alguien sin poder cancelar lo que pidió, que es el
-        peor resultado posible de una corrección pensada para protegerlo.
-
-        Sí se aplica a proponer retención, aprobar propuestas, gobernar roles y
-        **leer** las propuestas, los roles y el inventario de otra persona: son
-        acciones administrativas de producto, no derechos del titular.
-
-        `GET /api/datos/retencion` queda fuera: es información sobre cuánto se
-        conserva, y quien está en trámite tiene más motivo que nadie para
-        consultarla.
-        """
         return puerta.negativa(sujeto)
 
-
     def _es_investigador(sujeto: str) -> bool | None:
-        """`True`/`False`, o `None` si no se puede saber (almacén caído).
-
-        Tres valores y no dos: tratar «no lo sé» como `False` daría un 403 a
-        alguien que sí tiene el permiso, y como `True` daría acceso a quien no.
-        """
         try:
             return puede_revisar_evidencia(repos.roles.roles_de(sujeto))
         except (AlmacenNoConfigurado, AlmacenNoDisponible):
             return None
 
     def _exigir_investigador(sujeto: str) -> JSONResponse | None:
-        """`None` si puede seguir; si no, la respuesta ya hecha.
-
-        ⚠️ Esta comprobación es la del **borde**, y no sustituye a la del
-        repositorio: el rol se vuelve a exigir dentro de la transacción, donde un
-        rol retirado un segundo antes ya no cuenta. Aquí existe para dar un 403
-        con motivo en vez de un 409 genérico.
-        """
         autorizado = _es_investigador(sujeto)
         if autorizado is None:
             return mantenimiento("no se pudieron comprobar los permisos")
@@ -459,19 +339,6 @@ def crear_router(
 
     @router.post("/api/datos/supresion")
     async def solicitar_supresion(peticion: Request) -> JSONResponse:
-        """`EQ-022` · abre el trámite. **No borra nada.**
-
-        Exige las tres condiciones de la decisión: reautenticación reciente
-        acreditada por el servidor, frase de confirmación validada **por el
-        backend** y que no haya otro trámite abierto.
-
-        ⚠️ **La reautenticación no llega en el cuerpo** (hito R3). Se consume la
-        prueba que `POST /api/sesion/reautenticar` dejó en el almacén de sesiones
-        tras verificar un `id_token` del mismo sujeto institucional. Si no hay
-        prueba, o ya caducó, se responde 401 con el estado que el cliente
-        necesita para mandar a la persona a Google — no un 400, porque la
-        petición está bien formada y lo que falta es una credencial fresca.
-        """
         datos, negativa = requerir_sesion(sesiones, peticion)
         if negativa is not None:
             return negativa
@@ -501,14 +368,9 @@ def crear_router(
         except EscrituraRechazada as error:
             return JSONResponse({"detalle": str(error)}, status_code=409)
         except (AlmacenNoConfigurado, AlmacenNoDisponible):
-            # Cubre también el fallo de la auditoría: va en la misma transacción,
-            # así que si no se pudo registrar, el trámite no quedó abierto y
-            # decir «solicitada» sería mentira (`EQ-023`).
+
             return mantenimiento("no se pudo registrar la solicitud")
 
-        # `EQ-022` · aviso al correo institucional. **Fuera** de la transacción y
-        # sin poder deshacerla: `EQ-024` dice que el canal no decide el trámite.
-        # Su resultado se representa, no se finge.
         aviso = repos.notificacion.avisar(
             datos["correo"],
             _ASUNTO_SUPRESION,
@@ -528,7 +390,6 @@ def crear_router(
 
     @router.get("/api/datos/supresion")
     def estado_de_supresion(peticion: Request) -> JSONResponse:
-        """El trámite abierto y el historial de los cerrados."""
         datos, negativa = requerir_sesion(sesiones, peticion)
         if negativa is not None:
             return negativa
@@ -546,16 +407,6 @@ def crear_router(
 
     @router.delete("/api/datos/supresion")
     def cancelar_supresion(peticion: Request) -> JSONResponse:
-        """`EQ-022` · 24 horas para cancelar.
-
-        Pasado el plazo devuelve 409 con el motivo: que la ventana se cierre
-        **no ejecuta nada**, sólo retira la cancelación por parte del titular.
-
-        La constancia va en la misma transacción que el `UPDATE` (hito R5): si la
-        auditoría falla, el trámite sigue abierto y se responde mantenimiento.
-        Decirle a alguien que canceló algo que sigue en curso sería el peor de
-        los dos errores posibles.
-        """
         datos, negativa = requerir_sesion(sesiones, peticion)
         if negativa is not None:
             return negativa
@@ -576,12 +427,6 @@ def crear_router(
 
     @router.get("/api/datos/retencion")
     def retencion(peticion: Request) -> JSONResponse:
-        """`EQ-022` · el plazo, representable y consultable.
-
-        Hoy `sustentacion_en` es `null` y `limite` también: la fecha no existe y
-        una inventada sería peor que ninguna. `limite` se calcula en **meses
-        calendario** (`dominio/modelo/calendario.py`), no en bloques de 30 días.
-        """
         _datos, negativa = requerir_sesion(sesiones, peticion)
         if negativa is not None:
             return negativa
@@ -602,17 +447,6 @@ def crear_router(
 
     @router.get("/api/datos/inventario")
     def inventario(peticion: Request) -> JSONResponse:
-        """Qué alcanzaría una supresión de quien llama. Conteos, no contenidos.
-
-        Es la simulación que el cierre V-B necesita: qué tablas, cuántas filas,
-        cuáles llevan texto libre —seudonimizar no es anonimizar— y qué queda
-        fuera del alcance de una cascada de hoy.
-
-        Cada titular ve **el suyo**. Un investigador puede pedir el de otra
-        persona con `?sujeto=`, y esa consulta **queda auditada dentro de la
-        misma transacción** (`EQ-023`, hito R5): si la constancia no se puede
-        escribir, no se devuelven los conteos.
-        """
         datos, negativa = requerir_sesion(sesiones, peticion)
         if negativa is not None:
             return negativa
@@ -622,13 +456,7 @@ def crear_router(
 
         if ajeno and (impedido := _exigir_investigador(propio)) is not None:
             return impedido
-        # ⚠️ **Sólo el AJENO se bloquea, y antes de auditar o consultar.**
-        #
-        # El inventario propio es un derecho del titular: saber qué alcanzaría su
-        # supresión es justo lo que necesita quien la pidió. El de otra persona es
-        # una acción de investigación, y `inventariar()` la audita dentro de su
-        # transacción — así que rechazarla después habría dejado la constancia de
-        # una consulta que no debía ocurrir.
+
         if ajeno and (congelada := _congelada(propio)) is not None:
             return congelada
 
@@ -639,21 +467,8 @@ def crear_router(
 
         return JSONResponse(resultado.como_json())
 
-    # ── la doble aprobación de EQ-023 ────────────────────────────────────────
-
     @router.post("/api/datos/retencion")
     async def proponer_retencion(peticion: Request) -> JSONResponse:
-        """`EQ-023` · **propone** la política. No la fija.
-
-        Es la primera de las dos peticiones autenticadas. Devuelve **201 con
-        estado `pendiente`** y la huella del contenido; la política no cambia
-        hasta que otro administrador apruebe esa propuesta por su identificador.
-
-        ⚠️ **`aprobada_por` del cuerpo se ignora por completo** — no se lee, no se
-        valida y no se menciona. Leerlo para rechazarlo habría dejado el nombre
-        vivo en el código y la puerta entreabierta para el siguiente que lo
-        creyera útil.
-        """
         datos, negativa = requerir_sesion(sesiones, peticion)
         if negativa is not None:
             return negativa
@@ -678,9 +493,6 @@ def crear_router(
         if sustentacion.tzinfo is None:
             sustentacion = sustentacion.replace(tzinfo=UTC)
 
-        # El payload se normaliza aquí, antes de calcular la huella: si cada
-        # cliente mandara la fecha con un formato distinto, dos propuestas del
-        # mismo contenido tendrían huellas distintas.
         payload = {"sustentacion_en": sustentacion.isoformat()}
         if "meses_despues" in cuerpo:
             try:
@@ -701,12 +513,6 @@ def crear_router(
 
     @router.get("/api/gobierno/propuestas")
     def listar_propuestas(peticion: Request) -> JSONResponse:
-        """Las propuestas que esperan a un segundo administrador.
-
-        Es lo que el segundo necesita para poder aprobar: sin esta ruta tendría
-        que enterarse del identificador por un canal fuera del sistema, y una
-        aprobación que depende de un mensaje por otro medio no es auditable.
-        """
         datos, negativa = requerir_sesion(sesiones, peticion)
         if negativa is not None:
             return negativa
@@ -726,17 +532,6 @@ def crear_router(
 
     @router.post("/api/gobierno/propuestas/{propuesta}/aprobar")
     def aprobar_propuesta(propuesta: int, peticion: Request) -> JSONResponse:
-        """`EQ-023` · la **segunda** petición autenticada, de otra persona.
-
-        El aprobador sale de la sesión y de ningún otro sitio. El repositorio
-        comprueba el rol, que no sea suya, que siga pendiente y que el contenido
-        coincida con su huella; después aplica el efecto y audita, todo en una
-        transacción.
-
-        Aprobar dos veces devuelve **409 con el estado actual**: es un rechazo
-        limpio y, a diferencia de un 409 seco, deja ver que la propuesta ya está
-        aprobada, de modo que un reintento por corte de red no queda en duda.
-        """
         datos, negativa = requerir_sesion(sesiones, peticion)
         if negativa is not None:
             return negativa
@@ -764,12 +559,6 @@ def crear_router(
         return JSONResponse(_propuesta_como_json(aprobada))
 
     def _conflicto_de_propuesta(propuestas, identificador: int, motivo: str) -> JSONResponse:
-        """El 409 de una aprobación que no procede, con el estado si se puede leer.
-
-        Añadir el estado no es decorativo: distingue «ya estaba aprobada» —donde
-        el efecto ocurrió una vez y está bien— de «no puedes aprobar la tuya»,
-        que exige a otra persona. Sin él las dos serían el mismo 409.
-        """
         cuerpo = {"detalle": motivo}
         try:
             actual = propuestas.consultar(identificador)
@@ -780,16 +569,7 @@ def crear_router(
             cuerpo["detalle"] = motivo
         return JSONResponse(cuerpo, status_code=409)
 
-    # ── permisos · EQ-023 ────────────────────────────────────────────────────
-
     def _rol_del_cuerpo(cuerpo: dict) -> tuple[str, Rol | None, JSONResponse | None]:
-        """`(sujeto, rol, negativa)`. Lo común a asignar y a revocar.
-
-        El sujeto sobre el que se actúa **sí** viene del cuerpo —es a quién se le
-        da o se le quita—, pero el **actor** nunca: ése sale de la sesión. Son
-        dos cosas distintas y confundirlas es cómo alguien se atribuiría una
-        decisión ajena.
-        """
         sujeto = str(cuerpo.get("sujeto") or "").strip()
         if not sujeto:
             return "", None, JSONResponse(
@@ -804,13 +584,7 @@ def crear_router(
     def _exigir_propietario_para_investigacion(
         datos: dict, rol: Rol
     ) -> JSONResponse | None:
-        """Reserva el gobierno de investigadores al núcleo del entorno.
 
-        Un investigador delegado sigue pudiendo administrar docentes y sus
-        facultades, pero no puede multiplicar administradores. La identidad
-        propietaria sale del correo que Google verificó para la sesión; nunca
-        de un campo enviado por el cliente.
-        """
         if rol is Rol.INVESTIGADOR_ADMINISTRADOR and not es_propietario(
             str(datos.get("correo") or "")
         ):
@@ -826,7 +600,6 @@ def crear_router(
         return None
 
     def _proteger_propietario(sujeto: str, rol: Rol) -> JSONResponse | None:
-        """Impide retirar desde HTTP el núcleo declarado en el entorno."""
         if rol is not Rol.INVESTIGADOR_ADMINISTRADOR or repos.identidades is None:
             return None
         try:
@@ -844,12 +617,6 @@ def crear_router(
 
     @router.get("/api/gobierno/roles")
     def mis_roles(peticion: Request) -> JSONResponse:
-        """Los roles vigentes de quien llama. Sólo los suyos.
-
-        Sin parámetro para preguntar por otro: eso sería una consulta de datos
-        ajenos y tendría que auditarse. Quien administra ya ve el historial
-        completo al asignar o revocar.
-        """
         datos, negativa = requerir_sesion(sesiones, peticion)
         if negativa is not None:
             return negativa
@@ -863,22 +630,6 @@ def crear_router(
 
     @router.post("/api/gobierno/roles")
     async def asignar_rol(peticion: Request) -> JSONResponse:
-        """`EQ-023` · otorga un rol. Sólo un investigador vigente, y no a sí mismo.
-
-        Las tres reglas del encargo, y dónde vive cada una:
-
-        - **sólo un investigador-administrador vigente** — `_exigir_investigador()`
-          aquí para el motivo, y otra vez dentro de la transacción para que un rol
-          retirado un segundo antes no se cuele;
-        - **nadie se eleva a sí mismo** — aquí, comparando con el actor de la
-          sesión. No es redundante con la anterior: alguien que ya tiene el rol
-          pasaría esa comprobación y aun así no puede otorgárselo;
-        - **no hay bootstrap remoto** — es consecuencia de la primera: sin ningún
-          investigador vigente, ninguna sesión pasa, y la primera asignación la
-          hace el equipo contra la base.
-
-        El actor sale de la sesión. Un `otorgado_por` en el cuerpo se ignora.
-        """
         datos, negativa = requerir_sesion(sesiones, peticion)
         if negativa is not None:
             return negativa
@@ -922,17 +673,6 @@ def crear_router(
 
     @router.delete("/api/gobierno/roles")
     async def revocar_rol(peticion: Request) -> JSONResponse:
-        """`EQ-023` · retira un rol, conservando autor y fecha.
-
-        No borra la fila: le pone `revocado_por` y `revocado_en`. Una aprobación
-        de hace un mes tiene que seguir explicándose, y si la asignación
-        desapareciera quedaría hecha por alguien que —según la base— nunca pudo
-        hacerla.
-
-        Nadie se revoca a sí mismo, por el mismo motivo que nadie se eleva: un
-        administrador que se retirara el rol podría dejar el sistema sin ninguno,
-        y recuperarlo exigiría volver a la base.
-        """
         datos, negativa = requerir_sesion(sesiones, peticion)
         if negativa is not None:
             return negativa
@@ -970,7 +710,4 @@ def crear_router(
 
     return router
 
-
-#: Se importa para dejar constancia de que el rol que estas rutas consultan es el
-#: único de `EQ-023`; una prueba lo comprueba contra el enumerado.
 _ROL_DE_INVESTIGADOR = Rol.INVESTIGADOR_ADMINISTRADOR

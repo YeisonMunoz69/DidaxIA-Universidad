@@ -1,31 +1,13 @@
-<!--
-DD-13 · El concepto en detalle.
 
-Explicación, relaciones con otros conceptos y su simulación. Es la pestaña
-aparte que las docentes pidieron para no cargar la conversación.
-
-Las relaciones que muestra son las mismas aristas del grafo pedagógico. Al
-escribir «para entender esto hace falta antes aquello», las docentes dibujan
-grafo sin necesidad de saber que existe un grafo.
-
-
-Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
-Origen de esta pieza: OE3-Implementacion/09-Aportes-de-la-Consulta-Docente.md
-
--->
 <script>
   import EnlaceAConcepto from "./EnlaceAConcepto.svelte";
   import TextoDeConcepto from "./TextoDeConcepto.svelte";
   import Icono from "../base/Icono.svelte";
 
   let {
-    /** { id, nombre, nodo, estado, concepcion, secciones, previos } */
     ficha,
-    /** Se invoca con el identificador de un concepto previo o adyacente. */
     alAbrir = null,
-    /** Concepto anterior en la lista: { id, nombre } | null */
     anterior = null,
-    /** Concepto siguiente en la lista: { id, nombre } | null */
     siguiente = null,
   } = $props();
 
@@ -194,7 +176,6 @@ Origen de esta pieza: OE3-Implementacion/09-Aportes-de-la-Consulta-Docente.md
     padding: 0;
   }
 
-  /* Prerrequisitos en franja compacta */
   .franja-prerrequisitos {
     display: flex;
     flex-direction: column;
@@ -263,7 +244,6 @@ Origen de esta pieza: OE3-Implementacion/09-Aportes-de-la-Consulta-Docente.md
     font-size: var(--texto-base);
   }
 
-  /* Navegación anterior / siguiente */
   .pie-navegacion-concepto {
     display: flex;
     align-items: stretch;

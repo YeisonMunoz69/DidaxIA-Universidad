@@ -1,50 +1,3 @@
-"""
-telemetria_db.py — Escritura PostgreSQL de `evento_telemetria`
-===============================================================
-
-Un `INSERT ... ON CONFLICT (clave_idempotencia) DO NOTHING` con `RETURNING id`,
-y una comprobación de referencias antes, dentro de la misma transacción.
-
-Por qué el `ON CONFLICT` y no un `SELECT` previo
--------------------------------------------------------
-Porque entre el `SELECT` y el `INSERT` cabe el segundo reintento. Dos peticiones
-del mismo evento que se cruzan verían las dos «no existe» y las dos
-insertarían: la restricción única las frenaría, pero una de las dos subiría como
-error de integridad y el cliente lo leería como fallo. Con `ON CONFLICT` las dos
-terminan bien y sólo una crea fila, que es lo que idempotente significa.
-
-`RETURNING id` es lo que distingue los dos casos: la cláusula sólo devuelve fila
-cuando el `INSERT` la creó, así que un `fetchone()` vacío **es** el duplicado.
-
-Por qué las referencias se comprueban aquí y no en la ruta
-------------------------------------------------------------------
-El encargo pide rechazar «IDs fuera del alcance», y el alcance es una propiedad
-de la base: qué clase existe y de quién es. Comprobarlo en la ruta, antes de
-abrir la transacción, dejaría el mismo hueco que `autorizacion_sql.py` documenta
-para los roles —entre la comprobación y el efecto cabe un cambio— y, sobre todo,
-dejaría la regla fuera del repositorio: bastaría llamar al adaptador desde otro
-sitio para saltársela.
-
-Dos comprobaciones y no una:
-
-1. **La clase existe.** Si no, el evento se rechaza; no se guarda con la clase
-   en `NULL`, porque eso convertiría un identificador inventado en un evento
-   «sin clase» perfectamente válido y contaminaría los agregados institucionales.
-2. **El sujeto pertenece a esa clase, o la creó.** Un estudiante sólo puede
-   declarar eventos de su propia clase; un docente, de las suyas. Sin esto,
-   cualquier sesión autenticada podría inflar la telemetría de un curso ajeno.
-
-⚠️ Lo que este adaptador NO hace
---------------------------------------
-No audita. Registrar que alguien abrió el panel de fuentes no es una operación
-administrativa de `EQ-023`, y anotar cada evento en `auditoria_operacion`
-llenaría la tabla que más sobrevive con el uso ordinario del producto. Lo que sí
-se audita es la **lectura institucional** de los indicadores, y eso ocurre en
-`kpi_db.py`.
-
-
-"""
-
 from __future__ import annotations
 
 import hashlib
@@ -58,7 +11,7 @@ from adaptadores.salientes.registro.autorizacion_sql import (
 from adaptadores.salientes.registro.base_postgres import RepositorioPostgres
 from dominio.modelo.telemetria import ConflictoDeIdempotencia, EventoInvalido
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from dominio.modelo.telemetria import EventoTelemetria
 
 _INSERTAR = """
@@ -71,10 +24,7 @@ ON CONFLICT (clave_idempotencia) DO NOTHING
 RETURNING id
 """
 
-#: La clase existe y este sujeto puede declararle eventos: o está matriculado en
-#: ella, o es quien la creó. Una sola consulta y no dos, para que la respuesta
-#: «no existe» y la respuesta «no es tuya» sean indistinguibles desde fuera: la
-#: diferencia le diría a un cliente qué identificadores de clase son reales.
+
 _ALCANCE_DE_LA_CLASE = """
 SELECT 1
   FROM clase c
@@ -111,7 +61,6 @@ INSERT INTO incidencia_telemetria (
 
 
 class AdaptadorTelemetriaPostgres(RepositorioPostgres):
-    """`PuertoTelemetria` sobre PostgreSQL. Append-only e idempotente."""
 
     def registrar(
         self, evento: EventoTelemetria, *, alcance_institucional: bool = False
@@ -141,13 +90,6 @@ class AdaptadorTelemetriaPostgres(RepositorioPostgres):
 
     @staticmethod
     def _completar_contexto_del_turno(cur: Any, evento: EventoTelemetria) -> EventoTelemetria:
-        """Adjunta clase y conversación que el navegador no conserva.
-
-        El evento canónico `turno.respondido` se escribe antes de que la
-        respuesta llegue a la interfaz. Correlacionarlo por sujeto y turno
-        permite enriquecer el hecho sin confiar en una clase declarada por el
-        cliente y sin llevar el perfil académico al estado global del navegador.
-        """
         if not evento.turno or (evento.clase is not None and evento.conversacion is not None):
             return evento
         cur.execute(
@@ -166,12 +108,7 @@ class AdaptadorTelemetriaPostgres(RepositorioPostgres):
     def _exigir_clase_en_alcance(
         self, cur: Any, evento: EventoTelemetria, alcance_institucional: bool
     ) -> None:
-        """Que la clase referida exista y admita a este sujeto.
 
-        Un evento sin clase es legítimo —abrir un informe institucional no
-        pertenece a ninguna—, así que la ausencia no se comprueba: lo que se
-        comprueba es que una clase declarada sea real y propia.
-        """
         if evento.clase is None:
             return
         if alcance_institucional:
@@ -189,12 +126,6 @@ class AdaptadorTelemetriaPostgres(RepositorioPostgres):
             )
 
     def _es_el_mismo_evento(self, cur: Any, evento: EventoTelemetria) -> bool:
-        """Una clave repetida sólo es éxito si identifica el mismo hecho.
-
-        No se compara ``ocurrido_en``: un cliente que reintenta sin conservar
-        su reloj recibe una nueva hora de servidor, pero el hecho sigue siendo
-        el mismo por sujeto, tipo, referencias, versiones y metadatos.
-        """
         cur.execute(_EVENTO_POR_CLAVE, (evento.clave_idempotencia,))
         fila = cur.fetchone()
         esperado = (
@@ -218,7 +149,7 @@ class AdaptadorTelemetriaPostgres(RepositorioPostgres):
         categoria: str,
         codigo: str,
     ) -> None:
-        """Conserva el descarte sin duplicar la clave opaca ni contenido."""
+
         huella = hashlib.sha256(evento.clave_idempotencia.encode("utf-8")).hexdigest()
         cur.execute(
             _ANOTAR_INCIDENCIA,

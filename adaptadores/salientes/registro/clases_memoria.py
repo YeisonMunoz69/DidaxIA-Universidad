@@ -1,52 +1,3 @@
-"""
-clases_memoria.py — Clases y matrícula en memoria del proceso (`DD-12`)
-=============================================================================
-
-El respaldo de `AdaptadorClasesPostgres`: mismo `PuertoClases`
-(`dominio/puertos/clases.py`), mismos modelos, sin base. `aplicacion.py`
-construye uno u otro según `AGENTE_BD`, y `GET /api/salud` declara cuál cayó.
-
-EL CODIGO DE CLASE NO ES UNA CREDENCIAL. Identifica una agrupación. Quién es
-cada quien lo resuelve la autenticación de `DD-18`, que va aparte. Confundirlas
-convertiría un código compartido por mensajería en una puerta abierta.
-
-Regenerar el código NO expulsa a quien ya entró: invalida el código, no la
-matrícula.
-
-Dónde vivía antes, y por qué se movió
---------------------------------------------
-Hasta la Fase 2 · sesión 3 esta clase vivía en
-`adaptadores/entrantes/http/clases.py`, junto a los modelos que el adaptador
-de PostgreSQL importaba desde ahí. Un almacén es un adaptador **saliente**:
-tenerlo dentro del paquete HTTP obligaba a la composición a declarar el tipo
-`Clases | AdaptadorClasesPostgres` —una unión que cruza las dos orillas— en
-vez de un solo puerto. `adaptadores/entrantes/http/clases.py` conserva una
-reexportación explícita para no romper a quien todavía importe de allí.
-
-Nombres visibles en el respaldo de memoria
---------------------------------------------
-PostgreSQL obtiene el nombre institucional de `persona`. Este respaldo no
-tiene ese catálogo, por lo que `Matricula.como_fila()` conserva un rótulo
-derivado cuando una prueba no le inyecta un nombre explícito. El rótulo es un
-estado de dato ausente, no una identidad verificada.
-
-🐛 **Corregido el 2026-08-22 · la matrícula se guardaba con la clave
-equivocada.** Hasta esa fecha, `unirse()`/`mias()` se llamaban con
-`datos["sesion"]` —el identificador de sesión efímero— y no con la
-identidad estable. Cualquier cosa que rotara la sesión de quien ya se
-había unido —«Nueva conversación», cerrar y volver a iniciar sesión, la
-sesión expirando por su TTL— dejaba a esa persona matriculada bajo un
-identificador que nadie iba a volver a presentar. La corrección es la
-misma que `DD-27` ya aplicó en `rutas/turno.py`: la clave es
-`sujeto_de(datos)`, resuelta en la RUTA y pasada a este almacén ya
-resuelta; este archivo no conoce sesiones, sólo el identificador que le
-llega.
-
-
-Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
-
-"""
-
 from __future__ import annotations
 
 import secrets
@@ -64,22 +15,17 @@ from dominio.puertos.clases import (
 
 
 def _codigo() -> str:
-    # Seis caracteres, mayúsculas y dígitos: se dicta por voz o se comparte por
-    # mensajería sin ambigüedad de mayúscula/minúscula ni de "cero" y "o".
     alfabeto = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
     return "".join(secrets.choice(alfabeto) for _ in range(6))
-
 
 def _ahora() -> str:
     return datetime.now(UTC).isoformat(timespec="seconds")
 
-
 class Clases:
-    """Almacén en memoria. Ver el docstring del módulo sobre por qué basta hoy."""
 
     def __init__(self) -> None:
         self._por_id: dict[str, Clase] = {}
-        self._por_codigo: dict[str, str] = {}  # código -> id
+        self._por_codigo: dict[str, str] = {}
         self._archivadas: set[str] = set()
         self._solicitudes: dict[str, SolicitudDeMatricula] = {}
         self._eventos: list[dict] = []
@@ -90,7 +36,7 @@ class Clases:
     def crear(self, nombre: str, creador: str) -> Clase:
         identificador = secrets.token_urlsafe(8)
         codigo = _codigo()
-        while codigo in self._por_codigo:  # colisión improbable, pero no imposible
+        while codigo in self._por_codigo:
             codigo = _codigo()
         clase = Clase(identificador=identificador, nombre=nombre, creador=creador, codigo=codigo)
         self._por_id[identificador] = clase
@@ -192,9 +138,6 @@ class Clases:
                                 "hasta": None, "solicitud": solicitud.identificador})
 
     def regenerar_codigo(self, identificador: str, quien: str) -> str | None:
-        """Solo quien la creó puede regenerar. `None` si no existe o no es suya
-        — la ambigüedad es deliberada: no distingue "no existe" de "no es tuya"
-        hacia quien pregunta, para no confirmar la existencia de una clase ajena."""
         clase = self._por_id.get(identificador)
         if clase is None or clase.creador != quien or identificador in self._archivadas:
             return None
@@ -213,7 +156,6 @@ class Clases:
         return clase
 
     def archivar(self, identificador: str, quien: str, motivo: str, rol: str = "docente") -> bool:
-        """Retira la clase de las vistas y conserva el objeto para auditoría."""
         with self._cerrojo:
             clase = self._por_id.get(identificador)
             if (clase is None or identificador in self._archivadas
@@ -242,10 +184,6 @@ class Clases:
             return True
 
     def mias(self, identificador: str) -> list[Clase]:
-        """Las que creó, más las que se unió — `clases.js` pide una lista y no
-        distingue rol: «del docente las suyas; del estudiante en las que está».
-
-        `identificador` es `sujeto_de(datos)`, igual que en `unirse()`."""
         creadas = [c for c in self._por_id.values()
                    if c.identificador not in self._archivadas and c.creador == identificador]
         unidas = [
@@ -259,8 +197,6 @@ class Clases:
         return None if identificador in self._archivadas else self._por_id.get(identificador)
 
     def integrantes(self, identificador: str, quien: str) -> list[Matricula] | None:
-        """`None` si no existe o `quien` no es su creador — la lista de
-        matriculados es del docente que la creó, no de cualquiera."""
         clase = self._por_id.get(identificador)
         if clase is None or clase.creador != quien or identificador in self._archivadas:
             return None
@@ -319,19 +255,12 @@ class Clases:
     def integrante_para_investigacion(
         self, identificador: str, investigador: str, estudiante: str
     ) -> Matricula | None:
-        """Equivalente en memoria; el rol se comprueba en el borde HTTP."""
+
         del investigador
         clase = self._por_id.get(identificador)
         return clase.matriculados.get(estudiante) if clase is not None else None
 
     def suprimir_sujeto(self, identificador: str) -> int:
-        """RD-22: quita a `identificador` de la matrícula de toda clase donde
-        esté —no borra las clases que haya creado, DD-12 no ofrece borrar una
-        clase—. Devuelve cuántas matrículas quitó, para el recibo medido de
-        `datos_personales.suprimir()`.
-
-        Se llama a mano desde la ruta, igual que ya se hace con
-        `sesiones.cerrar()` — ver `_ALCANZA_SIEMPRE` en `datos_personales.py`."""
         quitadas = 0
         for clase in self._por_id.values():
             if clase.matriculados.pop(identificador, None) is not None:

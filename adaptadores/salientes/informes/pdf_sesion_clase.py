@@ -1,5 +1,3 @@
-"""Reporte acotado de uso observable de una clase, sin texto ni identidades."""
-
 from __future__ import annotations
 
 from datetime import datetime, timedelta
@@ -50,7 +48,7 @@ INTERPRETACION = {
 
 
 def _fuentes() -> tuple[str, str]:
-    import reportlab  # noqa: PLC0415
+    import reportlab
 
     raiz = Path(reportlab.__file__).resolve().parent / "fonts"
     normal, negrita = raiz / "Vera.ttf", raiz / "VeraBd.ttf"
@@ -61,12 +59,11 @@ def _fuentes() -> tuple[str, str]:
         return "DidaxIASesion", "DidaxIASesion-Bold"
     return "Helvetica", "Helvetica-Bold"
 
-
 def parametros_reporte(
     desde_crudo: str | None, hasta_crudo: str | None,
     metricas_crudas: str | None, kpis_crudos: str | None = None,
 ):
-    """Exige marcas horarias explícitas; el extremo final es exclusivo."""
+
     if not desde_crudo or not hasta_crudo:
         raise ValueError("desde y hasta deben incluir fecha, hora y zona horaria")
     try:
@@ -85,7 +82,6 @@ def parametros_reporte(
     if len(kpis) > 10 or any(not codigo or len(codigo) > 100 for codigo in kpis):
         raise ValueError("selección de KPI no válida")
     return desde.astimezone(ZONA), hasta.astimezone(ZONA), metricas, kpis
-
 
 def armar_reporte(
     actividad: dict, metricas: tuple[str, ...], desde: datetime, hasta: datetime,
@@ -149,7 +145,6 @@ def armar_reporte(
                if consumo_ia is not None else "por defecto se excluyen de este reporte."),
         ],
     }
-
 
 def _seccion_ia(referencia: dict | None, estilos, normal: str, negrita: str) -> list:
     if referencia is None:
@@ -225,7 +220,6 @@ def _seccion_ia(referencia: dict | None, estilos, normal: str, negrita: str) -> 
         ))
     return elementos
 
-
 def _grafica_kpi_seleccionados(indicadores: list[dict], estilos) -> list:
     figura = perfil_proporciones("KPI seleccionados · escala 0–100 %", indicadores)
     if figura is None:
@@ -239,7 +233,6 @@ def _grafica_kpi_seleccionados(indicadores: list[dict], estilos) -> list:
         ),
         Spacer(1, .15 * cm),
     ]
-
 
 def generar_pdf(reporte: dict) -> bytes:
     salida = BytesIO()
@@ -259,7 +252,7 @@ def generar_pdf(reporte: dict) -> bytes:
         Spacer(1, .35 * cm),
     ]
     from adaptadores.salientes.informes.explicacion_factores import (
-        explicar_factores,  # noqa: PLC0415
+        explicar_factores,
     )
 
     cuerpo.extend(explicar_factores(reporte["kpi_oficiales"], estilos))

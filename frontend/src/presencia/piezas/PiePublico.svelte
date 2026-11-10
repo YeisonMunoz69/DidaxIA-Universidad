@@ -1,21 +1,4 @@
-<!--
-El pie de la superficie pública.
 
-Autores, relación con la Institución, los tres documentos y el enlace al
-tutor. Es lo último que se lee en cualquiera de las cuatro páginas, así que
-es donde tiene que estar lo que no debe depender de haber leído la portada.
-
-⚠️ **NI ESCUDO NI LOGOTIPO INSTITUCIONAL** (`ESTADO-ACTUAL.md` §10.1). La
-relación con la Institución se explica en texto y **no se afirma ningún aval**:
-la solicitud está en trámite y §10.9 la lista como pendiente humano.
-
-Autores, institución y los caminos de los documentos salen de
-`contenido/proyecto.js` y de `nucleo/configuracion/origenes.js`. Este archivo
-no escribe ninguno de esos datos.
-
-
-
--->
 <script>
   import EnlacesPublicos from "../../comun/base/EnlacesPublicos.svelte";
   import { ENLACE_AL_TUTOR } from "../../nucleo/configuracion/origenes.js";
@@ -121,7 +104,6 @@ no escribe ninguno de esos datos.
     color: var(--ink-tertiary);
   }
 
-  /* Enlace de navegación, no de frase: declara su propio objetivo mínimo. */
   .tutor {
     display: inline-flex;
     align-items: center;

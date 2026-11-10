@@ -1,5 +1,3 @@
-"""Catálogo único de nombres y significados para interfaz e informes."""
-
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
@@ -12,7 +10,6 @@ class OperacionHumana:
     categoria: str
     descripcion: str
     sensible: bool = False
-
 
 _CATALOGO = {
     "recurso.publicado": OperacionHumana(
@@ -280,7 +277,6 @@ def describir_operacion(codigo: str) -> dict[str, Any]:
         "catalogada": False,
     }
 
-
 def diferencias(detalle: dict | None) -> list[dict[str, Any]]:
     detalle = detalle or {}
     antes = detalle.get("antes") if isinstance(detalle.get("antes"), dict) else {}
@@ -296,10 +292,8 @@ def diferencias(detalle: dict | None) -> list[dict[str, Any]]:
         if antes.get(clave) != despues.get(clave)
     ]
 
-
 def glosario(codigos: list[str] | tuple[str, ...] | set[str]) -> list[dict[str, Any]]:
     return [describir_operacion(codigo) for codigo in sorted(set(codigos))]
-
 
 def codigos_de_categoria(categoria: str) -> tuple[str, ...]:
     categoria = str(categoria or "").strip()

@@ -1,43 +1,4 @@
-<!--
-La función y su derivada. `RU-10`.
 
-`PM-B26`, 2026-08-12: el trazado real ya está conectado con JSXGraph. `definicion`
-llega como la cadena JSON que documenta `08-Contrato-del-Turno.md` §6.ter —
-`{"funcion_js": "...", "derivada_js": "..."}`, con `derivada_js` presente solo
-cuando el nivel de divulgación ya lo permite—. Si `definicion` es `null`, no
-parsea, o no trae `funcion_js`, el componente sigue declarando que no hay
-gráfica en vez de fingir una: la excepción de esta sesión fue conectar el
-trazado, no relajar esa regla.
-
-LA DESCRIPCION TEXTUAL ES OBLIGATORIA. Una gráfica sin alternativa deja fuera a
-quien usa lector de pantalla justo en el contenido que más carga informativa
-tiene. Si falta, se declara en vez de callarse.
-
-EL ARIA VA EN UN ELEMENTO QUE JSXGRAPH NO GOBIERNA, Y ESO SE APRENDIÓ MIRANDO
------------------------------------------------------------------------------
-Hasta el 2026-08-14 el `role="img"` y su nombre accesible iban en el MISMO div
-que recibía `initBoard`, con la nota de que la biblioteca «no sustituye el
-`role`, lo comparte». **Lo sustituye.** Visto en el navegador con el sistema
-real: el contenedor salía `role="region"` con `aria-label=""`, así que un lector
-de pantalla anunciaba una región sin nombre justo donde vive el contenido con
-más carga informativa del turno.
-
-Reponer los atributos después de `initBoard` habría durado hasta la siguiente
-versión de la biblioteca. Lo que no caduca es que el elemento con el ARIA y el
-elemento que la biblioteca administra **sean distintos**: bajo `role="img"` los
-descendientes no se exponen, así que lo que JSXGraph escriba dentro no llega a
-la capa de accesibilidad, y la descripción textual sigue siendo lo único que el
-lector de pantalla necesita.
-
-Y EL TRAZADO NO PUEDE TUMBAR EL TURNO. Si `initBoard` o la función fallan, el
-turno entero dejaría de pintarse: la gráfica es un añadido de `RU-10`, no la
-respuesta. Se declara que no se pudo dibujar —nunca se calla— y el resto del
-mensaje sigue en pie.
-
-
-Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
-
--->
 <script>
   import { descargarBlob } from '../../nucleo/descargas/archivo.js';
   import { toast } from '../estado/toasts.svelte.js';
@@ -71,7 +32,6 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
   import TecladoNumericoTabla from './TecladoNumericoTabla.svelte';
 
   let {
-    /** Definición de la gráfica tal como la emite el servidor. */
     definicion = null,
     alternativo = '',
     compacto = false,
@@ -87,14 +47,6 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
     alCargarFunciones = null,
     hayFuncionesParaGuardar = false,
     curvasOcultas = $bindable([]),
-    /**
-     * Miniatura del tamaño de un botón, para cuando `GaleriaDeTrabajo`
-     * tiene varias gráficas que listar y una detrás de otra a 135px cada
-     * una —`compacto`— se vuelve una lista larga de desplazar. Sin ejes ni
-     * marcas: a ese tamaño una etiqueta de eje no se lee, solo estorba —es
-     * el trazo el que tiene que reconocerse, no la escala—. El título va
-     * fuera, en quien nos usa: aquí no cabe.
-     */
     chip = false,
     clase = undefined,
     conversacion = undefined,
@@ -103,17 +55,8 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
     soloLectura = false,
   } = $props();
 
-  // `DD-14`. La preferencia se lee AQUÍ y no en quien nos usa, porque es el
-  // único sitio donde no se puede olvidar la mitad que importa: al ocultar el
-  // dibujo, la descripción textual sigue. Si el filtro viviera en `Bloque` o en
-  // la ruta, bastaría un `{#if}` distraído para que ocultar la gráfica ocultara
-  // también su alternativa, y entonces la preferencia sí quitaría información.
   const visible = $derived(laboratorio || preferencias.graficaVisible);
 
-  // `definicion` es JSON en texto —`Bloque.contenido` es `str`, §5—, nunca el
-  // objeto ya interpretado. Un `definicion` que no parsea o que no trae
-  // `funcion_js` es indistinguible de no tener gráfica: no hay nada que este
-  // componente pueda dibujar de todas formas.
   const datos = $derived.by(() => {
     if (!definicion) return null;
     try {
@@ -133,10 +76,6 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
   const expresionPresentable = $derived.by(() => {
     if (typeof datos?.expresion !== 'string') return '';
     let expresion = datos.expresion.trim();
-    // El segmentador conserva la marca que escribió la persona (`$...$`).
-    // `Notacion` recibe aquí una expresión matemática completa; anidar esos
-    // delimitadores dentro de `f(x) = ...` produce `f(x) = $cos(x)^3$`, que
-    // KaTeX rechaza. Se retira sólo la envoltura, nunca el contenido.
     if (expresion.startsWith('$$') && expresion.endsWith('$$')) {
       expresion = expresion.slice(2, -2).trim();
     } else if (expresion.startsWith('$') && expresion.endsWith('$')) {
@@ -150,7 +89,6 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
 
   let tablero = $state(null);
   let pizarraActual = $state(null);
-  /** Se declara en pantalla; no se traga. Ver la cabecera. */
   let noSePudoDibujar = $state(false);
   let pantallaCompleta = $state(false);
   let seccionMovil = $state('');
@@ -401,11 +339,6 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
     }
   }
 
-  /**
-   * Encuadre inicial inspirado en la calculadora antecesora, pero robusto para
-   * paneles angostos. Las funciones acotadas usan casi toda la altura; en una
-   * parábola no se deja que los extremos escondan el vértice y los ceros.
-   */
   function calcularVentana(evaluar, centro = 0, radio = 8) {
     const izquierda = centro - radio;
     const derecha = centro + radio;
@@ -422,9 +355,6 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
     let maximo = valores[valores.length - 1];
     const amplitud = maximo - minimo;
     if (amplitud > 16) {
-      // Conserva la zona pedagógicamente útil alrededor del eje y=0. Así los
-      // ceros y el vértice de x²−4 permanecen visibles sin ocultar que la curva
-      // continúa fuera del encuadre.
       minimo = Math.max(minimo - 1.5, -6);
       maximo = Math.min(maximo, minimo + 16);
     } else {
@@ -538,8 +468,6 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
   $effect(() => {
     if (!visible || !tablero || !datos) return;
 
-    // Estados que cambian la construcción de la pizarra. Leerlos aquí hace
-    // que Svelte destruya y reconstruya limpiamente los objetos de JSXGraph.
     mostrarFuncion;
     curvasOcultas;
     mostrarDerivada;
@@ -551,7 +479,6 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
     xAnalisis;
     deltaSecante;
     pantallaCompleta;
-    // También reconstruye colores y exportación cuando cambia el tema.
     preferencias.tema;
 
     noSePudoDibujar = false;
@@ -565,8 +492,6 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
       const estilo = getComputedStyle(tablero);
       const colorEje = estilo.getPropertyValue('--trazo-fuerte').trim() || estilo.getPropertyValue('--trazo').trim();
       const colorTexto = estilo.getPropertyValue('--ink-secondary').trim() || estilo.getPropertyValue('--ink-tertiary').trim();
-      // La caja se amplía antes de llegar a JSXGraph: no se recorta la zona
-      // pedagógica y una unidad ocupa los mismos píxeles en ambos ejes.
       const bbox = cajaProporcional(chip ? [-5, 2, 5, -2] : ventanaInicial);
 
       const interactiva = !chip && (!compacto || pantallaCompleta);
@@ -605,8 +530,6 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
           strokeWidth: 1.65,
           name: 'y',
           withLabel: true,
-          // El nombre queda a la izquierda del eje: a la derecha comparte
-          // sitio con la marca numérica superior y se leía como «y10».
           label: { position: 'rt', offset: [-18, -14], strokeColor: colorTexto, fontSize: 13 },
           highlight: false,
           ticks: { visible: false }
@@ -626,8 +549,6 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
       pizarra.on('boundingbox', actualizarEscala);
       actualizarEscala();
       observadorTamano = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(() => {
-        // Cambiar de hoja móvil modifica el lienzo. updateContainerDims mide
-        // el contenedor; resizeContainer sin ancho/alto deja el SVG en NaN.
         pizarra.updateContainerDims?.();
         ultimaCaja = '';
         actualizarEscala();
@@ -652,9 +573,6 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
 
   function trazar(pizarra) {
     const estilo = getComputedStyle(tablero);
-    // `--color-violet-light` y `--color-amber-chart` están marcadas «solo
-    // gráfico» en tokens.css: son los dos colores del sistema pensados para
-    // trazos, no para texto, así que no compiten con el resto de la paleta.
     const colorFuncion = estilo.getPropertyValue('--color-violet-light').trim();
     const colorDerivada = estilo.getPropertyValue('--color-amber-chart').trim();
 
@@ -702,8 +620,6 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
       const marca = pizarra.create('point', [punto.x, y], {
         name: nombre, size: abierto ? 5 : 3, fixed: true, highlight: false,
         strokeWidth: 2, strokeColor: color, fillColor: abierto ? fondo : color,
-        // Las muestras de la tabla se crean después. El hueco queda encima
-        // para que puntos muy cercanos no parezcan rellenar el punto excluido.
         layer: 12, label: { strokeColor: texto, fontSize: 12 }
       });
       marca.rendNode?.setAttribute('data-punto-dominio', abierto ? 'abierto' : 'cerrado');
@@ -782,9 +698,6 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
       return;
     }
     if (separarEn !== null) {
-      // Dos trazos distintos evitan que JSXGraph una con una recta falsa las
-      // ramas de un salto o de una asíntota. El valor exacto f(a), si existe,
-      // se dibuja aparte como punto cerrado en `trazarDestino`.
       protegerTrazadoSVG(pizarra.create('functiongraph', [(x) => x < separarEn ? f(x) : NaN], atributos));
       protegerTrazadoSVG(pizarra.create('functiongraph', [(x) => x > separarEn ? f(x) : NaN], atributos));
     } else {
@@ -828,8 +741,6 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
     }
   }
 
-  // La tabla se superpone sin reconstruir el tablero: cambiar su intervalo
-  // nunca mueve ni reescala la gráfica que la persona ya estaba explorando.
   $effect(() => {
     const pizarra = pizarraActual;
     if (!pizarra || !mostrarMuestras || chip) return;
@@ -938,8 +849,6 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
         copia.appendChild(grupo);
       }
     }
-    // Se añade a la COPIA y no al tablero interactivo: acompaña todos los
-    // formatos exportados sin estorbar el análisis dentro del tutor.
     agregarMarcaDeAgua(
       copia,
       ancho,
@@ -1060,16 +969,12 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
     tabulacionAbierta = seccionMovil === 'tabla';
   }
 
-  // Ordena antes de renderizar una reapertura. `toggle` puede agrupar cambios
-  // rápidos y notificarlos más tarde; no debe decidir el orden de los datos.
   $effect.pre(() => {
     if (tabulacionAbierta && !tablaEstabaAbierta) tablaOrdenada = true;
     tablaEstabaAbierta = tabulacionAbierta;
   });
 
   $effect(() => {
-    // JSXGraph necesita ajustar su lienzo cuando el divisor cambia el espacio
-    // disponible. El plano conserva sus controles de zoom y desplazamiento.
     alturaPanelMovil;
     panelMovilAbierto;
     if (pizarraActual && (laboratorio || pantallaCompleta)) {
@@ -1309,7 +1214,7 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
             </g>
           </svg>
         {/if}
-        <!-- Este de dentro es el de la biblioteca. Ver la cabecera. -->
+
         <div class="tablero" bind:this={tablero}>
           {#if !datos}
             <span class="pendiente">Gráfica no disponible</span>
@@ -1485,7 +1390,7 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
       error={errorNumero} alAplicar={aplicarNumero} alCancelar={cerrarNumero} />
   {/if}
 
-  <!-- El título va afuera en modo `chip`: ver el prop. -->
+
   {#if !chip}
     {#if curvas.length > 1}
       <figcaption>{curvas.length} funciones en el mismo plano. Los colores de la tabla corresponden a las curvas.</figcaption>
@@ -1701,13 +1606,6 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
   .cerrar-ampliada:hover { background: var(--accent-surface); transform: scale(1.04); }
   .pantalla-completa .barra-grafica { margin-inline-end: 48px; }
 
-  /*
-   * En la galería lateral no hay ancho suficiente para reservar una columna
-   * permanente a «Ampliar». Dar a cada grupo su propia fila mantiene todos
-   * los controles visibles y elimina la barra horizontal que hacía parecer
-   * que faltaban opciones. La vista ampliada conserva la barra profesional
-   * de una sola línea y su X independiente.
-   */
   .grafica.compacto:not(.pantalla-completa) .barra-grafica {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -1758,11 +1656,9 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
     flex-shrink: 0;
   }
 
-  /* El contenedor de JSXGraph. Necesita medidas resueltas para trazar. */
   .tablero {
     position: relative;
     z-index: 1;
-    /* JSXGraph asigna blanco a .jxgbox; la retícula compartida vive debajo. */
     background: transparent !important;
     display: flex;
     align-items: center;

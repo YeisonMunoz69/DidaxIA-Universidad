@@ -1,19 +1,4 @@
-<!--
-Enlace de salto para teclado. Visible al recibir foco.
 
-Sin él, quien navega por teclado tiene que tabular por toda la navegación en
-CADA pantalla antes de llegar al contenido. En la conversación, que es la ruta
-donde el estudiante pasa el tiempo, eso son decenas de pulsaciones por turno.
-
-Va como PRIMER elemento del documento, antes que nada. Si va después, no
-cumple su función.
-
-No se oculta con `display: none`: eso lo retiraría del orden de tabulación y
-dejaría de existir. Se desplaza fuera de la pantalla y vuelve al recibir foco.
-
-
-
--->
 <script>
   let { destino = '#contenido', texto = 'Saltar al contenido' } = $props();
 </script>

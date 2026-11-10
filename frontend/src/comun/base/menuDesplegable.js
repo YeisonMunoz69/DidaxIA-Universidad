@@ -1,8 +1,6 @@
 import { mount, unmount, tick } from 'svelte';
 import MenuDesplegable from './MenuDesplegable.svelte';
 
-/** Mejora progresiva: conserva el select real, sus valores tipados, labels,
- * validación, envío de formulario y todos sus listeners existentes. */
 export function menuDesplegable(control) {
   if (!control.hasAttribute('aria-label')) {
     const etiqueta = Array.from(control.labels ?? []).map((label) => {
@@ -18,7 +16,6 @@ export function menuDesplegable(control) {
   control.classList.add('menu-desplegable-nativo');
   const interfaz = mount(MenuDesplegable, { target: marco, props: { control } });
   let activa = true;
-  // La selección tipada de Svelte se aplica después de montar la acción.
   const refrescar = () => void tick().then(() => { if (activa) interfaz.refrescar(); });
   refrescar();
   return { update: refrescar, destroy() {

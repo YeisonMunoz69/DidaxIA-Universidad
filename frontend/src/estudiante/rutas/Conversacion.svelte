@@ -1,31 +1,4 @@
-<!--
-La ruta principal.
 
-Historial del diálogo, el redactor de entrada mixta español-notación de
-RU-01, el progreso del turno mientras se espera y la respuesta con sus
-sellos. Es donde vive el sistema.
-
-LO QUE ESTA PANTALLA NO MUESTRA, Y NO ES UN OLVIDO
----------------------------------------------------
-Ni ansiedad, ni autoeficacia, ni concepción candidata, ni dominio por nodo, ni
-confianza del diagnóstico, ni el nombre del filtro que intervino. `D-20` lo
-declaró ausente del árbol del estudiante, `RP-18` lo obliga y `DSC-03` deja
-constancia de que el artefacto previo SÍ lo mostraba. Ni siquiera
-indirectamente: no hay aquí ninguna señal —un color, un orden, un icono— que se
-derive de esos campos.
-
-`VectorConductual.svelte` vive bajo `docente/` justo para que importarlo desde
-aquí se vea raro al leerlo.
-
-La identidad y los límites del sistema siguen disponibles en las superficies
-de acceso, condiciones y privacidad. No se repiten como dos bandas permanentes
-en cada conversación: ocupaban la primera pantalla y apartaban del hilo el
-contenido que la persona vino a consultar.
-
-
-Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
-
--->
 <script>
   import { conservarFocoAlLeer } from '../../nucleo/presentacion/ventanaVisible.js';
   import CargadorCubo from '../../comun/base/CargadorCubo.svelte';
@@ -50,22 +23,11 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
   import { animarDesplazamientoAbajo } from "../../nucleo/animaciones/gsap.js";
   import * as apiSupervision from "../../nucleo/api/supervision.js";
 
-  /**
-   * Fase 5 · a dónde vuelve quien sale a leer una fuente desde un turno.
-   *
-   * Es la ruta canónica de la conversación y **no** `location.pathname`: se
-   * puede salir estando en el historial —que es esta misma pantalla vista de
-   * otra manera, `EQ-018`— y el retorno tiene que seguir siendo válido.
-   */
   const RETORNO_A_LA_CONVERSACION = "/";
 
-  /** Lo que de verdad se pinta: el hilo persistente en vivo, o el de una sesión pasada.
-      El segundo se puede retomar: cada envío conserva `retomarSesion` para
-      que el backend lo archive bajo la charla que se está viendo. */
   const hiloAMostrar = $derived(
     historial.viendoHistorial ? (historial.hiloVisto ?? []) : conversacion.hilo,
   );
-  /** @type {HTMLElement | undefined} El área que se desplaza. */
   let areaDelHilo;
 
   let tecladoAbierto = $state(false);
@@ -94,7 +56,6 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
       const respuesta = await apiSupervision.misAclaraciones(hilo);
       if (actual === consultaAclaraciones) aclaraciones = respuesta?.elementos ?? [];
     } catch {
-      /* La conversación sigue siendo utilizable si esta lectura auxiliar cae. */
     }
   }
 
@@ -134,40 +95,12 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
   const conversacionVacia = $derived(
     sesion.autenticada &&
       !historial.viendoHistorial &&
-      /* La fuente de verdad del estado nuevo es el hilo activo. Usar aquí la
-         proyección condicional `hiloAMostrar` podía conservar el arreglo de
-         una charla histórica durante el mismo ciclo reactivo en que
-         `historial.volver()` abría una conversación nueva. */
       conversacion.vacia &&
       !envio.ocupado &&
       !envio.fallo,
   );
 
-  /**
-   * Contestar el ítem de dos niveles es **un turno normal** con un campo más.
-   *
-   * El mensaje que acompaña dice lo que el estudiante hizo, para que el hilo
-   * se lea entero después: sin él, en el historial aparecería una respuesta
-   * del tutor sin nada delante. Lo que diagnostica es `dos_niveles`, no ese
-   * texto — el servidor no lo interpreta como una propuesta.
-   *
-   * @param {{nodo: string, resultado: string, razon: string}} respuesta
-   */
   async function responderSondeo(respuesta) {
-    // 🔴 Paquete H · se **espera** el envío y se rechaza si no llegó. El
-    // componente usa esa promesa para decidir si cierra el ítem o lo deja
-    // abierto con lo escrito dentro; antes se cerraba en la línea siguiente a
-    // la llamada, sin mirar si el servidor había confirmado nada.
-    //
-    // Una respuesta **degradada** cuenta como llegada: el turno se registró y
-    // volver a contestarlo lo contaría dos veces. Lo que deja el ítem abierto
-    // es que la petición no llegara.
-    //
-    // La clave de idempotencia **sale de la propia respuesta**, no de un
-    // contador: así el reintento del componente —que vuelve a llamar aquí con
-    // el mismo payload— lleva la misma clave y el servidor lo reconoce en vez
-    // de contar un turno más. Sin esto, un reintento tras un error que el
-    // servidor sí había procesado contaría dos veces la misma respuesta.
     const clave = `sondeo:${respuesta.nodo}:${respuesta.resultado}:${respuesta.razon}`;
     await envio.enviar(
       `Respondo a la pregunta corta: ${respuesta.resultado}`,
@@ -212,8 +145,6 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
       temporizadoresDeEntrada.push(setTimeout(() => desplazarAbajo(true, 0.15), 80), setTimeout(() => desplazarAbajo(true, 0.15), 250));
     }
     cargarAclaraciones();
-    // La aclaración la escribe otra sesión. Tres segundos mantiene la lectura
-    // prácticamente en vivo sin tocar el hilo, el borrador ni la posición.
     const intervalo = setInterval(() => {
       if (!document.hidden) cargarAclaraciones();
     }, 3000);
@@ -221,8 +152,6 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
     document.addEventListener('visibilitychange', alVolver);
     window.addEventListener('focus', alVolver);
     return () => {
-      // bind:this puede estar vacío al destruir el DOM. Conservar el último
-      // scroll observado mientras el elemento estaba conectado.
       conversacion.recordarLectura(claveLectura(), posicionActual, hiloAMostrar.length);
       temporizadoresDeEntrada.forEach(clearTimeout);
       clearInterval(intervalo);
@@ -239,14 +168,10 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
 </script>
 
 <div class="conversacion">
-  <!-- `T-10`: el `<h1>` permanece en el árbol accesible sin duplicar una
-       cabecera visual dentro del hilo. -->
+
   <h1 class="solo-lectura-asistida">Conversación</h1>
 
-  <!-- `tabindex` porque un área que se desplaza tiene que poder desplazarse
-       con el teclado, y sin él solo responde a la rueda y al dedo: WCAG 2.1.1.
-       El `role="log"` no se pone a propósito — anunciaría cada turno entero
-       otra vez, y el turno ya llega anunciado por `ProgresoDelTurno`. -->
+
   <div class="espacio-chat" class:vacia={conversacionVacia}>
     {#if conversacionVacia || preferencias.fondoDuranteConversacion}
       <div
@@ -296,15 +221,7 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
         <Degradacion respuesta={historial.falloHilo} alReintentar={null} amplio />
       {:else}
         {#each hiloAMostrar as entrada, i (i)}
-          <!-- Fase 5 · `volverA` es la ruta de la conversación y no
-               `location.pathname`: el retorno tiene que seguir siendo válido
-               aunque se saliera estando en el historial, que es la misma
-               pantalla vista de otra manera.
 
-               `RC-PED-06` · el ítem sólo se puede contestar en el ÚLTIMO turno
-               del tutor y sólo fuera del historial: contestar uno de hace tres
-               turnos mandaría una respuesta a un ítem que la conversación ya
-               dejó atrás, y en un hilo pasado no hay a quién mandarla. -->
           <Turno
             turno={entrada.turno}
             autor={entrada.autor}
@@ -323,8 +240,7 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
             <AclaracionDocente {aclaracion} />
           {/each}
         {/each}
-        <!-- Filas anteriores a la migración 21 no tienen un turno demostrable.
-             Se conservan visibles al final sin inventar a qué respuesta iban. -->
+
         {#each aclaracionesSinAncla as aclaracion (aclaracion.id)}
           <AclaracionDocente {aclaracion} />
         {/each}
@@ -342,10 +258,6 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
             ? null
             : async () => {
                 await sesion.sincronizar();
-                // 🔴 Paquete H · `reintentar()` y no `enviar(ultimoMensaje)`:
-                // aquello perdía `dosNiveles` —la respuesta al ítem viajaba
-                // como texto suelto y no diagnosticaba nada— y duplicaba el
-                // mensaje del estudiante en el hilo.
                 await envio.reintentar();
               }}
         />
@@ -364,8 +276,7 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
     <div class="pie" class:no-autenticado={!sesion.autenticada} class:con-teclado={tecladoAbierto}>
       <div class="pie-contenido">
         {#if historial.viendoHistorial && historial.necesitaRetomar}
-          <!-- Solo antes del primer turno de la retoma: después, esto ya es
-               la conversación en curso y no hace falta seguir avisándolo. -->
+
           <p class="aviso-retomar">
             Escribe aquí para retomar esta conversación.
           </p>
@@ -380,14 +291,7 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
     </div>
   </div>
 
-  <!--
-    EL PANEL DE CONTEXTO · lo que el turno nombró, al lado y no debajo.
 
-    Vive en `../piezas/PanelDeContexto.svelte` desde el 2026-08-22 —galería,
-    conceptos citados y la ficha al abrir uno, las tres cosas juntas—. Esta
-    ruta decide si se ve como columna en escritorio. En teléfono la pieza
-    permanece disponible como una hoja transitoria de pantalla completa.
-  -->
   <PanelDeContexto
     hilo={hiloAMostrar}
     solicitudGrafica={graficaSolicitada}
@@ -398,10 +302,6 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
 </div>
 
 <style>
-  /*
-    ARMAZÓN, NO FLUJO DE DOCUMENTO. Lo que se desplaza es el hilo y solo el
-    hilo; el redactor flota en la parte inferior como en el mockup.
-  */
   .conversacion {
     flex: 1;
     min-block-size: 0;
@@ -423,16 +323,12 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
     position: relative;
     height: 100%;
     overflow: hidden;
-    /* El papel pertenece al espacio completo, no a la capa desplazable. Así
-       el ambiente puede vivir entre la hoja y los turnos sin que un fondo
-       opaco lo oculte. */
     background-color: var(--surface-paper);
   }
 
   .inicio-conversacion {
     position: absolute;
     inset: 0;
-    /* Por encima del hilo vacío y por debajo del redactor flotante. */
     z-index: 2;
     display: grid;
     place-items: center;
@@ -454,16 +350,6 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
 
   .ambiente-chat.durante-charla { opacity: var(--intensidad-ambiente, 1); }
 
-  /*
-    Tres planos deliberados:
-      0 · ambiente matemático;
-      1 · cuadrícula y turnos;
-      2 · saludo del estado vacío.
-
-    `superficie-cuaderno` aporta la cuadrícula, pero su color sólido tapaba
-    por completo el plano 0. El papel base queda ahora en `.espacio-chat` y
-    esta capa conserva únicamente las líneas transparentes de la cuadrícula.
-  */
   .hilo {
     position: relative;
     z-index: 1;
@@ -521,7 +407,6 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
     }
   }
 
-  /* La hoja donde se trabaja: continua y sin marcos innecesarios */
   .hilo {
     flex: 1;
     min-block-size: 0;
@@ -551,20 +436,11 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
     min-height: 330px;
   }
 
-  /* Sin sesión, `.pie` está en `display: none` —ver esa regla más abajo—:
-     no hay redactor flotando que le reserve hueco al hilo, así que este
-     espaciador se quedaba como puro vacío al final de la tarjeta de
-     acceso. Con la sesión resuelta y `.pie` visible, vuelve a hacer
-     falta y `no-autenticado` deja de aplicar. */
   .espaciador-inferior.no-autenticado {
     height: 0;
     min-height: 0;
   }
 
-  /* El aviso «Escribe aquí para retomar esta conversación» —ver
-     `.pie-contenido`— se suma ARRIBA del redactor, así que `.pie` mide
-     más alto que lo que este espaciador ya reservaba: sin este ajuste el
-     último mensaje del hilo quedaba tapado detrás. */
   .espaciador-inferior.con-aviso-retomar {
     height: 190px;
     min-height: 190px;
@@ -603,9 +479,6 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
     -webkit-backdrop-filter: none;
   }
 
-  /* El redactor centrado del estado vacío sirve sin teclado. Al abrir el
-     panel matemático, el conjunto baja al borde para no cortar sus teclas
-     en teléfonos de poca altura. */
   .espacio-chat.vacia .pie.con-teclado {
     inset-block-end: 0;
   }
@@ -613,9 +486,6 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
   .pie > :global(*) {
     pointer-events: auto;
     inline-size: 100%;
-    /* 54rem se sentía angosto para el teclado de notación matemática desde
-       que el carril lateral —`Aplicacion.svelte`— ganó ancho para el botón
-       de Google: la misma pantalla le dejaba menos sitio a esto. */
     max-inline-size: min(100%, 58rem);
   }
 
@@ -642,15 +512,7 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
     text-align: center;
   }
 
-  /* La tercera columna del marco —panel de herramientas— vive en
-     `../piezas/PanelDeContexto.svelte` desde el 2026-08-22, con su propio
-     CSS. Esta ruta solo la monta condicionalmente; ver el markup. */
 
-  /* La tarjeta «inicia sesión para…» vive en `comun/estado/
-     BloqueoAutenticacion.svelte` desde el 2026-08-22 — este archivo era
-     una de las tres copias que la motivaron. `.boton-login-hero` sigue
-     aquí: es contenido que ESTE archivo le pasa por `children`, así que su
-     marcado lleva el scope de aquí y no el de `BloqueoAutenticacion`. */
   .boton-login-hero {
     margin-block-start: 0.5rem;
   }
@@ -660,8 +522,6 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
       padding: 16px 16px 0;
     }
 
-    /* El editor ocupa su propio espacio: el hilo visible termina sobre él y
-       puede recorrerse sin que una capa flotante intercepte el dedo. */
     .espacio-chat:not(.vacia) .pie {
       position: relative;
       flex-shrink: 0;

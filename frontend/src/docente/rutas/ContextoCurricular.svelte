@@ -1,21 +1,4 @@
-<!--
-Configuración del contexto del curso.
 
-Qué se está viendo, con qué notación, con qué material.
-
-ES LO ÚNICO QUE EL DOCENTE CONFIGURA DEL SISTEMA, y por eso conviene decir qué
-NO configura: no fija el nivel de ayuda —eso es dominio y lo decide el
-servidor—, no elige qué se le responde a quién, y no toca el corpus. Conserva
-una referencia curricular propia de cada clase para el trabajo docente.
-
-LA NOTACIÓN IMPORTA MÁS DE LO QUE PARECE. Un curso que escribe `sen` y un
-sistema que responde `sin` producen un desajuste que el estudiante lee como
-error suyo. Es el tipo de fricción que la consulta docente señaló y que no
-cuesta nada evitar.
-
-
-
--->
 <script>
   import CargadorCubo from '../../comun/base/CargadorCubo.svelte';
   import { menuDesplegable } from '../../comun/base/menuDesplegable.js';
@@ -39,13 +22,6 @@ cuesta nada evitar.
   let cargando = $state(true);
   let consultandoContexto = $state(false);
 
-  /**
-   * `[valor, nombre, pista]`. Las mismas dos opciones que ya aceptaba el
-   * servidor —`panel_docente.py` no da para más: «qué ES un contexto
-   * curricular» sigue sin decidirse como producto (`PM-B21`)—, con una
-   * frase de una línea explicando la diferencia en vez de dejar que el
-   * nombre solo hable por sí mismo.
-   */
   const NOTACIONES_CURSO = [
     ['sen', 'sen, cos, tan', 'La notación en español — la que trae el sistema por defecto.'],
     ['sin', 'sin, cos, tan', 'La notación de la mayoría de libros y calculadoras en inglés.']
@@ -134,8 +110,7 @@ cuesta nada evitar.
     {#if consultandoContexto}
       <CargadorCubo mensaje="Consultando contexto de la clase…" />
     {:else}
-    <!-- Una columna, no dos: la rejilla lado a lado que se probó primero
-         se pidió deshacer — Unidad arriba, Notación debajo de eso. -->
+
     <Campo etiqueta="Unidad que se está viendo" bind:valor={unidad}
            ayuda="Por ejemplo: reglas de derivación." />
 
@@ -160,13 +135,9 @@ cuesta nada evitar.
     <Campo etiqueta="Notas para el sistema" bind:valor={observaciones} multilinea
            ayuda="Qué se ha visto ya en clase y qué todavía no." />
 
-    <!-- `justify-content: center`: el botón quedaba a la izquierda del
-         todo, «a un lado» — se pidió que fuera al centro de su fila. -->
+
     <div class="acciones">
-      <!-- Sin icono: el texto ya dice lo que hace, y el «check» a 14px se
-           leía como un adorno suelto —«el churito»— más que como parte del
-           botón. Mismo criterio que el botón de crear clase del modal de
-           `MisClases.svelte`. -->
+
       <Boton tipo="submit">Guardar</Boton>
       {#if guardado}
         <span class="hecho">
@@ -207,36 +178,12 @@ cuesta nada evitar.
     border: 1px dashed var(--trazo-suave); border-radius: var(--radius-md);
     color: var(--ink-secondary); background: var(--surface-panel);
   }
-  /* El envoltorio de scroll —antes `.contexto-desplazable`/`.contexto` en
-     este archivo— se extrajo a `docente/piezas/PantallaDesplazable.svelte`
-     el 2026-08-22, junto con las otras tres copias casi idénticas del
-     mismo arreglo. Esta pantalla es la única que le pasa props no
-     default: `anchoMaximo="min(70rem, 100%)"` en vez de 78rem
-     —`.tarjeta-formulario` de más abajo ya limita su propio ancho a
-     48rem, así que 78rem le sobraba de más—, y `relleno`/`espacio` más
-     ajustados —ver el comentario de `.tarjeta-formulario` sobre el
-     scroll mínimo que motivó el recorte—. */
   .tarjeta-formulario {
     display: flex;
     flex-direction: column;
     gap: var(--espacio-md);
-    /* Relleno vertical más ajustado que el horizontal, mismo motivo que
-       el `relleno`/`espacio` que este archivo le pasa a
-       `PantallaDesplazable` más arriba — al volver a una sola columna
-       (Unidad arriba, Notación debajo), el formulario creció en alto y a
-       ventanas de ~650-715px de alto —una laptop común, sin pantalla
-       completa— aparecía un scroll mínimo, más molesto que útil. */
     padding: var(--espacio-md) var(--espacio-lg);
-    /* Una columna: «Unidad» y «Notación» van una debajo de la otra, no
-       lado a lado —se probó la rejilla de dos columnas y se pidió
-       deshacerla—, así que el formulario vuelve a un ancho de lectura
-       cómodo en vez de estirarse para llenar dos columnas. */
     max-inline-size: 48rem;
-    /* Centra el formulario DENTRO de `.contexto`, que es más ancho que
-       él: sin esto, un elemento con `max-inline-size` propio en un
-       contenedor `flex-direction: column` se queda pegado al borde de
-       inicio (izquierda) en vez de centrarse — reportado como «muy
-       pegado al lado izquierdo». */
     align-self: center;
     inline-size: 100%;
     background: var(--surface-panel);
@@ -259,14 +206,6 @@ cuesta nada evitar.
     color: var(--ink-secondary);
   }
 
-  /*
-    Mismo estilo de opción que `comun/preferencias/Ajustes.svelte` y
-    `estudiante/piezas/ElegirNotacion.svelte` —radio nativo oculto,
-    círculo dibujado aparte—, reutilizado en vez de reinventado: son tres
-    sitios que preguntan «¿cuál de estas dos/tres cosas?» con la misma
-    forma visual, y antes este era el único con `<input>` a secas sin
-    ningún estilo. Ver el comentario de `Ajustes.svelte::.opcion-fila`.
-  */
   .lista-opciones {
     display: flex;
     flex-direction: column;
@@ -340,9 +279,6 @@ cuesta nada evitar.
     line-height: 1.35;
   }
 
-  /* `justify-content: center`: el botón se veía «a un lado» —pegado al
-     borde de inicio del formulario— y se pidió que quedara al centro de
-     su fila. */
   .acciones { display: flex; align-items: center; justify-content: center; gap: 0.7rem; }
 
   .hecho {

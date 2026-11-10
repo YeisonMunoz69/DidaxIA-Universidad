@@ -1,53 +1,3 @@
-"""
-adaptador.py — Adaptador del puerto simbólico sobre SymPy
-=========================================================
-
-Esta es la pieza **🆕 «adaptador aislado de verificación»** que
-`06-Guia-de-Reutilizacion.md` §6.3 registró como inexistente: en la iteración 0
-el motor se invoca dentro de `reflection.py`, sin frontera de ningún tipo.
-
-Las seis correcciones de `ADR-008` §1.1, aplicadas
-------------------------------------------------
-| Defecto de la iteración 0 | Cómo se corrige aquí |
-|---|---|
-| **Aprobaba por defecto** cuando ningún patrón casaba | El veredicto por defecto es `NO_VERIFICABLE`, que **no** aprueba |
-| Solo comprobaba la **primera** coincidencia | `verificar` recorre todos los bloques declarados |
-| Usaba `search` en vez de `finditer` | No hay búsqueda: se **leen bloques declarados** (`ADR-008` C1) |
-| Un fallo de análisis **interrumpía el barrido** | Cada bloque se comprueba aislado; un fallo produce su veredicto, no corta |
-| Normalización propia que duplicaba la del preprocesador | Hay una única forma canónica: `analizador.analizar` (`ADR-008` K4) |
-| Cobertura limitada a derivadas | La comprobación es de equivalencia simbólica, no de forma |
-
-`PM-B22` trajo el motor determinista de `ADR-013` (`analizador.py`,
-`pasos.py`, `tabla_trigonometrica.py`, `limites.py`, `limites_tecnicas.py`,
-`simplificacion.py`), y `precomputar` pasó de un `sp.diff` + `sp.simplify` en
-bucle a usar ese motor de verdad — con regla etiquetada por paso, que es lo
-que `ADR-013` §6.3 exige y el precómputo anterior no daba.
-
-`PM-B18` corrigió el veredicto por el lado peligroso
-------------------------------------------------------
-El hallazgo, medido contra este mismo adaptador: `«d/dx sen(x^2)»` se leía
-como *d entre dx, por sen(x²)* — dos símbolos libres inventados, `d` y `dx` —
-y la comparación contra `2*x*cos(x^2)` salía **INVALIDA**. Una afirmación
-correcta recibía «error matemático», que es la dirección que `ADR-008` V1 más
-se cuida de evitar.
-
-Dos piezas, no una:
-
-1. **`_como_derivada`** reconoce la notación `d/dx <expresión>` en
-   `izquierda` — la misma que `dominio/filtros/prompt.py` ya pide al
-   generador en su ejemplo — y cuando la reconoce, compara la derivada
-   **calculada** contra `derecha`. Cabe dentro de los cinco campos de
-   `ADR-014` §5.1 sin enmienda: `relacion` sigue siendo `"="`, y lo que
-   cambia es cómo se lee `izquierda`. Es lo que hace que la afirmación de
-   derivada correcta valide de verdad, no solo que deje de fallar en falso.
-2. **`_simbolos_espurios`** es la red de seguridad general: cualquier bloque
-   —con o sin notación de derivada— cuyo análisis introduce símbolos que no
-   son la variable ni una de las auxiliares conocidas (`x, y, z, t, u, v, a,
-   b, c, n`) no se declara falso: se declara `NO_VERIFICABLE`. Cubre lo que
-   `_como_derivada` no reconoce — notación mal formada, `d/dx` con espacios
-   raros, cualquier otra cosa que hoy no se haya previsto.
-"""
-
 from __future__ import annotations
 
 import os
@@ -85,9 +35,7 @@ from dominio.modelo.matematica import (
 
 HERRAMIENTA = "sympy"
 
-#: Reglas de derivación del alcance comprometido, con el orden en que se buscan.
-#: `RC-PED-35`. El orden importa: la cadena se detecta antes que la potencia
-#: porque una composición suele contener también una potencia.
+
 _REGLAS = (
     ("cadena", "regla de la cadena"),
     ("cociente", "regla del cociente"),
@@ -99,9 +47,7 @@ _REGLAS = (
     ("constante", "derivada de una constante"),
 )
 
-#: Concepciones erróneas comprometidas (`01-Definicion-del-Alcance`) y el rasgo
-#: de la expresión que las hace plausibles. Cuatro de las veinticuatro del
-#: catálogo: M16, M21, M22, M23.
+
 _CONCEPCIONES = {
     "M21": "composición de funciones · regla de la cadena",
     "M22": "derivada del coseno · signo",
@@ -109,35 +55,23 @@ _CONCEPCIONES = {
     "M16": "conjugados en la derivada por definición",
 }
 
-#: Las mismas variables que `analizador.py` reconoce sin que el estudiante las
-#: declare. Cualquier otro símbolo libre en un bloque verificado es espurio.
+
 _VARIABLES_CONOCIDAS = {"x", "y", "z", "t", "u", "v", "a", "b", "c", "n", "k"}
 
-#: `d/dx <expresión>`, `d/dt <expresión>`... — la notación que el filtro 7 ya
-#: pide al generador (`dominio/filtros/prompt.py`, ejemplo de nivel 2).
+
 _PATRON_DERIVADA = re.compile(r"^d\s*/\s*d([A-Za-z])\b\s*(.+)$")
 
 
 def _entero_de_entorno(nombre: str, defecto: int) -> int:
-    """Umbral configurable sin recompilar (`RF-ADM-06` · `RI-13`)."""
     try:
         return int(os.environ.get(nombre, "") or defecto)
     except ValueError:
         return defecto
 
-
-#: Orden máximo de derivación admitido (`ADR-013` §5 lo cronometra; los casos
-#: patológicos por encima de esto los corta `proceso_aislado.py`, no esto).
 ORDEN_MAXIMO = _entero_de_entorno("AGENTE_CAS_ORDEN_MAXIMO", 8)
 
 
 def _como_derivada(texto: str) -> tuple[str, str] | None:
-    """Si `texto` tiene la forma «d/dx <expresión>», devuelve `(variable, expresión)`.
-
-    Reconocerla aquí es lo que evita que el analizador la lea como «d entre
-    dx» — el defecto que `PM-B18` encontró — y lo que permite comparar contra
-    la derivada **calculada** en vez de contra una igualdad literal.
-    """
     coincidencia = _PATRON_DERIVADA.match(texto.strip())
     if not coincidencia:
         return None
@@ -148,40 +82,20 @@ def _como_derivada(texto: str) -> tuple[str, str] | None:
         for i, caracter in enumerate(resto):
             nivel += (caracter == abrir) - (caracter == cerrar)
             if nivel == 0:
-                # (x+1)/(x-1) y (x+1)(x-1) no son una envoltura completa.
+
                 if i == len(resto)-1:
                     resto = resto[1:-1].strip()
                 break
     return variable, resto
 
-
 def _a_notacion_corriente(expr) -> str:
-    """La expresión en la notación que `ADR-014` §5.2 pide — `2*x*cos(x^2)`.
-
-    `PM-B31`: el respaldo determinista declara una **afirmación**, y una
-    afirmación no se puede escribir en LaTeX; tiene que ir en la notación que
-    el motor sabe volver a leer, porque el filtro 9 la verifica como cualquier
-    otra. `sp.sstr` da `2*x*cos(x**2)`, y las dos únicas diferencias con la
-    notación del contrato son cosméticas: `**` por `^` y `sin` por `sen`.
-
-    **Las dos sustituciones son seguras en esta dirección**, y no al revés:
-    `analizar()` acepta las cuatro formas, así que convertir no puede producir
-    algo que el motor luego no sepa leer. Vacío si falla, igual que
-    `_a_js_o_vacio` — sin resultado no hay respaldo, y se declara.
-    """
     try:
         texto = sp.sstr(expr)
-    except Exception:                                          # noqa: BLE001
+    except Exception:
         return ""
     return texto.replace("**", "^").replace("sin(", "sen(")
 
-
 def _desplegar_primera_regla(expr: sp.Expr, variable: sp.Symbol) -> tuple[str, str]:
-    """Primera transformación de derivación, recalculada por SymPy.
-
-    Sólo se devuelve una igualdad que el filtro 9 puede verificar. Para otras
-    formas, el motor conserva sus pasos completos como orientación del tutor.
-    """
     try:
         numerador, denominador = sp.fraction(expr)
         if denominador != 1 and denominador.has(variable):
@@ -201,18 +115,11 @@ def _desplegar_primera_regla(expr: sp.Expr, variable: sp.Symbol) -> tuple[str, s
             auxiliar = sp.Symbol("_u")
             intermedio = sp.diff(expr.func(auxiliar), auxiliar).subs(auxiliar, interna) * sp.diff(interna, variable)
             return _a_notacion_corriente(intermedio), "regla de la cadena"
-    except Exception:  # noqa: BLE001 — un paso opcional no invalida el cálculo
+    except Exception:
         pass
     return "", ""
 
-
 def _componentes_de_derivacion(expr: sp.Expr, variable: sp.Symbol) -> tuple[tuple[str, str, str], ...]:
-    """Partes internas útiles para explicar un acierto, con igualdad comprobable.
-
-    Se limita a cinco derivadas de subexpresiones. No se expone un paso del
-    motor sólo porque exista en LaTeX: la forma corriente debe volver a
-    analizarse y coincidir con SymPy antes de entrar en la respuesta.
-    """
     numerador, denominador = sp.fraction(expr)
     if denominador != 1 and denominador.has(variable):
         principales = (numerador, denominador)
@@ -242,13 +149,11 @@ def _componentes_de_derivacion(expr: sp.Expr, variable: sp.Symbol) -> tuple[tupl
             if sp.simplify(sp.diff(analizar(fuente), variable) - analizar(valor)) != 0:
                 continue
             salida.append((fuente, valor, AdaptadorSimbolico._regla_dominante(parte, variable)))
-        except Exception:  # noqa: BLE001 — un paso opcional no invalida el ejercicio
+        except Exception:
             continue
     return tuple(salida)
 
-
 def _racionalizacion_comprobable(expr: sp.Expr) -> str:
-    """Conjugado de una diferencia de dos términos cuando interviene una raíz."""
     try:
         numerador, denominador = sp.fraction(expr)
         if not numerador.is_Add or len(numerador.args) != 2:
@@ -264,15 +169,14 @@ def _racionalizacion_comprobable(expr: sp.Expr) -> str:
         corriente = _a_notacion_corriente(conjugada)
         if corriente and sp.simplify(analizar(corriente) - expr) == 0:
             return corriente
-    except Exception:  # noqa: BLE001 — técnica opcional; el límite ya fue calculado
+    except Exception:
         pass
     return ""
-
 
 def _pasos_lhopital_comprobables(
     expr: sp.Expr, variable: sp.Symbol, destino_texto: str, resultado: sp.Expr, cantidad: int
 ) -> tuple[str, ...]:
-    """Recalcula las fracciones de L'Hôpital y exige el mismo límite en cada una."""
+
     if cantidad == 0:
         return ()
     try:
@@ -293,24 +197,14 @@ def _pasos_lhopital_comprobables(
                 break
             salida.append(corriente)
         return tuple(salida)
-    except Exception:  # noqa: BLE001 — son pasos opcionales, no el veredicto
+    except Exception:
         return ()
 
-
 def _a_js_o_vacio(expr) -> str:
-    """`expr_to_js(expr)`, o `""` si la conversión falla.
-
-    `PM-B26`: una gráfica que no se pudo describir en JavaScript no es un
-    motivo para invalidar el precómputo entero —el resultado matemático ya
-    se calculó y ya se verificó por su cuenta—; es un motivo para que el
-    bloque `grafica` del turno no se emita, que decide
-    `adaptadores/entrantes/http/turno.py` mirando si esta cadena llegó vacía.
-    """
     try:
         return expr_to_js(expr)
-    except Exception:                                          # noqa: BLE001
+    except Exception:
         return ""
-
 
 class AdaptadorSimbolico:
     def objetivos_conversacionales(self, activo):
@@ -330,10 +224,7 @@ class AdaptadorSimbolico:
 
     """Implementa `dominio.puertos.simbolico.PuertoSimbolico`."""
 
-    # ── Precómputo (ADR-013, filtro 6.5) ─────────────────────────────────────
-
     def precomputar_valor(self, expresion: str) -> Precomputo:
-        """Evalúa aritmética exacta; una variable sin valor no se adivina."""
         try:
             expr = analizar(expresion)
             if expr.free_symbols:
@@ -348,7 +239,7 @@ class AdaptadorSimbolico:
             )
         except EntradaNoAdmitida as e:
             return Precomputo(error=str(e))
-        except Exception as e:  # noqa: BLE001 — entrada de usuario no tumba el turno
+        except Exception as e:
             return Precomputo(error=f"no se pudo evaluar la expresión: {e}")
 
     def precomputar(
@@ -358,21 +249,15 @@ class AdaptadorSimbolico:
         orden: int = 1,
         notacion: str = "",
     ) -> Precomputo:
-        # `PM-B32`: una notación que este motor no sabe escribir NO es un
-        # error del turno — se cae al defecto y se sigue. Quien la eligió mal
-        # es el cliente, y dejar sin desarrollo a un estudiante por eso sería
-        # castigarle por un campo de preferencia.
+
         notacion = notacion if notacion in NOTACIONES else NOTACION_POR_DEFECTO
         try:
             var = sp.Symbol(variable)
-            # `analizar` normaliza primero y aplica después la misma guarda
-            # léxica. Validar aquí el texto crudo rechazaba precisamente las
-            # notaciones admitidas por esa frontera (LaTeX, unicode y la prima
-            # observada al pegar una expresión) antes de poder canonizarlas.
+
             expr = analizar(expresion, variable)
         except EntradaNoAdmitida as e:
             return Precomputo(error=str(e))
-        except Exception as e:                                  # noqa: BLE001
+        except Exception as e:
             return Precomputo(error=f"no se pudo interpretar la expresión: {e}")
 
         if not 1 <= orden <= ORDEN_MAXIMO:
@@ -384,7 +269,7 @@ class AdaptadorSimbolico:
             for _ in range(orden):
                 _, actual, pasos_de_este_orden = MotorDePasos(actual, var, notacion).ejecutar()
                 pasos_totales.extend(pasos_de_este_orden)
-        except Exception as e:                                  # noqa: BLE001
+        except Exception as e:
             return Precomputo(error=f"el desarrollo no pudo completarse: {e}")
 
         pasos = tuple(PasoDerivacion(p["tipo"], p["latex"], p["regla"]) for p in pasos_totales)
@@ -404,15 +289,6 @@ class AdaptadorSimbolico:
         )
 
     def precomputar_limite(self, expresion: str, variable: str = "x", valor_limite: str = "0") -> Precomputo:
-        """Capacidad adicional del adaptador — `RF-IUC-03`: *«no entiendo el
-        límite cuando x→∞ de 1/x», sin rechazo*.
-
-        No forma parte de `PuertoSimbolico`: `ADR-013` §6.1 declara **dos**
-        operaciones sobre el puerto, no tres, y nada en la cadena de hoy
-        distingue una petición de límite de una de derivada — `ADR-013` §9.bis
-        aplazó esa señal estructural (`D-10`). Se expone y se prueba aquí,
-        lista para cuando el filtro 1 o el 4 la detecten.
-        """
         try:
             var = sp.Symbol(variable)
             expr = analizar(expresion, variable)
@@ -433,7 +309,7 @@ class AdaptadorSimbolico:
             )
         except EntradaNoAdmitida as e:
             return Precomputo(error=str(e))
-        except Exception as e:                                  # noqa: BLE001
+        except Exception as e:
             return Precomputo(error=f"el límite no pudo evaluarse: {e}")
 
         pasos = tuple(PasoDerivacion(p["tipo"], p["latex"], p["regla"]) for p in evaluacion.pasos)
@@ -449,8 +325,7 @@ class AdaptadorSimbolico:
         )
         return Precomputo(
             resultado=sp.latex(evaluacion.resultado),
-            # `PM-B31`/`D-21` · el respaldo vale «para derivadas **y para
-            # límites**», así que este camino también lo entrega.
+
             resultado_corriente=_a_notacion_corriente(evaluacion.resultado),
             simplificacion_corriente=simplificacion_corriente,
             limites_intermedios=_pasos_lhopital_comprobables(
@@ -458,16 +333,11 @@ class AdaptadorSimbolico:
             ),
             pasos=pasos,
             expresion_fuente=expresion,
-            # El límite no es una curva distinta: se dibuja la función
-            # original y el punto al que se aproxima. El trazador siempre
-            # evalúa con `x`, incluso si el ejercicio escribió `t` o `θ`.
+
             funcion_js=_a_js_o_vacio(expr.xreplace({var: sp.Symbol("x")})),
         )
 
-    # ── Verificación (ADR-008, filtro 9) ─────────────────────────────────────
-
     def verificar(self, bloques: Sequence[BloqueVerificable]) -> InformeVerificacion:
-        """Barrido exhaustivo. Un bloque que falla no interrumpe a los demás."""
         salida: list[Verificacion] = []
         for b in bloques:
             salida.append(self._verificar_uno(b))
@@ -522,7 +392,6 @@ class AdaptadorSimbolico:
         return self._verificar_por_equivalencia(b, cerrar)
 
     def _verificar_limite(self, b: BloqueVerificable, extraido, cerrar) -> Verificacion:
-        """Comprueba una afirmación ``lim x->a f(x) = L`` con el mismo CAS."""
         expresion, destino_texto, variable_texto = extraido
         try:
             variable = sp.Symbol(variable_texto)
@@ -545,23 +414,17 @@ class AdaptadorSimbolico:
             return cerrar(Veredicto.INVALIDA, "el resultado declarado no coincide con el límite calculado")
         except EntradaNoAdmitida as e:
             return cerrar(Veredicto.NO_VERIFICABLE, f"entrada no admitida: {e}")
-        except Exception as e:  # noqa: BLE001
+        except Exception as e:
             return cerrar(Veredicto.NO_VERIFICABLE, f"no se pudo verificar el límite: {e}")
 
     def _verificar_por_equivalencia(self, b: BloqueVerificable, cerrar) -> Verificacion:
-        """`izquierda` y `derecha` se comparan por equivalencia algebraica.
-
-        Es la vía general — la que ya existía antes de `PM-B18` — para todo
-        bloque que no declara una derivada en notación `d/dx`.
-        """
         try:
-            # analizar() normaliza LaTeX y Unicode ANTES de aplicar la guarda.
-            # Rechazar el texto crudo aquí impedía verificar \frac{...}{...}.
+
             izq = analizar(b.izquierda)
             der = analizar(b.derecha)
         except EntradaNoAdmitida as e:
             return cerrar(Veredicto.NO_VERIFICABLE, f"entrada no admitida: {e}")
-        except Exception as e:                                  # noqa: BLE001
+        except Exception as e:
             return cerrar(Veredicto.NO_VERIFICABLE, f"no se pudo analizar: {e}")
 
         espurios = self._simbolos_espurios(izq) | self._simbolos_espurios(der)
@@ -577,34 +440,30 @@ class AdaptadorSimbolico:
             return cerrar(Veredicto.INVALIDA, "la igualdad falla en un punto exacto del dominio común")
         try:
             diferencia = sp.simplify(izq - der)
-        except Exception as e:                                  # noqa: BLE001
+        except Exception as e:
             return cerrar(Veredicto.NO_VERIFICABLE, f"no se pudo comparar: {e}")
 
         if izq == der or diferencia == 0:
             return cerrar(Veredicto.VALIDA)
-        # Diferencia no nula pero tampoco decidible: no se aprueba.
+
         if diferencia.free_symbols and not diferencia.is_number:
             try:
                 if sp.simplify(sp.expand(izq) - sp.expand(der)) == 0:
                     return cerrar(Veredicto.VALIDA)
-            except Exception:                                   # noqa: BLE001
+            except Exception:
                 pass
         return cerrar(Veredicto.INVALIDA, f"la diferencia no es nula: {sp.srepr(diferencia)[:80]}")
 
     def _verificar_derivada(self, b: BloqueVerificable, extraido: tuple[str, str], cerrar, orden=1) -> Verificacion:
-        """`izquierda` es «d/d<var> <expresión>»: se compara la derivada
-        **calculada** de esa expresión contra `derecha`, no una igualdad
-        literal. Es la mitad 1 de `PM-B18`."""
         variable, expresion_texto = extraido
         try:
-            # analizar() normaliza la notación y aplica la guarda antes del CAS.
-            # La guarda sobre LaTeX crudo rechazaba derivadas ya comprobadas.
+
             expr = analizar(expresion_texto, variable)
             derivada_calculada = sp.diff(expr, sp.Symbol(variable), orden)
             afirmado = analizar(b.derecha, variable)
         except EntradaNoAdmitida as e:
             return cerrar(Veredicto.NO_VERIFICABLE, f"entrada no admitida: {e}")
-        except Exception as e:                                  # noqa: BLE001
+        except Exception as e:
             return cerrar(Veredicto.NO_VERIFICABLE, f"no se pudo derivar «{expresion_texto}»: {e}")
 
         espurios = self._simbolos_espurios(derivada_calculada) | self._simbolos_espurios(afirmado)
@@ -618,7 +477,7 @@ class AdaptadorSimbolico:
             return cerrar(Veredicto.INVALIDA, "la derivada propuesta falla en un punto exacto del dominio común")
         try:
             diferencia = sp.simplify(derivada_calculada - afirmado)
-        except Exception as e:                                  # noqa: BLE001
+        except Exception as e:
             return cerrar(Veredicto.NO_VERIFICABLE, f"no se pudo comparar: {e}")
 
         if diferencia == 0:
@@ -631,11 +490,6 @@ class AdaptadorSimbolico:
 
     @staticmethod
     def _contraejemplo_exacto(izq, der):
-        """Solo refutar: un punto exacto discrepante nunca acredita equivalencia.
-
-        Evita expandir potencias enormes al combinar logaritmos con propuestas
-        numéricas incorrectas. No usa redondeo ni muestreo para aprobar.
-        """
         if izq == der or izq.has(sp.Float) or der.has(sp.Float):
             return False
         simbolos = izq.free_symbols | der.free_symbols
@@ -651,11 +505,8 @@ class AdaptadorSimbolico:
     def _simbolos_espurios(expr) -> set[str]:
         return {str(s) for s in expr.free_symbols} - _VARIABLES_CONOCIDAS
 
-    # ── Interno ──────────────────────────────────────────────────────────────
-
     @staticmethod
     def _regla_dominante(expr, var) -> str:
-        """La regla que el paso crítico aplica. Orienta la pregunta socrática."""
         funciones = (sp.sin, sp.cos, sp.tan, sp.cot, sp.sec, sp.csc,
                      sp.asin, sp.acos, sp.atan, sp.sinh, sp.cosh, sp.tanh)
 
@@ -687,11 +538,6 @@ class AdaptadorSimbolico:
 
     @staticmethod
     def _concepciones(expr, var) -> tuple[str, ...]:
-        """Concepciones del catálogo que la expresión hace plausibles.
-
-        Es una señal para S5, **no un diagnóstico**: el alcance declara lectura
-        probabilística y nunca categórica.
-        """
         salida = []
         if any(f.args and f.args[0].has(var) and not f.args[0].is_Symbol
                for f in expr.atoms(sp.Function)):

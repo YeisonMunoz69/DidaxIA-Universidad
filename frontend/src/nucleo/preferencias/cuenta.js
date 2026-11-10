@@ -1,4 +1,3 @@
-/** La portada no importa este módulo. Cada sesión conserva únicamente sus propios ajustes. */
 import { LIENZO_INICIAL } from './lienzo.js';
 import { pedir } from '../api/cliente.js';
 import { preferencias } from './preferencias.svelte.js';
@@ -33,30 +32,24 @@ export function desvincularCuenta() {
 export async function vincularCuenta(id) {
   if (!id || titular===id) return;
   limpiarCuenta(); titular=id;
-  // Conserva la apariencia local mientras consulta; nunca la usa como valores de la cuenta.
   const g=generacion;
   const iniciales=valoresInterfaz();
   try {
     const resultado=await pedir('/preferencias-interfaz');
     if (g!==generacion) return;
     const locales=valoresInterfaz();
-    // Cada cuenta sin estos campos recibe los valores iniciales del piloto.
-    // Los ajustes explícitos de la cuenta conservan su prioridad.
     const remotas={...COLOR_INICIAL,tema:'sistema',escalaTexto:'normal',animaciones:true,
       ...LIENZO_INICIAL,
       ...resultado.preferencias,...normalizarColores(resultado.preferencias)};
     const cambios=Object.fromEntries(Object.entries(locales).filter(([k,v])=>v!==iniciales[k]));
-    // Una respuesta tardía no elimina la combinación que acaba de elegir el usuario.
     if (Object.keys(cambios).some(k=>k in COLOR_INICIAL)) Object.assign(cambios,preferencias.colores);
     aplicar({...remotas,...cambios});
     revision=resultado.revision ?? 0; confirmadas={...remotas}; cargada=true;
-    // Los valores iniciales se muestran, pero no se declaran guardados en la cuenta.
-    // El primer Guardar completo también persiste estos cuatro campos nuevos.
     for (const clave of Object.keys(LIENZO_INICIAL)) {
       if (!Object.prototype.hasOwnProperty.call(resultado.preferencias ?? {}, clave)) delete confirmadas[clave];
     }
     if(resultado.preferencias) recordarAparienciaLocal(remotas);
-  } catch { /* Guardar vuelve a intentar obtener la revisión; no afirma sincronización. */ }
+  } catch {  }
 }
 export function guardarInterfaz(campos=null) {
   const deseadas=valoresInterfaz(), g=generacion;
@@ -76,7 +69,6 @@ export function guardarInterfaz(campos=null) {
       if (e.estado!==409 || g!==generacion) throw e;
       const actual=await pedir('/preferencias-interfaz');
       if (g!==generacion) throw new Error('La sesión cambió.');
-      // Sólo se reenvían los campos cambiados aquí, conservando los de otro dispositivo.
       resultado=await pedir('/preferencias-interfaz',{metodo:'PATCH',cuerpo:{cambios,revision:actual.revision}});
     }
     if (g!==generacion) return;

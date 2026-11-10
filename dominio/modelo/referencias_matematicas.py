@@ -1,5 +1,3 @@
-"""Referencias explícitas de una conversación, sin calcular ni interpretar prosa."""
-
 import re
 
 from dominio.modelo.notacion_entrada import normalizar_frase_matematica
@@ -9,7 +7,6 @@ _FUNCIONES = {"sin", "sen", "cos", "tan", "asin", "acos", "atan", "arctan", "sec
 
 
 def formula_acotada(texto, variable="x"):
-    """Acepta únicamente notación delimitada; nunca convierte prosa en función."""
     s = normalizar_frase_matematica(texto).strip().rstrip("?.! ")
     s = re.sub(rf"(?<![a-zA-Z_]){re.escape(variable.upper())}(?![a-zA-Z_])", variable, s)
     if len(s) > 2048 or s.count("$") % 2:
@@ -31,32 +28,25 @@ def formula_acotada(texto, variable="x"):
             return ""
     return "" if pila else s
 
-
 def sustituir_variable(expresion, variable, punto):
-    """Sustituye tokens, incluidos 2x; no la x interior de exp."""
     return re.sub(rf"(?<![a-zA-Z_]){re.escape(variable)}(?![a-zA-Z_])",
                   lambda _: f"({punto})", expresion)
 
-
 def propuesta_breve(texto, variable="x"):
-    """Una fórmula aislada puede ser una respuesta tentativa: ¿10? o 2x?."""
     s = texto.strip()
     if s.startswith("¿") and s.endswith("?"):
         s = s[1:-1].strip()
     return formula_acotada(s, variable)
 
-
 def _lado_declarado(texto, variable):
     s = re.split(r"[;!?¿¡]|\.(?=\s|$)|,\s*(?=[a-záéíóúñ])|\s+y\s+(?=[a-zA-Z]\s*\(|calcula|eval|deriv|explica)|\s+(?:porque|pero|ser[ií]a|respecto|cuando|resolviendo)\b", texto, maxsplit=1, flags=re.I)[0]
-    # El primer token de prosa cierra la fórmula, incluso sin puntuación.
-    # No basta añadir separadores: conservar únicamente el prefijo matemático.
+
     for palabra in re.finditer(r"[a-zA-Z_áéíóúñÁÉÍÓÚÑ]+", s):
         if palabra.group() not in _FUNCIONES and palabra.group() not in (variable, variable.upper()):
             s = s[:palabra.start()]
             break
     s = re.sub(r"\s+y\s*$", "", s).rstrip(",; ")
     return formula_acotada(s, variable)
-
 
 def _registrar_funciones(datos, texto):
     declaraciones = list(_DECLARACION.finditer(texto))
@@ -69,7 +59,7 @@ def _registrar_funciones(datos, texto):
         if expresion:
             funciones[m[1]] = {"expresion": expresion, "variable": variable}
             nuevas.append(m[1])
-    # Acotar memoria de nombres, sin reutilizar una definición eliminada.
+
     while len(funciones) > 12:
         funciones.pop(next(iter(funciones)))
     if len(nuevas) == 1:
@@ -78,7 +68,6 @@ def _registrar_funciones(datos, texto):
         datos.pop("funcion_vigente", None)
         datos.pop("ejercicio_activo", None)
     return funciones, nuevas
-
 
 def _solicitud(funciones, nombre, prima, argumento, texto, *, estricto=False):
     funcion = funciones.get(nombre)
@@ -97,9 +86,7 @@ def _solicitud(funciones, nombre, prima, argumento, texto, *, estricto=False):
                     variable=var, destino=punto if prima else "", **({"orden": len(prima)} if len(prima) > 1 else {}))
     return None
 
-
 def _resolver_solicitudes(datos, funciones, texto, *, estricto=False):
-    # No interpretar una igualdad de respuesta como una nueva petición.
     peticiones = re.findall(r"\b([a-zA-Z])\s*(?:('+)|prima\s+de\s+)?\s*\(\s*([^()]*)\s*\)(?!\s*=)", texto)
     peticiones += re.findall(r"\b([a-zA-Z])\s+prima\s+de\s+(x|y|t|\d+)\b", texto)
     for p in peticiones:
@@ -111,15 +98,13 @@ def _resolver_solicitudes(datos, funciones, texto, *, estricto=False):
             return solicitud
     return None
 
-
 def recordar_funciones_y_resolver(datos, mensaje, *, asumir_derivada=True, nombres_estrictos=False):
-    """El estado pertenece al hilo autorizado. La frontera CAS valida después."""
     texto = normalizar_frase_matematica(mensaje).replace("′", "'")
     texto = re.sub(r"\^?\s*(?:\{\s*)?\\prime\s*\}?", "'", texto)
     funciones, nuevas = _registrar_funciones(datos, texto)
     if re.search(r"\b(?:a[nñ]ade|agrega|superp[oó]n)\b.*\bcompar\w*", texto, re.I):
         return None
-    # La primera tarea pedida en el mensaje se atiende; las demás quedan literales en el historial.
+
     if solicitud := _resolver_solicitudes(datos, funciones, texto, estricto=nombres_estrictos):
         return solicitud
     if anafora := _derivada_de_funcion_anterior(datos, funciones, texto):
@@ -128,7 +113,6 @@ def recordar_funciones_y_resolver(datos, mensaje, *, asumir_derivada=True, nombr
         f = funciones[nuevas[0]]
         return dict(tipo="derivada", expresion=f["expresion"], variable=f["variable"], destino="")
     return None
-
 
 def _derivada_de_funcion_anterior(datos, funciones, texto):
     if not (re.search(r"\bderiv\w*\b", texto, re.I) and re.search(r"\b(?:derivarla|derivarlo|su\s+derivada|(?:esa|esta|la anterior)\s+funci[oó]n)\b", texto, re.I)):
@@ -143,9 +127,7 @@ def _derivada_de_funcion_anterior(datos, funciones, texto):
         return dict(tipo="derivada", expresion=expresion, variable="x", destino="")
     return None
 
-
 def paso_preguntado(texto, variable="x"):
-    """Sólo una pregunta matemática explícita o una anáfora con fórmula citada."""
     preguntas = re.findall(r"¿([^?]+)\?", texto)
     if len(preguntas) != 1:
         return None
@@ -162,9 +144,7 @@ def paso_preguntado(texto, variable="x"):
             return dict(tipo="derivada", expresion=expresion, variable=variable)
     return None
 
-
 def igualdades_explicitas(texto, variable="x"):
-    """Conserva todas las transiciones; un resultado final no las valida."""
     formulas = re.findall(r"\$([^$]+)\$", texto)
     if not formulas:
         formulas = [texto.strip().rstrip("?.! ")]

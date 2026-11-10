@@ -1,30 +1,3 @@
-"""
-kpi_armado.py — De filas crudas a resultados explicables
-=========================================================
-
-La mitad aritmética del cálculo. Recibe lo que `kpi_consultas.py` trajo y
-llama a `dominio/kpi/medidas.py`, que es quien decide el estado. Aquí no hay
-ninguna división: `proporcion()` la hace, y hacerla también aquí habría
-duplicado la regla de «no dividir por cero» en un sitio donde nadie la
-buscaría.
-
-Se prueba sin base
-------------------------
-Todas las funciones reciben diccionarios y listas. Comprobar «una muestra de
-cuatro no se publica» no exige sembrar cuatro estudiantes en PostgreSQL: se
-pasan cuatro filas. Lo que sí exige base —que el SQL cuente lo que dice— se
-prueba aparte, contra PostgreSQL real.
-
-Un indicador ausente no es un cero
-------------------------------------------
-Cuando el catálogo declara un indicador no instrumentado, aquí no se calcula
-nada: `medidas.no_instrumentado()` construye el resultado desde la propia
-definición. Por eso este módulo sólo tiene funciones para los que sí se pueden
-calcular, y `armar_todo()` recorre el catálogo entero llamando a una u otra.
-
-
-"""
-
 from __future__ import annotations
 
 import statistics
@@ -38,17 +11,10 @@ from dominio.modelo.factores_agregados import calcular_factores
 from dominio.modelo.fenomenos_anteproyecto import detalle_cobertura
 from dominio.modelo.observables_dialogo import calcular_observables
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from datetime import datetime
 
-
 def _percentil(valores: list[float], fraccion: float) -> float | None:
-    """Percentil por interpolación lineal, o `None` sobre una lista vacía.
-
-    Se implementa en vez de usar `statistics.quantiles` porque aquélla necesita
-    al menos dos datos y aquí una muestra de uno tiene que devolver ese uno, no
-    levantar: quien decide si esa muestra se publica es `medidas`, no esto.
-    """
     if not valores:
         return None
     ordenados = sorted(valores)
@@ -60,9 +26,7 @@ def _percentil(valores: list[float], fraccion: float) -> float | None:
     peso = posicion - bajo
     return float(ordenados[bajo] * (1 - peso) + ordenados[alto] * peso)
 
-
 def _distribucion(valores: list[float]) -> tuple[float | None, dict]:
-    """La mediana y sus acompañantes, listos para `medidas.distribucion()`."""
     if not valores:
         return None, {"observaciones": 0}
     return statistics.median(valores), {
@@ -74,14 +38,7 @@ def _distribucion(valores: list[float]) -> tuple[float | None, dict]:
         "maximo": float(max(valores)),
     }
 
-
 def _intervalos_entre_sesiones(conversaciones: list[dict]) -> list[float]:
-    """Horas entre el fin de una sesión y el inicio de la siguiente.
-
-    Sólo entre sesiones que **las dos** caen dentro del periodo: el hueco entre
-    el periodo anterior y éste no se puede medir sin mirar fuera de la ventana
-    consultada, y estimarlo sería inventar actividad.
-    """
     por_estudiante: dict[str, list[dict]] = {}
     for conversacion in conversaciones:
         por_estudiante.setdefault(conversacion["estudiante"], []).append(conversacion)
@@ -94,33 +51,21 @@ def _intervalos_entre_sesiones(conversaciones: list[dict]) -> list[float]:
                 intervalos.append(delta.total_seconds() / 3600)
     return intervalos
 
-
 class ArmadoKPI:
-    """Convierte la materia prima en los resultados del catálogo.
-
-    Una clase y no funciones sueltas porque las diecisiete lecturas comparten
-    el mismo contexto —periodo, filtros, versiones— y pasarlo a cada función
-    habría sido repetirlo diecisiete veces.
-    """
 
     def __init__(self, contexto: ContextoDeCalculo, crudo: dict) -> None:
         self._contexto = contexto
         self._crudo = crudo
 
-    # ── Ayudantes ────────────────────────────────────────────────────────────
-
     def _proporcion(self, codigo: str, partes: tuple[float, float], faltantes: int = 0):
         return medidas.proporcion(cat.buscar(codigo), self._contexto, partes, faltantes)
 
     def _conteo(self, codigo: str, valor: int, poblacion: int, detalle: dict | None = None):
-        """`poblacion` dice sobre cuántos se contó. Ver `medidas.conteo()`."""
         return medidas.conteo(cat.buscar(codigo), self._contexto, valor, poblacion, detalle)
 
     def _distribucion(self, codigo: str, valores: list[float]):
         mediana, percentiles = _distribucion(valores)
         return medidas.distribucion(cat.buscar(codigo), self._contexto, mediana, percentiles)
-
-    # ── A · Adopción y permanencia ──────────────────────────────────────────
 
     def _adopcion(self) -> dict[str, ResultadoKPI]:
         estudiantes: list[dict] = self._crudo["estudiantes"]
@@ -132,8 +77,7 @@ class ArmadoKPI:
         semana = [
             e for e in activos if e["ultima"] is not None and e["ultima"] >= hasta - timedelta(days=7)
         ]
-        # Sólo entra en el denominador quien tuvo tiempo de regresar: contar a
-        # quien empezó ayer como «no regresó a 7 días» sería un falso negativo.
+
         con_ventana_7 = [
             e for e in activos
             if e["primera"] is not None
@@ -172,8 +116,6 @@ class ArmadoKPI:
             ),
         }
 
-    # ── B · Aprendizaje ─────────────────────────────────────────────────────
-
     def _aprendizaje(self) -> dict[str, ResultadoKPI]:
         niveles = self._crudo["niveles"]
         autocorreccion = self._crudo.get(
@@ -190,8 +132,6 @@ class ArmadoKPI:
                 (autocorreccion["confirmadas"], autocorreccion["detectadas"]),
             ),
         }
-
-    # ── C · Recuperación ────────────────────────────────────────────────────
 
     def _recuperacion(self) -> dict[str, ResultadoKPI]:
         recuperacion = self._crudo["recuperacion"]
@@ -234,8 +174,6 @@ class ArmadoKPI:
                 (self._crudo["supervision"]["derivados"], recuperacion["elegibles"]),
             ),
         }
-
-    # ── D · Supervisión ─────────────────────────────────────────────────────
 
     def _supervision(self) -> dict[str, ResultadoKPI]:
         supervision = self._crudo["supervision"]
@@ -281,8 +219,6 @@ class ArmadoKPI:
             ),
         }
 
-    # ── F · Institución ─────────────────────────────────────────────────────
-
     def _institucion(self) -> dict[str, ResultadoKPI]:
         estudiantes = self._crudo["estudiantes"]
         clases = self._crudo["clases"]
@@ -302,10 +238,7 @@ class ArmadoKPI:
                 "institucion.estudiantes_activos_por_clase",
                 [float(c["activos"]) for c in clases],
             ),
-            # ⚠️ Estas dos publican el desglose porque su definición lo promete.
-            # Lo encontró la autocrítica del diff: el catálogo decía «con el
-            # desglose como detalle» y el cálculo no lo entregaba, así que la
-            # definición describía algo que la respuesta no traía.
+
             "institucion.cobertura_clases_por_facultad": _con_detalle(
                 self._proporcion(
                     "institucion.cobertura_clases_por_facultad",
@@ -362,12 +295,6 @@ class ArmadoKPI:
         }
 
     def _cambio_de_corpus(self) -> ResultadoKPI:
-        """La cobertura bajo la última versión de corpus, con la anterior al lado.
-
-        Sin dos versiones observadas no hay comparación posible y el estado es
-        `sin_datos`: no es que la cobertura no cambiara, es que no hubo un
-        cambio de corpus que comparar.
-        """
         definicion = cat.buscar("institucion.recuperacion_tras_cambio_de_corpus")
         cobertura = self._crudo["cobertura_por_corpus"]
         if len(cobertura) < 2:
@@ -393,18 +320,7 @@ class ArmadoKPI:
             },
         )
 
-    # ── El recorrido completo del catálogo ──────────────────────────────────
-
     def armar(self, alcance: Alcance, codigos: tuple[str, ...]) -> list[ResultadoKPI]:
-        """Todos los indicadores del alcance, calculados o con su estado.
-
-        Recorre el **catálogo** y no las funciones de arriba: así un indicador
-        que nadie calcula todavía sale igualmente con `no_instrumentado`, y
-        añadir uno nuevo al catálogo lo hace aparecer aquí sin tocar este
-        método. Lo contrario —recorrer lo calculado— habría dejado los
-        indicadores pendientes invisibles, que es exactamente el silencio que
-        el encargo prohíbe.
-        """
         continuacion = self._crudo.get("continuacion", {})
         sin_retorno = self._crudo.get("sin_retorno_7d", {})
         fenomenos = self._crudo.get("fenomenos_anteproyecto", {})
@@ -457,14 +373,7 @@ class ArmadoKPI:
             salida.append(resultado)
         return salida
 
-
 def _reparto(versiones: list[dict], clave: str) -> list[tuple[str, int]]:
-    """Turnos por versión, de mayor a menor, sin las vacías.
-
-    Una versión vacía es «no consta» y se omite del reparto: incluirla como si
-    fuera una versión más haría creer que el corpus tiene una edición sin
-    nombre.
-    """
     acumulado: dict[str, int] = {}
     for fila in versiones:
         valor = fila[clave]
@@ -472,15 +381,7 @@ def _reparto(versiones: list[dict], clave: str) -> list[tuple[str, int]]:
             acumulado[valor] = acumulado.get(valor, 0) + fila["turnos"]
     return sorted(acumulado.items(), key=lambda par: (-par[1], par[0]))
 
-
 def _recuento(filas: list[dict], clave: str) -> list[dict]:
-    """Cuántas filas hay por cada valor de esa clave, de mayor a menor.
-
-    Omite el valor vacío por el mismo motivo que `_reparto()`: «sin declarar»
-    no es una facultad ni un programa, y listarlo como uno más haría creer que
-    existe. Cuántas filas lo tienen vacío ya lo dice el denominador del propio
-    indicador.
-    """
     acumulado: dict[str, int] = {}
     for fila in filas:
         valor = fila.get(clave) or ""
@@ -491,20 +392,11 @@ def _recuento(filas: list[dict], clave: str) -> list[dict]:
         for valor, cantidad in sorted(acumulado.items(), key=lambda par: (-par[1], par[0]))
     ]
 
-
 def _con_detalle(resultado: ResultadoKPI, detalle: dict) -> ResultadoKPI:
-    """El mismo resultado con detalle añadido, sin saltarse sus invariantes.
-
-    Se reconstruye en vez de mutar porque `ResultadoKPI` es inmutable, y su
-    constructor es quien impone que un valor sólo exista con estado
-    `disponible`. Copiar los campos a mano habría eludido esa comprobación.
-    """
-    from dataclasses import replace  # noqa: PLC0415 — sólo aquí hace falta
+    from dataclasses import replace
 
     medicion = replace(resultado.medicion, detalle={**resultado.medicion.detalle, **detalle})
     return replace(resultado, medicion=medicion)
 
-
 def contexto_de(periodo: Any, calculado_en: Any, filtros: dict) -> ContextoDeCalculo:
-    """El contexto compartido por todos los resultados de una lectura."""
     return ContextoDeCalculo(periodo=periodo, calculado_en=calculado_en, filtros=filtros)

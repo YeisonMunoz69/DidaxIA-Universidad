@@ -1,71 +1,4 @@
-<!--
-El recorrido retenido · `EQ-020` / `EQ-021` / `EQ-016`.
 
-Una sola ruta y una composición por pasos dentro. Los pasos NO son rutas: no
-hay navegación real entre ellos —no se puede «ir» a la pantalla de bloqueo— y
-cuál se pinta lo decide el `acceso` que **calcula el servidor**.
-
-⚠️ QUÉ HABÍA AQUÍ ANTES, Y POR QUÉ NO SE PODÍA CONSERVAR NADA
----------------------------------------------------------------
-La pantalla anterior llamaba a `POST /api/consentimiento` —que hoy responde
-**410**— mandando decisión y edad juntas, y anunciaba un tratamiento
-«Opcional» de «acompañamiento personalizado» con tres garantías redactadas en
-el propio componente. Cuatro problemas, y ninguno de redacción:
-
-1. la ruta escribía en memoria de proceso y en una tabla que no es autoridad, y
-   al declarar una edad menor de 18 ejecutaba una cascada de borrado;
-2. el texto legal estaba **inventado en el frontend**. `EQ-021` exige un
-   documento versionado con su huella, y hoy no hay ninguno publicado: la
-   interfaz tiene que impedir aceptar, no redactar un sustituto;
-3. decía «tu elección se recuerda mientras dure esta sesión» a quien no tuviera
-   cuenta — un supuesto que `EQ-020` retiró junto con las sesiones anónimas;
-4. rechazar se presentaba como algo que no cierra el tutor. Bajo `EQ-016`,
-   rechazar o revocar **sí** bloquea.
-
-CÓMO SE DECIDE QUÉ SE PINTA
-----------------------------
-`GET /api/onboarding/estado` en una sola llamada: las cuatro dimensiones tienen
-que describir el mismo instante. De ahí sale `acceso`, y de `acceso` sale el
-paso. El cliente no recalcula el estado ni deduce el paso de los datos sueltos.
-
-NINGÚN ÉXITO OPTIMISTA
------------------------
-Cada escritura espera la respuesta de PostgreSQL y **pinta el estado que
-devuelve el servidor**, no uno que este archivo adelante. `responder_con_estado()`
-manda el estado ya recalculado junto a los recibos, así que no hace falta suponer
-nada: si la escritura falló, el paso sigue donde estaba y el formulario conserva
-lo escrito.
-
-⚠️ UNA DECISIÓN VISIBLE, UNA PETICIÓN · `D1B`
-----------------------------------------------
-Aquí había **dos** pasos de decisión: `DecisionDeConsentimiento` montado para el
-titular y, más abajo, otra vez para el asentimiento del menor. Eran dos
-peticiones, y entre ellas cabía el estado que nadie decidió.
-
-`D0` §10.10 lo cierra: una sola acción, «Acepto y continuar», y los actos que
-correspondan guardados **atómicamente por el servidor**. Esta composición hace
-exactamente **una** llamada a `decidirConjunta()` y pinta los `recibos` que
-devuelva —uno para un adulto, dos para un menor—. No hay `Promise.all`, no hay
-encadenamiento y no hay una segunda petición para el asentimiento.
-
-QUÉ DECIDE SI HAY QUE DECIDIR · `D1B` bis
---------------------------------------------
-`estado.decision`, que lo resuelve el servidor. Aquí se consume.
-
-Hasta la corrección, esta composición deducía el paso comparando `al_dia` de las
-dos dimensiones. Con el estado mixto —una revocada por su ruta independiente,
-la otra otorgada— eso ya no basta: hay que saber si la **política** admite una
-decisión nueva, y esa regla vive en `dominio/modelo/redecision.py`. Recalcularla
-aquí habría puesto dos redacciones de la misma regla en dos sitios, y la del
-navegador sería la que la persona ve.
-
-`decision.requerida` se combina con `al_dia` en vez de sustituirlo: son dos
-preguntas —«¿la política admite decidir?» y «¿está el acceso al día?»— y las dos
-tienen que ser ciertas para que el paso siguiente tenga sentido.
-
-
-
--->
 <script>
   import CargadorCubo from '../../comun/base/CargadorCubo.svelte';
   import { confirmarAccion } from '../../comun/estado/confirmaciones.svelte.js';
@@ -94,61 +27,19 @@ tienen que ser ciertas para que el paso siguiente tenga sentido.
 
   const codigoDocumento = new URLSearchParams(globalThis.location?.search ?? '').get('documento') ?? '';
 
-  /**
-   * El estado vigente completo, tal como lo devolvió el servidor.
-   *
-   * Vive AQUÍ y no en `sesion.svelte.js` a propósito: es el detalle del
-   * recorrido —perfil, versiones, dimensiones del menor— y el estado
-   * compartido sólo conserva lo que decide qué pantalla se pinta. Copiarlo
-   * arriba habría construido una réplica de la fila en el navegador.
-   */
   let estado = $state(null);
-  /** Las versiones publicadas de los tres alcances; pueden ser `null`. */
   let versiones = $state(null);
   let versionesNoDisponibles = $state(false);
-  /** Nombre y correo de Google, sólo para enseñarlos. No se persisten aquí. */
   let identidad = $state(null);
-  /**
-   * Los recibos de la última decisión. Los devolvió el servidor.
-   *
-   * ⚠️ **Plural desde `D1B`.** Una decisión de un menor produce dos actos
-   * —titular y asentimiento—, cada uno con su versión, su huella y su secuencia.
-   * Un `recibo` singular habría obligado a elegir cuál enseñar, y la persona se
-   * quedaría sin constancia de la mitad de lo que acaba de decidir.
-   */
   let recibos = $state([]);
-  /**
-   * Si el aviso por correo de la última decisión **otorgada** salió · `D2`.
-   *
-   * `null` significa «no aplica»: no se ha decidido todavía, o lo que se decidió
-   * fue un rechazo, que por decisión de `EQ-024` no manda correo. `true`/`false`
-   * son lo que el servidor respondió en `aviso_enviado`, y sólo se conocen
-   * **después** de intentarlo: la pantalla no promete el envío por adelantado.
-   */
   let avisoEnviado = $state(null);
-  /**
-   * Si la decisión ya habilitó el tutor y se espera a que la persona continúe.
-   *
-   * ⚠️ **Hallazgo B de la revisión de `bd2b66f`.** Hasta entonces, un adulto que
-   * aceptaba quedaba `habilitado` y `aplicarRespuesta()` navegaba a `/` en el
-   * acto: el mensaje del correo y el recibo se pintaban y desaparecían en el
-   * mismo fotograma. Las pruebas de `D2` usaban un menor —que no navega— y por
-   * eso el recorrido adulto quedaba fuera de lo comprobado.
-   *
-   * La navegación ahora la acciona la persona. No hay `setTimeout` ni navegación
-   * demorada: un plazo fijo o adivina cuánto tarda alguien en leer, o se lo
-   * quita a quien lee despacio.
-   */
 
   let cargando = $state(true);
   let fallo = $state(null);
-  /** Motivo redactado por el servidor cuando rechazó la última escritura. */
   let errorDelPerfil = $state('');
   let errorDeDecision = $state('');
   let sinVersionAlDecidir = $state(false);
-  /** Motivo cuando el servidor negó la decisión por política, no por versión. */
   let motivoDeLaPolitica = $state('');
-  /** Qué alcances dijo el servidor que faltan. Lista cerrada, suya. */
   let alcancesFaltantes = $state([]);
   let errorDeEvidencia = $state('');
   let reservaPendiente = $state(false);
@@ -157,46 +48,16 @@ tienen que ser ciertas para que el paso siguiente tenga sentido.
   let rechazoAnunciado = $state(false);
   let motivoDelRechazo = $state('');
 
-  /** El acceso del que se pinta: el del estado recién leído, o el compartido. */
   const acceso = $derived(estado?.acceso ?? sesion.acceso);
 
   const enBloqueo = $derived(
     acceso === 'mantenimiento' || acceso === 'eliminacion_solicitada' || esBloqueo(acceso)
   );
 
-  /**
-   * Si un bloqueo tiene salida desde aquí · `D1B` bis.
-   *
-   * ⚠️ **Sin esto, el recorrido no tenía salida y la corrección del servidor no
-   * llegaba a la persona.** Tras revocar una sola dimensión, el acceso calculado
-   * es `bloqueado_por_revocacion`: la composición pintaba `PanelDeEstado` y
-   * nunca la decisión, así que el servidor admitía volver a decidir y la
-   * pantalla no lo ofrecía. Es el requisito 12 del encargo.
-   *
-   * Se ofrece **junto al panel**, no en su lugar: el panel explica qué pasó
-   * —«retiraste tu autorización»— y eso sigue haciendo falta. Quitarlo dejaría a
-   * la persona ante una decisión sin saber por qué se la vuelven a pedir.
-   *
-   * Los otros dos estados de `enBloqueo` quedan fuera a propósito:
-   *
-   * - **`mantenimiento`** · no se sabe nada del estado real, así que ofrecer una
-   *   decisión sería inventarla (`EQ-024`);
-   * - **`eliminacion_solicitada`** · `EQ-022` reserva ese trámite y su cancelación
-   *   a «Mis datos». Ofrecer aquí una aceptación insinuaría que decidir de nuevo
-   *   cancela la supresión, y no la cancela.
-   */
   const bloqueoConSalida = $derived(
     esBloqueo(acceso) && estado?.decision?.requerida === true
   );
 
-  /**
-   * El `<h1>` de la vista. UNO, y siempre presente.
-   *
-   * `T-09`–`T-11` fijan que cada vista pone exactamente un `<h1>` y el armazón
-   * ninguno. Aquí eso obliga a que el título viva en la composición y no en
-   * cada paso: con un `<h1>` por panel, el paso de carga no tendría ninguno y
-   * un paso que montara dos piezas tendría dos. Los pasos usan `<h2>`.
-   */
   const titulo = $derived(
     codigoDocumento
       ? 'Documento vigente de consentimiento'
@@ -218,29 +79,8 @@ tienen que ser ciertas para que el paso siguiente tenga sentido.
         }[acceso] ?? 'Antes de empezar tu tutoría'
   );
 
-  /**
-   * Si toca pedir el perfil.
-   *
-   * Sale de `perfil.completo`, que lo calcula el servidor con las cuatro cosas
-   * que `EQ-020` exige. No se deduce mirando los campos uno a uno: la regla de
-   * «completo» es del dominio y duplicarla aquí la haría divergir.
-   */
   const faltaPerfil = $derived(estado?.perfil?.completo === false);
 
-  /**
-   * Si toca la decisión conjunta.
-   *
-   * Sólo cuando el perfil ya está completo: pedir las dos cosas a la vez haría
-   * decidir sobre un documento antes de saber si la persona es menor, que es
-   * justo lo que cambia el régimen —y cuántos actos escribe el servidor—.
-   *
-   * ⚠️ **Mira las dos dimensiones, no sólo el titular** (`D1B`). Un menor con el
-   * consentimiento al día y el asentimiento sin otorgar sigue teniendo la
-   * decisión pendiente, y presentarle el paso siguiente lo dejaría esperando
-   * algo que nunca le van a pedir. Los dos `al_dia` los calcula el servidor:
-   * `dominio/modelo/acceso.py` compara con la versión que rige, y recalcularlo
-   * aquí habría duplicado la regla.
-   */
   const faltaDecision = $derived(
     Boolean(estado) &&
       !faltaPerfil &&
@@ -249,40 +89,13 @@ tienen que ser ciertas para que el paso siguiente tenga sentido.
         (esMenor && estado.asentimiento?.al_dia !== true))
   );
 
-  /**
-   * Qué acciones admite la política del servidor. Se consumen, no se calculan.
-   *
-   * `?? true` cubre una respuesta sin el campo —un backend anterior a `D1B`
-   * bis—: se ofrecen las dos y el servidor responde 409 si no procede. Es más
-   * honesto que deshabilitarlas por un campo ausente, que dejaría a la persona
-   * mirando una pantalla muerta sin motivo.
-   */
   const puedeAceptar = $derived(estado?.decision?.puede_aceptar ?? true);
   const puedeRechazar = $derived(estado?.decision?.puede_rechazar ?? true);
 
-  /**
-   * Si esta persona es menor de edad.
-   *
-   * ⚠️ **Sale de la edad PERSISTIDA, no del campo del formulario.** `perfil.edad`
-   * es lo que `persona` guarda y lo que el servidor usó para derivar la
-   * categoría de edad y fijar el plazo del representante. Mirar el `<input>`
-   * habría hecho que el recorrido del menor apareciera y desapareciera mientras
-   * alguien teclea, y que un guardado fallido dejara la pantalla del régimen
-   * equivocado.
-   *
-   * Se compara con 18 igual que `categoria_de_edad()`: el límite exacto es
-   * adulto. No se deriva de `representante.estado`, que podría venir
-   * `no_requerido` en una fila vieja — `acceso.py` toma la misma precaución.
-   */
   const esMenor = $derived(
     typeof estado?.perfil?.edad === 'number' && estado.perfil.edad < 18
   );
 
-  /**
-   * El rechazo del PDF es un bloqueo global, pero no una pantalla sin salida.
-   * Si las decisiones del menor siguen vigentes, el trámite del representante
-   * tiene prioridad sobre el panel genérico y permite enviar un nuevo intento.
-   */
   const representanteEsPasoActual = $derived(
     Boolean(estado) &&
       esMenor &&
@@ -294,16 +107,12 @@ tienen que ser ciertas para que el paso siguiente tenga sentido.
       )
   );
 
-  /** Guarda lo que el servidor devolvió tras una escritura, sin adelantar nada. */
   function aplicarRespuesta(respuesta) {
     estado = respuesta;
     sesion.aplicarAcceso(
       respuesta.acceso,
       respuesta.tutoria_academica_sin_investigacion
     );
-    // `recibos` de la decisión conjunta —uno o dos— y `recibo` de una
-    // revocación o de la carga de evidencia, que siguen siendo de una sola
-    // dimensión. Se normaliza a lista para que la plantilla tenga un solo caso.
     if (Array.isArray(respuesta.recibos) && respuesta.recibos.length) {
       recibos = respuesta.recibos;
     } else if (respuesta.recibo) {
@@ -313,7 +122,6 @@ tienen que ser ciertas para que el paso siguiente tenga sentido.
     navegar('/');
   }
 
-  /** Traduce un rechazo del servidor a lo que hay que enseñar. Nunca a un éxito. */
   function motivoDe(error) {
     const clase = clasificar(error);
     if (clase === 'mantenimiento') {
@@ -325,8 +133,6 @@ tienen que ser ciertas para que el paso siguiente tenga sentido.
       sesion.sincronizar();
       return '';
     }
-    // El `detalle` lo redacta el servidor y no contiene datos de nadie; es más
-    // útil que un texto genérico porque nombra la regla concreta que falló.
     return error?.detalle || describir(error).titulo;
   }
 
@@ -352,16 +158,7 @@ tienen que ser ciertas para que el paso siguiente tenga sentido.
         navegar('/');
         return;
       }
-      // Las versiones y la identidad hacen falta cuando hay algo que decidir o
-      // que enseñar.
-      //
-      // ⚠️ **También en un bloqueo con salida** (`D1B` bis): sin las versiones,
-      // la decisión que se ofrece debajo del panel saldría deshabilitada por
-      // «falta el documento» aunque el documento exista, y la salida volvería a
-      // estar cerrada — esta vez sin decir por qué.
       if (!enBloqueo || estado.decision?.requerida === true || representanteEsPasoActual) {
-        // `Promise.allSettled` y no `all`: que falle la identidad —cosmética—
-        // no puede impedir que se pinte el documento que hay que aceptar.
         const [v, s] = await Promise.allSettled([
           consentimiento.versiones(),
           sesionApi.consultar()
@@ -380,13 +177,9 @@ tienen que ser ciertas para que el paso siguiente tenga sentido.
     } catch (e) {
       const clase = clasificar(e);
       if (clase === 'sin-sesion') {
-        // No es un fallo: es la entrada institucional. `sincronizar()` deja el
-        // estado compartido coherente y la plantilla pinta la puerta.
         await sesion.sincronizar();
         estado = null;
       } else if (clase === 'mantenimiento') {
-        // `EQ-024` · se representa como estado, no como error de red ni como
-        // formulario vacío. `PanelDeEstado` lo pinta y ofrece reintentar.
         estado = null;
         sesion.aplicarAcceso('mantenimiento');
       } else {
@@ -403,8 +196,6 @@ tienen que ser ciertas para que el paso siguiente tenga sentido.
       aplicarRespuesta(await onboarding.guardarPerfil(valores));
     } catch (e) {
       errorDelPerfil = motivoDe(e);
-      // Se relanza para que el formulario sepa que no salió y cierre su
-      // diálogo conservando lo escrito.
       throw e;
     }
   }
@@ -416,13 +207,8 @@ tienen que ser ciertas para que el paso siguiente tenga sentido.
       const respuesta = await consentimiento.cargarEvidencia(archivo);
       aplicarRespuesta(respuesta);
     } catch (e) {
-      // El 503 con `reserva_pendiente` del hito R4 no es un fallo limpio: el
-      // archivo llegó y su custodia quedó a medias. Se dice tal cual.
       if (e?.cuerpo?.reserva_pendiente) reservaPendiente = true;
       else if (clasificar(e) === 'tiempo-agotado') {
-        // Un timeout no demuestra que el servidor no guardó el archivo.
-        // Consultar su estado antes de ofrecer un segundo intento evita
-        // duplicarlo si terminó de llegar después de cortar la conexión.
         await actualizarRepresentante();
         if (estado?.representante?.estado === 'documento_recibido') return;
         errorDeEvidencia = 'La carga tardó demasiado y no pudimos confirmar si llegó. Comprueba su estado antes de enviarla otra vez.';
@@ -449,11 +235,6 @@ tienen que ser ciertas para que el paso siguiente tenga sentido.
     }
   }
 
-  /**
-   * Actualiza únicamente el estado sensible a la revisión. No sustituye la
-   * pantalla por un cargador ni enseña fallos transitorios de red: la persona
-   * conserva la constancia de que su documento está en revisión.
-   */
   async function actualizarRepresentante() {
     if (refrescandoRepresentante || !sesion.autenticada) return;
     refrescandoRepresentante = true;
@@ -472,13 +253,6 @@ tienen que ser ciertas para que el paso siguiente tenga sentido.
     }
   }
 
-  /**
-   * La única acción visible · `D0` §10.10.
-   *
-   * **Una petición.** El servidor decide cuántos actos escribe y los guarda en
-   * una transacción; aquí no se encadena nada ni se compone ningún
-   * `Promise.all`, que es la solución falsa que la decisión descarta.
-   */
   async function decidir(decision) {
     errorDeDecision = '';
     sinVersionAlDecidir = false;
@@ -487,28 +261,14 @@ tienen que ser ciertas para que el paso siguiente tenga sentido.
     avisoEnviado = null;
     try {
       const respuesta = await consentimiento.decidirConjunta(decision);
-      // `D2` · se lee ANTES de aplicar la respuesta, porque `aplicarRespuesta()`
-      // puede navegar al tutor. Sólo aplica al otorgamiento: en un rechazo el
-      // servidor devuelve `false` porque no había aviso que enviar, y
-      // enseñárselo a alguien como «el correo no pudo enviarse» sería
-      // contarle un fallo que no existió.
       avisoEnviado = decision === 'otorgado' ? (respuesta?.aviso_enviado ?? null) : null;
-      // Si la decisión abre el tutor se entra directamente. La constancia y el
-      // estado del aviso siguen disponibles en «Mis datos»; interponer una
-      // segunda pantalla de confirmación repetía una decisión ya terminada.
       aplicarRespuesta(respuesta);
     } catch (e) {
-      // Tres desenlaces que se arreglan de formas distintas, y por eso se
-      // distinguen por el cuerpo y no por el 409 que comparten.
       const cual = e?.estadoDelServidor;
       if (cual === 'sin_version') {
-        // Falta publicar algún documento. No se guardó nada.
         sinVersionAlDecidir = true;
         alcancesFaltantes = e?.cuerpo?.alcances_faltantes ?? [];
       } else if (cual === 'decision_ya_vigente' || cual === 'usar_revocacion') {
-        // La política del servidor dice que no hay decisión pendiente. Se
-        // recarga el estado para que la pantalla refleje lo que de verdad hay:
-        // este caso llega, sobre todo, cuando otra pestaña ya decidió.
         motivoDeLaPolitica = e?.detalle || '';
         cargar();
       } else {
@@ -519,16 +279,11 @@ tienen que ser ciertas para que el paso siguiente tenga sentido.
   }
 
   $effect(() => {
-    // Se vuelve a cargar cuando cambia si hay sesión: entrar con Google desde
-    // esta misma pantalla tiene que traer el recorrido sin recargar la página.
     sesion.autenticada;
     cargar();
   });
 
   $effect(() => {
-    // El operador puede publicar el formato mientras el menor espera aquí.
-    // Al volver a la pestaña o mientras se espera un documento se reconsulta
-    // sin exigir cerrar sesión. No se sondea una versión que ya está presente.
     if (!sesion.autenticada || !representanteEsPasoActual) return;
     const alVolver = () => {
       if (globalThis.document?.visibilityState !== 'hidden') void actualizarVersiones();
@@ -623,15 +378,7 @@ tienen que ser ciertas para que el paso siguiente tenga sentido.
       />
 
     {:else if enBloqueo}
-      <!--
-        `D1B` bis · el panel explica, y si hay salida se ofrece debajo.
 
-        Un bloqueo por rechazo o por revocación de UNA dimensión puede
-        deshacerse volviendo a decidir; el servidor lo dice en
-        `estado.decision.requerida` y aquí se consume. Sin esto, quien revocaba
-        su asentimiento quedaba mirando una pantalla que sólo sabía decirle que
-        estaba bloqueado.
-      -->
       <PanelDeEstado {acceso} alReintentar={cargar} />
 
       {#if bloqueoConSalida}
@@ -664,14 +411,7 @@ tienen que ser ciertas para que el paso siguiente tenga sentido.
       />
 
     {:else if faltaDecision}
-      <!--
-        `D1B` · UNA SOLA ACCIÓN VISIBLE, PARA ADULTO Y PARA MENOR.
 
-        La misma pieza en los dos casos: lo único que cambia es que a un menor
-        se le exige además la versión del asentimiento, y que el servidor
-        escribirá dos actos en vez de uno. Dos componentes habrían acabado
-        validando distinto.
-      -->
       <DecisionConjunta
         {esMenor}
         versionTitular={versiones?.titular ?? null}
@@ -686,11 +426,7 @@ tienen que ser ciertas para que el paso siguiente tenga sentido.
       />
 
     {:else}
-      <!--
-        Adulto, perfil completo y consentimiento al día, y aun así no habilitado.
-        No debería ocurrir: es justo el estado que `calcular_acceso()` habilita.
-        Se dice que no se puede explicar, en vez de fingir un éxito o un trámite.
-      -->
+
       <p class="paso-pendiente">
         Tu perfil y tu autorización están al día, pero el sistema todavía no
         habilita el tutor. Vuelve a comprobarlo en un momento; si sigue igual,
@@ -698,25 +434,8 @@ tienen que ser ciertas para que el paso siguiente tenga sentido.
       </p>
     {/if}
 
-    <!--
-      `D1B` · UN RECIBO POR ACTO, y no uno «de la decisión».
 
-      Un menor recibe dos: cada uno con su versión, su huella, su secuencia y su
-      momento, que es lo que permite localizar la fila y recomputar el
-      comprobante. Fundirlos habría producido un comprobante que no corresponde
-      a ninguna fila.
-    -->
-    <!--
-      `D2` · QUÉ PASÓ CON EL CORREO, DESPUÉS DE SABERLO.
 
-      Va junto a los recibos y no en el diálogo de confirmación: ahí todavía no
-      se sabe si el envío saldrá, y anunciarlo antes dejaría a alguien esperando
-      un correo que quizá no llega —o dudando de si su decisión se guardó—.
-
-      Las dos redacciones dicen primero lo que de verdad importa —que la decisión
-      quedó registrada— y sólo después qué pasó con el aviso, porque `EQ-024`
-      dice que el canal informa y no decide.
-    -->
     {#if !representanteEsPasoActual}
       {#if avisoEnviado === true}
         <p class="aviso-correo" role="status">
@@ -735,26 +454,7 @@ tienen que ser ciertas para que el paso siguiente tenga sentido.
       {/each}
     {/if}
 
-    <!--
-      `D1A` · LOS TEXTOS PÚBLICOS, ALCANZABLES DESDE AQUÍ Y EN TODOS LOS PASOS.
 
-      Va fuera de la cadena de `{:else if}` a propósito: quien todavía no ha
-      entrado, quien está rellenando el perfil y quien ya quedó bloqueado
-      necesitan los mismos tres documentos, y colgados de un paso concreto
-      habrían desaparecido justo en los estados donde más falta hacen.
-
-      Los enlaces salen de `nucleo/configuracion/origenes.js` y llevan el
-      origen público delante —`absolutos`—: relativos apuntarían a
-      `app.didaxia.pro/privacidad`, que no existe.
-
-      ⚠️ **`D1B` YA SUSTITUYÓ LA SECUENCIA.** Este bloque sigue igual y sigue
-      fuera de la cadena de pasos, pero la decisión de arriba es ahora una sola
-      —«Acepto y continuar»— con los actos guardados atómicamente por el
-      servidor. `DecisionConjunta.svelte` repite los enlaces de privacidad,
-      condiciones e investigación **dentro de cada sección**, para que quien lee
-      un resumen tenga ahí mismo el texto que lo desarrolla; éste los conserva
-      para los pasos que no son la decisión.
-    -->
     {#if !representanteEsPasoActual}
       <div class="publicos">
         <p class="rotulo-publicos">Antes de decidir</p>
@@ -857,7 +557,6 @@ tienen que ser ciertas para que el paso siguiente tenga sentido.
     line-height: 1.2;
   }
 
-  /* `D1B` bis · la salida de un bloqueo, separada del panel que lo explica. */
   .salida-del-bloqueo {
     display: flex;
     flex-direction: column;
@@ -891,11 +590,6 @@ tienen que ser ciertas para que el paso siguiente tenga sentido.
     color: var(--ink-primary);
   }
 
-  /*
-    `D2` · el resultado del aviso por correo. No es un error ni un éxito del
-    trámite —el trámite ya está registrado en los dos casos—, así que usa el
-    tono informativo de la tarjeta y no el rojo de `.error-servidor`.
-  */
   .aviso-correo {
     margin: 0;
     padding: 8px 10px;
@@ -910,7 +604,6 @@ tienen que ser ciertas para que el paso siguiente tenga sentido.
 
   .aviso-correo.sin-correo { border-inline-start-color: var(--ink-tertiary); }
 
-  /* `D1A` · el bloque de documentos públicos, al pie de la tarjeta. */
   .publicos {
     display: flex;
     flex-direction: column;

@@ -1,60 +1,13 @@
-<!--
-La dimensión del representante · `EQ-016` / `EQ-021`.
 
-Los seis estados que `EstadoRepresentante` declara, el plazo que informa el
-servidor, la versión requerida del documento y la carga del PDF.
-
-⚠️ SIN VERSIÓN REQUERIDA NO SE OFRECE CARGA, Y ESTE ERA EL FALLO
-------------------------------------------------------------------
-Hasta la corrección de C1 este panel no recibía la versión del representante y
-pintaba el selector de PDF siempre. Con `GET /api/consentimiento/versiones`
-devolviendo `representante: null` —el estado real de cualquier base de este
-árbol— el recorrido invitaba a buscar una autorización, firmarla, escanearla y
-subirla, para que `POST /api/representante/evidencia` la rechazara con `409` y
-`sin_version`. La comprobación existía en las otras dos dimensiones y aquí
-faltaba, así que el menor era el único a quien la interfaz le pedía trabajo
-imposible.
-
-Se usa el mismo `hayVersion()` que `DecisionConjunta.svelte`: una sola
-definición de «hay documento publicado» para las tres dimensiones, que es lo
-que impide que una vuelva a divergir.
-
-⚠️ EL PLAZO LO DICE EL BACKEND, SIEMPRE
------------------------------------------
-`limite` llega en la respuesta y lo fija `declarar_perfil()` en la misma
-sentencia que la edad, con el reloj de la base. Aquí sólo se formatea y se
-compara con la hora del navegador **para redactar** («quedan tres días»), nunca
-para decidir si venció: eso lo decide el estado que manda el servidor. Un reloj
-adelantado diría «vencido» sobre un plazo abierto, y uno atrasado lo contrario.
-
-✅ LA PLANTILLA APROBADA SE DESCARGA COMO PDF FECHADO
-------------------------------------------------
-El servidor parte del Word aprobado por los docentes, conserva su maquetación y
-estampa en el pie la fecha civil de Colombia en que el estudiante lo descarga.
-El padre, madre o representante lo diligencia y firma; la carga posterior sigue
-aceptando exclusivamente PDF y se registra contra la versión vigente.
-
-
-
--->
 <script>
   import Icono from '../../../comun/base/Icono.svelte';
   import CargaDeEvidencia from './CargaDeEvidencia.svelte';
   import { hayVersion } from '../../../nucleo/api/consentimiento.js';
 
   let {
-    /** `estado.representante` tal como llegó del servidor. */
     representante,
-    /**
-     * La versión requerida del alcance `representante`, o `null`.
-     *
-     * Sale de `GET /api/consentimiento/versiones`; puede ser `null` en una
-     * base sin publicación, y de eso depende la oferta de carga.
-     */
     version = null,
-    /** `async () => void`, descarga autenticada del PDF con fecha. */
     alDescargar,
-    /** `async (archivo) => void`, para la carga binaria. */
     alSubir,
     errorDelServidor = '',
     reservaPendiente = false,
@@ -64,13 +17,6 @@ aceptando exclusivamente PDF y se registra contra la versión vigente.
     alComprobarEstado = () => {}
   } = $props();
 
-  /**
-   * Qué significa cada estado y si el backend puede recibir una carga en él.
-   *
-   * Los seis de `EstadoRepresentante`, ninguno inventado. `subir` sólo dice si
-   * el ESTADO admite una carga; que además exista versión publicada es la otra
-   * condición, y las dos tienen que cumplirse.
-   */
   const ESTADOS = {
     pendiente_documento: {
       titulo: 'Falta la autorización de tu representante',
@@ -115,19 +61,9 @@ aceptando exclusivamente PDF y se registra contra la versión vigente.
 
   const info = $derived(ESTADOS[representante?.estado] ?? ESTADOS.pendiente_documento);
 
-  /** ¿Hay un documento publicado contra el que registrar la evidencia? */
   const publicada = $derived(hayVersion(version));
-  // Una versión publicada puede no corresponder al PDF empaquetado. El API
-  // lo comprueba con la misma regla que la descarga y lo comunica aquí.
   const formatoDisponible = $derived(version?.formato_disponible !== false);
 
-  /**
-   * La carga se ofrece sólo si se cumplen LAS DOS condiciones.
-   *
-   * El estado tiene que admitirla y debe existir un formato descargable. El
-   * servidor admite una entrega tardía sin mover el plazo histórico (véase
-   * test_un_vencido_puede_cargar_todavia); ocultarla aquí bloqueaba al menor.
-   */
   const ofreceCarga = $derived(info.subir && publicada && formatoDisponible);
   const recibido = $derived(representante?.estado === 'documento_recibido');
   const aprobado = $derived(representante?.estado === 'aprobado');
@@ -159,12 +95,6 @@ aceptando exclusivamente PDF y se registra contra la versión vigente.
     }
   }
 
-  /**
-   * El límite en lenguaje humano, o `''` si el servidor no mandó ninguno.
-   *
-   * `null` es un estado real —el plazo nace al declarar la minoría de edad, y
-   * antes de eso no existe—, así que no se rellena con una fecha calculada aquí.
-   */
   const limiteLegible = $derived.by(() => {
     if (!representante?.limite) return '';
     const fecha = new Date(representante.limite);
@@ -172,12 +102,6 @@ aceptando exclusivamente PDF y se registra contra la versión vigente.
     return fecha.toLocaleString('es-CO', { dateStyle: 'long', timeStyle: 'short' });
   });
 
-  /**
-   * Cuántos días faltan, para redactar. NO para decidir si venció.
-   *
-   * Devuelve `null` cuando no hay límite o cuando ya pasó: en ese caso el texto
-   * no dice nada y manda el estado del servidor.
-   */
   const diasRestantes = $derived.by(() => {
     if (!representante?.limite) return null;
     const fecha = new Date(representante.limite);

@@ -1,7 +1,4 @@
-<!--
-  Compositor limitado al investigador. La interfaz oculta esta pieza al resto,
-  pero la autorización real vuelve a comprobarse en las dos rutas HTTP.
--->
+
 <script>
   import CargadorCubo from '../../comun/base/CargadorCubo.svelte';
   import { menuDesplegable } from '../../comun/base/menuDesplegable.js';
@@ -115,7 +112,6 @@
     await tick(); editor.focus(); editor.setSelectionRange(desde + texto.length, desde + texto.length);
   }
 
-  // Cancelar la petición anterior impide que un render lento reemplace el borrador actual.
   $effect(() => {
     if (!catalogo.length) return;
     const cuerpo = { plantilla, asunto: asunto.trim() || 'Asunto de la comunicación', mensaje: mensaje.trim() || 'Escribe el mensaje para ver cómo lo recibirá cada persona.',

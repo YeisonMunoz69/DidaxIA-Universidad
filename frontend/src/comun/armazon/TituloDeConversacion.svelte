@@ -1,9 +1,7 @@
-<!-- Títulos nuevos y antiguos comparten la misma lectura matemática segura. -->
+
 <script>
   import { renderizar } from '../../nucleo/formato/notacion.js';
   let { titulo = '' } = $props();
-  // Conservar las marcas originales cuando son texto literal o notación rota.
-  // Los títulos antiguos también pueden envolver $...$ en backticks.
   const marcas = /(?<!\\)\$\$([\s\S]+?)\$\$|\\\[([\s\S]+?)\\\]|\\\(([\s\S]+?)\\\)|(?<!\\)\$([^$\n]+?)\$|`([^`\n]+)`/g;
   function esProsa(valor) {
     if (/\\[a-zA-Z]+/.test(valor)) return false;
@@ -11,13 +9,10 @@
     return palabras.some(p => !/^(?:lim|sin|cos|tan|sen|tg|ctg|ln|log|exp|sqrt|infty|arcsen|arctg)$/i.test(p));
   }
   function prosaConFunciones(texto) {
-    // Reconocer f(x)=... dentro de una frase histórica, sin convertir la
-    // instrucción «y explícame...» en variables matemáticas.
     const funcion = /\b[a-zA-Z]\(\s*[a-zA-Z]\s*\)\s*=\s*(?:(?:\\[a-zA-Z]+|(?:sqrt|sin|cos|tan|sen|ln|log|exp)\b|[a-zA-Z](?![a-zA-Záéíóúñ])|\d+(?:\.\d+)?|[+\-*/^_(){}=.,π∞²³⁴⁵⁶⁷⁸⁹⁰])\s*)+/g;
     const salida = [];
     let desde = 0;
     for (const marca of texto.matchAll(funcion)) {
-      // Una barra invertida puede ser el escape de un dólar literal.
       if (marca.index > 0 && /[$\\]/.test(texto[marca.index - 1])) continue;
       let valor = marca[0].trim();
       if (/\s+y$/.test(valor) && !/[+\-*/=^]\s+y$/.test(valor)) valor = valor.replace(/\s+y$/, '');
@@ -53,8 +48,6 @@
   const partes = $derived.by(() => {
     const texto = String(titulo ?? '');
     let piezas = separar(texto);
-    // Algunos títulos históricos guardaron la expresión sin delimitadores.
-    // Sólo reconocer una expresión completa explícita, nunca una frase normal.
     if (!piezas.some(p => p.tipo === 'formula') && !texto.includes('…') &&
         /^\\(?:lim|frac|sqrt|int|sum)\b/.test(texto.trim())) {
       piezas = [{tipo:'formula',valor:texto.trim()}];

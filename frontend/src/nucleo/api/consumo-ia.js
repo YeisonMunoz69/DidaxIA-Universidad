@@ -1,4 +1,3 @@
-/** Consumo financiero-operativo, reservado al investigador. */
 import { pedir, pedirArchivo } from './cliente.js';
 
 function consulta({ desde, hasta, secciones }) {

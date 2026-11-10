@@ -1,22 +1,3 @@
-"""
-cola_revision_db.py — Persistencia de la cola de revisión docente en PostgreSQL
-
-`ColaDeRevision` (`cola_revision_memoria.py`) vive solo en memoria del
-proceso: un reinicio del backend borraba cualquier turno pendiente de
-revisión sin avisar a la docente que lo dejó a medias. Mismo
-`PuertoColaDeRevision`, re-expresado contra `09-cola-revision.sql`.
-
-Reconstruye `ItemDeRevision`/`NuevoItem` de `dominio/puertos/supervision.py`
-por la misma razón que `clases_db.py` reconstruye `Clase`/`Matricula`:
-duplicarlos aquí arriesgaría que `como_elemento()` divergiera entre los dos
-almacenes.
-
-Hasta la Fase 2 · sesión 3 esos tipos se importaban de
-`adaptadores/entrantes/http/supervision.py`, con el argumento de que «no hay
-una versión de dominio de estos tipos». Ahora la hay, y es neutral: ni este
-adaptador ni el de memoria dependen del otro.
-"""
-
 from __future__ import annotations
 
 import secrets
@@ -32,23 +13,19 @@ from dominio.puertos.supervision import (
     ItemDeRevision,
 )
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from collections.abc import Iterator
 
     from dominio.puertos.supervision import NuevoItem
 
-
 class AdaptadorColaDeRevisionPostgres:
-    """Ver el docstring del módulo. `listar_pendientes()`/`total_pendientes()`
-    filtran con `WHERE`, no en Python — `ColaDeRevision` los filtra en
-    memoria porque ahí no hay otra opción."""
 
     def __init__(self, cadena_de_conexion: str) -> None:
         self._cadena = cadena_de_conexion
 
     @contextmanager
     def _conexion(self) -> Iterator[Any]:
-        from adaptadores.salientes.conexion import conectar  # noqa: PLC0415
+        from adaptadores.salientes.conexion import conectar
 
         with conectar(self._cadena) as cnx:
             yield cnx
@@ -72,7 +49,7 @@ class AdaptadorColaDeRevisionPostgres:
         )
 
     def agregar(self, nuevo: NuevoItem) -> ItemDeRevision:
-        from psycopg.types.json import Jsonb  # noqa: PLC0415
+        from psycopg.types.json import Jsonb
 
         identificador = secrets.token_urlsafe(8)
         with self._conexion() as cnx, cnx.cursor() as cur:
@@ -131,9 +108,7 @@ class AdaptadorColaDeRevisionPostgres:
             parametros.append(tope)
             parametros.append(desde)
         elif desde:
-            # `OFFSET` sin `LIMIT` es válido en SQL pero rarísimo de pedir:
-            # solo pasa si alguien manda `desde` sin `tope`, que hoy ningún
-            # llamador hace. Se admite igual en vez de ignorarlo en silencio.
+
             consulta += " OFFSET %s"
             parametros.append(desde)
         with self._conexion() as cnx, cnx.cursor() as cur:
@@ -158,7 +133,7 @@ class AdaptadorColaDeRevisionPostgres:
         self, identificador: str, texto: str, actor: str = "",
         clases_permitidas: tuple[str, ...] = (),
     ) -> bool:
-        from psycopg.types.json import Jsonb  # noqa: PLC0415
+        from psycopg.types.json import Jsonb
 
         with self._conexion() as cnx, cnx.cursor() as cur:
             cur.execute(
@@ -198,7 +173,7 @@ class AdaptadorColaDeRevisionPostgres:
         self, identificador: str, motivo: str, actor: str = "",
         clases_permitidas: tuple[str, ...] = (),
     ) -> bool:
-        from psycopg.types.json import Jsonb  # noqa: PLC0415
+        from psycopg.types.json import Jsonb
 
         with self._conexion() as cnx, cnx.cursor() as cur:
             cur.execute(

@@ -1,26 +1,4 @@
-<!--
-Consulta, exportación y derechos del titular · `RU-06` / `RP-19` / `EQ-022`.
 
-Es el canal que la Ley 1581 exige que exista y sea alcanzable, no una pantalla
-de cortesía. Por eso se llega a ella **desde todos los estados de bloqueo**
-—así lo declara la allowlist de `nucleo/sesion/acceso.js`—: quien rechazó,
-revocó o pidió la eliminación es justo quien más necesita entrar aquí.
-
-QUÉ CAMBIÓ EN C1
------------------
-1. **El estado de acceso se integra.** Antes esta pantalla enseñaba los campos
-   de la sesión y nada más; quien llegaba bloqueado no sabía por qué. Ahora
-   arriba está lo que el servidor calculó y qué autorizaciones lo sostienen.
-2. **Revocar vive aquí**, que es el lugar comprensible: al lado de lo que el
-   sistema guarda, no dentro del trámite por el que sólo se pasa al principio.
-3. **El borrado inmediato se retiró.** `DELETE /api/datos-personales` ejecutaba
-   la cascada al recibir la petición y responde 410 desde el hito R2. En su
-   lugar está el trámite reversible de `EQ-022`, con su reautenticación, su
-   frase, sus 24 horas y su cancelación.
-
-
-
--->
 <script>
   import CargadorCubo from '../../comun/base/CargadorCubo.svelte';
   import { ayudaContextual } from '../../comun/base/ayudaContextual.js';
@@ -41,28 +19,13 @@ QUÉ CAMBIÓ EN C1
   import { navegar } from '../../enrutado/navegar.js';
 
   let mios = $state(null);
-  /** El estado vigente completo. Vive aquí, no en el estado compartido. */
   let estado = $state(null);
   let cargando = $state(true);
   let fallo = $state(null);
-  /** `true` cuando el estado no se pudo leer por un 503. `EQ-024`. */
   let enMantenimiento = $state(false);
-  /** La portada de la cuenta enseña primero a la persona, no los registros técnicos. */
   let seccion = $state('perfil');
   let fotoPerfil = $state(null);
 
-  /**
-   * Vuelve a leerlo todo.
-   *
-   * ⚠️ `silencioso` NO es cosmética. Tras revocar o cancelar, esta pantalla se
-   * recarga; si además volviera al estado «cargando», el `{#if}` desmontaría
-   * `PanelDeAutorizaciones` y se llevaría por delante **el recibo que acababa
-   * de devolver el servidor** —lo único que prueba el acto—. Se midió montando
-   * el componente: la huella aparecía y desaparecía en el mismo cuadro.
-   *
-   * Sólo la primera carga enseña el indicador, que es cuando de verdad no hay
-   * nada que mirar.
-   */
   async function cargar({ silencioso = false } = {}) {
     if (!sesion.autenticada) {
       cargando = false;
@@ -72,9 +35,6 @@ QUÉ CAMBIÓ EN C1
     fallo = null;
     enMantenimiento = false;
     try {
-      // `allSettled`: que falle el estado de onboarding no puede impedir
-      // consultar y exportar, que son derechos por sí mismos y viven en otra
-      // ruta. Y al revés.
       const [datosPersonales, estadoVigente, foto] = await Promise.allSettled([
         datos.consultar(),
         onboarding.estado(),
@@ -88,8 +48,6 @@ QUÉ CAMBIÓ EN C1
         estado = estadoVigente.value;
         sesion.aplicarAcceso(estado.acceso);
       } else if (clasificar(estadoVigente.reason) === 'mantenimiento') {
-        // No se pinta un estado en blanco ni «sin autorizaciones»: se dice que
-        // no se pudo comprobar.
         estado = null;
         enMantenimiento = true;
       } else {
@@ -126,15 +84,6 @@ QUÉ CAMBIÓ EN C1
     globalThis.dispatchEvent?.(new CustomEvent('didaxia:foto-actualizada'));
   }
 
-  /*
-   * ⚠️ `borrar()` Y `seguir()` SE RETIRARON EN C1, CON SU DIÁLOGO Y SU RECIBO.
-   *
-   * `borrar()` llamaba a `DELETE /api/datos-personales`, que ejecutaba la
-   * cascada al recibir la petición y cerraba la sesión; el diálogo decía «se
-   * borrará toda la información y no se puede deshacer» y el recibo decía «se
-   * borró todo lo registrado». Bajo `EQ-022` las tres afirmaciones son falsas.
-   * El trámite vive en `piezas/datos/SolicitudDeSupresion.svelte`.
-   */
 
   $effect(() => {
     sesion.autenticada;
@@ -425,12 +374,7 @@ QUÉ CAMBIÓ EN C1
     cursor: pointer;
   }
 
-  /* Los registros y los derechos viven en `../piezas/PanelDeDatosPersonales
-     .svelte`; las autorizaciones y el trámite, en `../piezas/datos/`. Esta
-     ruta sólo decide qué se monta. */
 
-  /* La tarjeta «inicia sesión para…» vive en `comun/estado/
-     BloqueoAutenticacion.svelte` desde el 2026-08-22. */
 
   @media (max-width: 75rem) {
     .mis-datos-contenedor {

@@ -1,18 +1,10 @@
-"""Catálogo institucional de facultades y programas del piloto.
-
-La relación vive en el dominio para que onboarding, correcciones profesionales
-y PostgreSQL hablen el mismo idioma. No es texto libre: un programa sólo es
-válido dentro de la facultad a la que pertenece.
-"""
-
 from __future__ import annotations
 
 from types import MappingProxyType
 
 
 class OfertaAcademicaInvalida(ValueError):
-    """La facultad y el programa no forman una pareja institucional."""
-
+    pass
 
 FACULTAD_INGENIERIA = "Facultad de Ingeniería"
 FACULTAD_ARTE = "Facultad de Arte y Diseño"
@@ -50,7 +42,6 @@ PROGRAMAS = tuple(programa for programas in OFERTA_ACADEMICA.values() for progra
 
 
 def exigir_oferta_valida(facultad: str, programa: str) -> tuple[str, str]:
-    """Normaliza y exige una pareja facultad/programa del catálogo vigente."""
     facultad = str(facultad or "").strip()
     programa = str(programa or "").strip()
     if facultad not in OFERTA_ACADEMICA:

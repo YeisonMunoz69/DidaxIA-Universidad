@@ -1,19 +1,3 @@
-"""
-tabla_trigonometrica.py — Reglas de derivación de funciones trascendentes
-============================================================================
-
-Extraído de `pasos.py` para que ningún archivo pase de 400 líneas —el propio
-`sympy_steps.py` de origen tenía esta tabla mezclada con el motor de pasos en
-un único método de 300 líneas, que las normas de esta sesión no permiten
-copiar tal cual.
-
-Cada entrada es `clase_sympy -> (constructor_de_la_derivada, nombre_de_la_
-regla, plantilla_latex)`. `pasos.py` la recorre para reconocer qué regla
-aplica al nodo que está derivando; el constructor recibe el argumento interno
-de la función y devuelve el nodo derivado, sin resolver la regla de la cadena
-—eso lo hace `pasos.py` al seguir derivando ese argumento.
-"""
-
 from __future__ import annotations
 
 from collections.abc import Callable
@@ -26,9 +10,8 @@ Entrada = tuple[Constructor, str, str]
 
 
 def reglas(x: Symbol, v: str) -> dict[type, Entrada]:
-    """La tabla, construida para la variable `x` (de nombre `v`) de este turno."""
     return {
-        # ── Trigonométricas ──────────────────────────────────────────────
+
         sp.sin: (
             lambda a: sp.cos(a) * Derivative(a, x),
             "Derivada del Seno",
@@ -59,7 +42,7 @@ def reglas(x: Symbol, v: str) -> dict[type, Entrada]:
             "Derivada de la Cosecante",
             rf"\dfrac{{d}}{{d{v}}}[\csc u] = -\csc u \cdot \cot u \cdot u'",
         ),
-        # ── Inversas ──────────────────────────────────────────────────────
+
         sp.asin: (
             lambda a: Derivative(a, x) / sp.sqrt(1 - a ** 2),
             "Derivada del Arcoseno",
@@ -90,7 +73,7 @@ def reglas(x: Symbol, v: str) -> dict[type, Entrada]:
             "Derivada del Arcocosecante",
             rf"\dfrac{{d}}{{d{v}}}[\text{{arccsc}}\,u] = \dfrac{{-u'}}{{|u|\sqrt{{u^2-1}}}}",
         ),
-        # ── Hiperbólicas ──────────────────────────────────────────────────
+
         sp.sinh: (
             lambda a: sp.cosh(a) * Derivative(a, x),
             "Derivada del Seno Hiperbólico",

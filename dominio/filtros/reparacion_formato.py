@@ -1,4 +1,3 @@
-"""Una corrección de formato antes del CAS, sin acreditar matemática ni progreso."""
 import json
 from dataclasses import replace
 
@@ -15,7 +14,6 @@ def problemas_de(generacion):
         return RespuestaGenerada.desde_objeto(generacion.estructura).problemas()
     except (ValueError, TypeError, KeyError):
         return ('estructura incompatible con el contrato',)
-
 
 class FiltroReparacionFormato(Filtro):
     nombre = 'reparación acotada del formato conversacional'
@@ -77,9 +75,8 @@ class FiltroReparacionFormato(Filtro):
                     modelo=candidata.modelo, proveedor=candidata.proveedor,
                     unidades_de_entrada=candidata.unidades_de_entrada,
                     unidades_de_salida=candidata.unidades_de_salida)
-        # El siguiente filtro comprueba también los errores matemáticos del LLM.
-        return replace(ctx, generacion=candidata), meta
 
+        return replace(ctx, generacion=candidata), meta
 
 def _mensajes_corregidos(mensajes, instrucciones):
     if not mensajes:

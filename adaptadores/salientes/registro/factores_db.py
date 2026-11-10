@@ -1,5 +1,3 @@
-"""Lecturas privadas por turno y versión; sin invocar al proveedor al leer KPI."""
-
 import hashlib
 import json
 
@@ -24,8 +22,7 @@ def habilitado(cur, sujeto):
     estado = AdaptadorEstadoVigentePostgres("").desde_cursor(cur, sujeto)
     return estado is not None and permite_escritura_longitudinal(calcular_acceso(estado))
 
-
-def guardar(cur, historial, mensaje, lectura, trazas, *, origen, huella):  # noqa: PLR0913 — contrato de evidencia explícito
+def guardar(cur, historial, mensaje, lectura, trazas, *, origen, huella):
     if not lectura_guardada(lectura, mensaje):
         return False
     cur.execute(
@@ -46,7 +43,6 @@ def guardar(cur, historial, mensaje, lectura, trazas, *, origen, huella):  # noq
         ),
     )
     return cur.fetchone() is not None
-
 
 class AdaptadorFactoresPostgres:
     def __init__(self, cadena):

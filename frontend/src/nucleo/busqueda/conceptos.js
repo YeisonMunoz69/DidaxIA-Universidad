@@ -1,4 +1,3 @@
-/** Búsqueda humana del banco: nombre y vocabulario pedagógico, nunca claves. */
 export function normalizar(texto = '') {
   return texto
     .normalize('NFD')

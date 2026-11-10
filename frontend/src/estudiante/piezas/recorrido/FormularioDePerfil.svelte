@@ -1,35 +1,4 @@
-<!--
-El perfil obligatorio · `EQ-020`: edad exacta, facultad, programa, semestre y clase.
 
-NOMBRE Y CORREO SE MUESTRAN Y NO SE EDITAN
--------------------------------------------
-Los aporta Google en el `id_token` y ya están en `persona`.
-`POST /api/onboarding/perfil` **no los lee**: admitirlos dejaría que el cliente
-reescribiera su propia identidad. Aquí se pintan como texto, no como campos, y
-`onboarding.guardarPerfil()` no tiene por dónde enviarlos.
-
-LA CLASE NO ES UN CAMPO DE ESTE FORMULARIO
--------------------------------------------
-Es el cuarto requisito de `EQ-020`, pero lo resuelve el mecanismo de
-clase/matrícula que `08-clases.sql` ya tiene y la pantalla `/unirse` que ya
-existe. Aquí se muestra si está resuelto y se ofrece el camino; inventar un
-segundo campo habría creado dos respuestas para «¿está en una clase?».
-
-LA EDAD DECIDE EL RÉGIMEN, Y POR ESO SE CONFIRMA
---------------------------------------------------
-Declararla es lo que fija la categoría de edad en `persona` y —si es menor de
-18— arranca de una vez el plazo de siete días del representante, con el reloj
-de la base. No se puede deshacer escribiendo otro número sin consecuencias, así
-que el guardado lleva diálogo de confirmación con la consecuencia dicha.
-
-⚠️ Y NO SE GUARDA NADA EN EL NAVEGADOR. Ni la edad, ni el programa, ni el
-semestre: mientras se escriben viven en memoria del componente y al enviarse
-viven en PostgreSQL. Un borrador en `localStorage` sería un dato personal
-legible por cualquier guion de la página.
-
-
-
--->
 <script>
   import { menuDesplegable } from '../../../comun/base/menuDesplegable.js';
   import Campo from '../../../comun/base/Campo.svelte';
@@ -46,29 +15,12 @@ legible por cualquier guion de la página.
   import { untrack } from 'svelte';
 
   let {
-    /** `estado.perfil` tal como llegó de `GET /api/onboarding/estado`. */
     perfil,
-    /** Lo que Google dijo, para enseñarlo. Puede faltar y entonces no se pinta. */
     identidad = null,
-    /** `async ({edad, facultad, programa, semestre}) => void`. Lanza si el servidor rechaza. */
     alGuardar,
-    /** Mensaje del servidor cuando rechazó el guardado, ya redactado. */
     errorDelServidor = ''
   } = $props();
 
-  /*
-   * Los campos arrancan con lo que el servidor YA tiene, no vacíos.
-   *
-   * `EQ-020` dice que recargar vuelve al onboarding mientras siga incompleto:
-   * si al volver los campos aparecieran en blanco, quien ya declaró programa y
-   * semestre y sólo le falta la clase tendría que escribirlos otra vez.
-   *
-   * `untrack()` NO es aquí una forma de callar el aviso de Svelte: dice lo que
-   * se quiere. Estos cuatro campos son **la semilla** del formulario, no un
-   * espejo del servidor. Si siguieran a `perfil`, una respuesta que llegara
-   * mientras alguien escribe le borraría lo tecleado a mitad de palabra —y
-   * justo tras un rechazo, que es cuando el encargo pide conservarlo—.
-   */
   let edad = $state(untrack(() => (perfil?.edad != null ? String(perfil.edad) : '')));
   let facultad = $state(untrack(() => facultadAdmitida(perfil?.facultad) ? perfil.facultad : ''));
   let programa = $state(untrack(() => programaAdmitido(perfil?.programa, perfil?.facultad) ? perfil.programa : ''));
@@ -83,14 +35,6 @@ legible por cualquier guion de la página.
 
   const claseVinculada = $derived(Boolean(perfil?.clase_vinculada));
 
-  /**
-   * Los cuatro datos que esta pieza puede guardar ya están persistidos.
-   *
-   * `perfil.completo` NO sirve para responder esta pregunta: también exige una
-   * matrícula. Usarlo hacía que, después de un `200 OK`, se volviera a pintar
-   * el mismo formulario sólo porque aún faltaba la clase. La escritura sí había
-   * terminado, pero la pantalla parecía inmóvil y permitía repetirla.
-   */
   const datosPersonalesGuardados = $derived(
     typeof perfil?.edad === 'number' &&
       Boolean(String(perfil?.facultad ?? '').trim()) &&
@@ -98,15 +42,6 @@ legible por cualquier guion de la página.
       typeof perfil?.semestre === 'number'
   );
 
-  /**
-   * Los cuatro campos que este formulario sí manda, ya normalizados.
-   *
-   * `String(...)` y no `.trim()` a secas: `bind:value` sobre un
-   * `<input type="number">` entrega un **número** —o `undefined` si el campo
-   * está vacío o lleva algo que no es numérico—, no la cadena que el `$state`
-   * inicial sugiere. Sin esta conversión, escribir en «edad» reventaba con
-   * `.trim is not a function` en cuanto el valor dejaba de ser el inicial.
-   */
   const valores = $derived({
     edad: String(edad ?? '').trim(),
     facultad: String(facultad ?? '').trim(),
@@ -114,13 +49,6 @@ legible por cualquier guion de la página.
     semestre: String(semestre ?? '').trim()
   });
 
-  /**
-   * Qué le falta a cada campo, o `''`.
-   *
-   * Las mismas reglas que el servidor aplica —`identidad.py`— para no hacerle
-   * enviar algo que va a rechazar. **El servidor sigue decidiendo**: esto es
-   * cortesía, y su mensaje manda sobre el de aquí.
-   */
   const errores = $derived({
     edad: !valores.edad
       ? 'Escribe tu edad exacta.'
@@ -149,7 +77,6 @@ legible por cualquier guion de la página.
     if (programa && !opciones.includes(programa)) programa = '';
   });
 
-  /** Si al confirmar hay que advertir del régimen de menores. */
   const declaraMinoria = $derived(
     Boolean(valores.edad) && !errores.edad && Number(valores.edad) < 18
   );
@@ -174,8 +101,6 @@ legible por cualquier guion de la página.
   }
 
   async function confirmar() {
-    // El botón se desactiva mientras dura el envío: dos pulsaciones seguidas
-    // son dos escrituras, y la segunda podría llegar con la edad ya cambiada.
     if (enviando) return;
     enviando = true;
     try {
@@ -188,9 +113,6 @@ legible por cualquier guion de la página.
       motivo = '';
       if (continuarAClase) navegar('/unirse');
     } catch {
-      // El error lo redacta y lo pinta la composición, con lo que dijo el
-      // servidor. Aquí sólo se cierra el diálogo para dejarlo a la vista, y
-      // **el formulario conserva lo escrito**.
       confirmando = false;
     } finally {
       enviando = false;
@@ -337,7 +259,7 @@ legible por cualquier guion de la página.
     </div>
   {/if}
 
-  <!-- La clase: estado y camino, nunca un campo que la duplique. -->
+
   <div class="clase" class:resuelta={claseVinculada}>
     <div class="clase-texto">
       <span class="clase-icono"><Icono nombre="clase" medida={15} /></span>

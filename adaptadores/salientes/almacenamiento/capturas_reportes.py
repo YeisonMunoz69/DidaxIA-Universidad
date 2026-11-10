@@ -1,5 +1,3 @@
-"""Normalización segura de capturas adjuntas a reportes de usuario."""
-
 from __future__ import annotations
 
 import io
@@ -12,8 +10,7 @@ LADO_MAXIMO = 1920
 
 
 class CapturaNoAdmitida(ValueError):
-    """La entrada no es una imagen estática segura y procesable."""
-
+    pass
 
 def _rgb_sobre_blanco(original: Image.Image) -> Image.Image:
     orientada = ImageOps.exif_transpose(original)
@@ -24,9 +21,7 @@ def _rgb_sobre_blanco(original: Image.Image) -> Image.Image:
     fondo.alpha_composite(capa)
     return fondo.convert("RGB")
 
-
 def normalizar_captura(entrada: bytes, *, tipo: str | None = None) -> bytes:
-    """Re-codifica a WebP, retira metadatos y acota píxeles y tamaño."""
     if not entrada:
         raise CapturaNoAdmitida("selecciona una captura")
     if len(entrada) > LIMITE_ENTRADA_BYTES:

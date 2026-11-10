@@ -1,8 +1,3 @@
-"""Instrumentos preliminares: especificación y puntuación, sin recolector implícito.
-
-Los casos sintéticos prueban aritmética, no validan constructos. Ninguna función
-de este módulo lee personas ni activa recolección o cambia permisos.
-"""
 from __future__ import annotations
 
 from math import isfinite
@@ -16,7 +11,7 @@ FUNDAMENTO = (
     "requieren revisión académica, contraste externo y calibración; no son escalas validadas."
 )
 
-# Cada familia tiene una única fórmula, usada por la ficha y el puntuador.
+
 FAMILIAS = {
     "proporcion": (r"p=\frac{x}{n}", "p = x / n", {"x": "casos que cumplen el criterio", "n": "oportunidades elegibles con seguimiento completo"}, "6 de 10 oportunidades: 6/10 = 0,60 (60%)."),
     "ordinal": (r"\begin{aligned}S_i&=100\frac{\sum_{j=1}^{m}(r_{ij}-1)}{4m}\\M&=\operatorname{mediana}_i(S_i)\end{aligned}", "S_i = 100 × suma(r_ij − 1) / (4m); M = mediana(S_i)", {"r_{ij}": "respuesta de la persona i al ítem j, de 1 (nunca) a 5 (siempre)", "m": "tres ítems respondidos; todos orientados en el mismo sentido", "S_i": "puntuación individual completa", "M": "mediana entre personas; cada persona pesa igual"}, "Respuestas 2, 3 y 4: 100 × (1+2+3)/12 = 50 puntos. Si las puntuaciones individuales son 25, 50 y 75, la mediana del grupo es 50."),
@@ -31,7 +26,6 @@ def _ficha(familia, pregunta, criterio, recoleccion, items=()):
     return dict(familia=familia, pregunta=pregunta, criterio=criterio,
                 recoleccion=recoleccion, items=list(items), formula_latex=latex,
                 formula=formula, simbolos=simbolos, ejemplo=ejemplo, version=VERSION)
-
 
 PROPUESTAS = {
     "aprendizaje.cobertura_conceptual": _ficha("proporcion", "¿Qué parte de los conceptos planificados tuvo trabajo verificable?", "x: conceptos distintos del plan con intento vinculado; n: conceptos del plan congelado de la clase. No usar el corpus completo como denominador.", "Plan conceptual versionado por clase y evento intento vinculado a concepto; revisión de la atribución automática."),
@@ -85,7 +79,6 @@ def _puntuar_criterios(familia, obs):
         return min(obs) / 2
     return obs[1] - obs[0]
 
-
 def _puntuar_observacion(familia, obs, niveles):
     if obs is None:
         return None
@@ -100,13 +93,7 @@ def _puntuar_observacion(familia, obs, niveles):
         return 1
     return _puntuar_criterios(familia, obs)
 
-
 def puntuar(codigo: str, observaciones: list, *, minimo: int = 1) -> dict:
-    """Puntuador prospectivo de datos YA rubricados; no infiere etiquetas.
-
-    None es faltante. La preparación de oportunidades y la autorización son
-    responsabilidad de un recolector futuro, que todavía no se activa.
-    """
     familia = PROPUESTAS[codigo]["familia"]
     if type(minimo) is not int or minimo < 1:
         raise ValueError("mínimo debe ser entero positivo")

@@ -1,4 +1,3 @@
-/** Añade la firma visual de DidaxIa a una instantánea SVG exportable. */
 export function agregarMarcaDeAgua(svg, ancho, alto, color, documento = document) {
   const marca = documento.createElementNS('http://www.w3.org/2000/svg', 'text');
   marca.textContent = 'DidaxIa';

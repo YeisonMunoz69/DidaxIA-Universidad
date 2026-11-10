@@ -1,6 +1,4 @@
-<!-- Carga indeterminada: no simula porcentaje ni bloquea contenido ya consultado.
-     Geometría y giro: mockups/Loader-profesional (bociKond / Uiverse.io).
-     Los colores siguen tokens.css; las caras son decorativas para lectores de pantalla. -->
+
 <script>
   let { mensaje = 'Cargando…', pantallaCompleta = false, compacto = false } = $props();
 </script>

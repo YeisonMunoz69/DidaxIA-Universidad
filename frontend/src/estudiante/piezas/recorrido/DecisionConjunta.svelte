@@ -1,61 +1,4 @@
-<!--
-La única acción visible del recorrido · `D0` §10.10 / `D1B`.
 
-⚠️ QUÉ SUSTITUYE, Y POR QUÉ NO SE PODÍA CONSERVAR
----------------------------------------------------
-`DecisionDeConsentimiento.svelte` pintaba **una dimensión**: se montaba una vez
-para el titular y otra para el asentimiento del menor, con dos botones cada una
-y una petición cada una. Eso ponía en el navegador una secuencia que `D0` §10.10
-descarta: para un menor, entre la primera respuesta y la segunda petición cabía
-—y ocurría— el estado que nadie decidió.
-
-Ese componente está **eliminado**, no desactivado. Un componente productivo
-muerto es el que alguien vuelve a montar dentro de seis meses.
-
-UNA DECISIÓN BREVE, CON EL DOCUMENTO EXACTO DISPONIBLE
-------------------------------------------------------
-Privacidad, condiciones, participación en la investigación y medición
-conductual forman el paquete versionado del titular (`D0` §10.10), no cuatro
-decisiones separadas. La pantalla explica la decisión sin repetir el documento
-completo y ofrece el texto exacto, identificado por código y huella, en una
-pestaña autenticada aparte. Los enlaces públicos generales permanecen en el pie.
-
-UNA PETICIÓN, Y SE COMPRUEBA
-------------------------------
-`alDecidir()` se llama **una vez** por decisión. No hay `Promise.all`, no hay
-encadenamiento y no hay una segunda llamada para el asentimiento: los actos que
-correspondan los escribe el servidor en una transacción. `enviando` cierra la
-puerta a un segundo envío mientras la primera vuela.
-
-SIN VERSIÓN PUBLICADA NO SE PUEDE ACEPTAR, Y SE DICE CUÁL FALTA
------------------------------------------------------------------
-Si `GET /api/consentimiento/versiones` devuelve `null` para un alcance requerido,
-no existe un texto decidible. Un adulto necesita la del titular; un menor,
-la del titular **y** la del asentimiento. Las dos acciones quedan desactivadas y
-se nombra lo que falta, en vez de redactar un texto de relleno —que sería la
-autorización fabricada que toda la Fase 3 existe para no crear—.
-
-DOS CONDICIONES DISTINTAS, Y NINGUNA SE DEDUCE AQUÍ · `D1B` bis
-------------------------------------------------------------------
-Para ofrecer una acción hacen falta **dos** cosas, y son independientes:
-
-1. **que exista el documento** — lo dice `versiones`, y sin él no hay nada que
-   aceptar;
-2. **que la política admita esa decisión** — lo dice `estado.decision`, que el
-   servidor resuelve con `dominio/modelo/redecision.py`.
-
-La segunda no se puede deducir mirando banderas desde el navegador, y ése era el
-riesgo: con el par otorgado y al día, «No acepto» **no** es una acción —para
-retirar lo autorizado está la revocación—, y tras revocar una sola dimensión sí
-lo son las dos. Una regla escrita aquí y otra en el servidor habrían acabado
-diciendo cosas distintas, y la que la persona vería sería la equivocada.
-
-Por eso `puedeAceptar` y `puedeRechazar` **llegan como props**. Este componente
-las combina con la publicación del documento y no las calcula.
-
-
-
--->
 <script>
   import CargadorCubo from '../../../comun/base/CargadorCubo.svelte';
   import Boton from '../../../comun/base/Boton.svelte';
@@ -64,43 +7,18 @@ las combina con la publicación del documento y no las calcula.
   import { hayVersion, textoDeVersion } from '../../../nucleo/api/consentimiento.js';
 
   let {
-    /** Si esta persona es menor de edad, según la edad PERSISTIDA. */
     esMenor = false,
-    /** La versión requerida del paquete del titular, o `null`. */
     versionTitular = null,
-    /** La versión requerida del asentimiento, o `null`. Sólo aplica al menor. */
     versionAsentimiento = null,
-    /** `async (decision) => void`. `decision` es `otorgado` o `rechazado`. */
     alDecidir,
-    /** Lo que dijo el servidor si rechazó la última decisión. */
     errorDelServidor = '',
-    /** Si el servidor dijo que falta alguna versión al intentar registrar. */
     sinVersion = false,
-    /** Qué alcances nombró el servidor como faltantes. Lista cerrada. */
     alcancesFaltantes = [],
-    /**
-     * Si la política del servidor admite aceptar ahora. **No se calcula aquí.**
-     * Por defecto `true` para que un estado sin el campo —una respuesta vieja—
-     * no bloquee el recorrido: la autoridad real sigue siendo el servidor, que
-     * responde 409 si no lo admite.
-     */
     puedeAceptar = true,
-    /** Lo mismo para «No acepto». Ver la cabecera. */
     puedeRechazar = true,
-    /** Lo que el servidor dijo cuando negó la última decisión por política. */
     motivoDeLaPolitica = ''
   } = $props();
 
-  /**
-   * Qué alcances necesita ESTA persona, con cómo se nombra cada uno.
-   *
-   * `rotulo` encabeza la fila del documento; `nombre` es cómo se lee dentro de
-   * una frase —«falta que se publique el texto de …»—. Son dos porque un rótulo
-   * de tabla y un sintagma en mitad de una oración no se escriben igual, y usar
-   * uno para las dos cosas dejaba frases que no se pueden leer.
-   *
-   * La edad la decide el servidor: aquí sólo se recibe si es menor.
-   */
   const requeridas = $derived(
     esMenor
       ? [
@@ -127,31 +45,13 @@ las combina con la publicación del documento y no las calcula.
         ]
   );
 
-  /** Las que faltan por publicar. Vacío significa que hay documento. */
   const faltantes = $derived(requeridas.filter((r) => !hayVersion(r.version)));
   const publicadas = $derived(faltantes.length === 0);
 
-  /**
-   * Los documentos que esta pantalla intentó mostrar y no pudo · `C1-A`.
-   *
-   * ⚠️ **Esto NO es lo que impide aceptar sin documento.** Lo impide el
-   * servidor: desde la migración 14 una versión sin instantánea válida no es la
-   * requerida —así que ni siquiera llega aquí— y el disparador de la base
-   * rechaza cualquier acto contra ella, venga de donde venga.
-   *
-   * Lo que esto aporta es que la persona no pulse un botón que va a ser
-   * rechazado sin entender por qué. Si el documento no se pudo leer, no se
-   * ofrece decidir sobre él.
-   */
   let documentosRotos = $state({});
   let documentosComprobados = $state(false);
   const hayDocumentoRoto = $derived(Object.keys(documentosRotos).length > 0);
 
-  /*
-   * La pantalla queda breve, pero no pierde el fallo cerrado de C1-A. Se pide
-   * el documento en segundo plano y se contrasta con la huella publicada antes
-   * de habilitar las acciones. La lectura visible ocurre en otra pestaña.
-   */
   $effect(() => {
     const documentos = publicadas
       ? requeridas.map((r) => ({ codigo: r.version.codigo, huella: r.version.huella_contenido }))
@@ -182,14 +82,6 @@ las combina con la publicación del documento y no las calcula.
     return () => { vigente = false; };
   });
 
-  /**
-   * Cada acción, con sus DOS condiciones: documento publicado y política.
-   *
-   * Separadas a propósito: la persona necesita saber cuál de las dos falta.
-   * «Todavía no hay texto» y «esto ya está registrado» se arreglan de formas
-   * distintas, y fundirlas en un botón gris sin explicación deja a quien lo mira
-   * sin saber qué hacer.
-   */
   const aceptarDisponible = $derived(
     publicadas && documentosComprobados && !hayDocumentoRoto && puedeAceptar && !enviando
   );
@@ -198,7 +90,6 @@ las combina con la publicación del documento y no las calcula.
   );
 
   let enviando = $state(false);
-  /** `''`, `otorgado` o `rechazado`: qué confirmación está abierta. */
   let confirmando = $state('');
 
   function pedir(decision) {
@@ -208,10 +99,6 @@ las combina con la publicación del documento y no las calcula.
   }
 
   async function confirmar() {
-    // Un segundo clic mientras la primera petición vuela crearía OTRO juego de
-    // actos: el servidor recibiría dos decisiones del mismo sujeto y la segunda
-    // llegaría sobre un estado que ya cambió. Se cierra la puerta aquí, y el
-    // servidor la vuelve a cerrar con su cerrojo por titular.
     if (enviando) return;
     const decision = confirmando;
     enviando = true;
@@ -219,15 +106,12 @@ las combina con la publicación del documento y no las calcula.
       await alDecidir(decision);
       confirmando = '';
     } catch {
-      // Lo redacta la composición con el motivo del servidor. Se cierra el
-      // diálogo para que el mensaje quede a la vista.
       confirmando = '';
     } finally {
       enviando = false;
     }
   }
 
-  /** Cómo se nombra cada alcance faltante delante de una persona. */
   const NOMBRE_DE_ALCANCE = {
     titular: 'la autorización del tratamiento',
     asentimiento: 'tu propio acuerdo como menor de edad',
@@ -266,11 +150,7 @@ las combina con la publicación del documento y no las calcula.
         <CargadorCubo mensaje="Comprobando el documento publicado…" compacto />
       {/if}
       {#if hayDocumentoRoto}
-        <!--
-          `C1-A` · falla cerrado y lo dice. No se esconden los botones: se
-          explican, porque quien no entiende por qué no puede decidir vuelve a
-          intentarlo en vez de avisar de que algo va mal.
-        -->
+
         <p class="documento-roto" role="alert">
           No se pudo mostrar el documento completo, o no coincide con su huella.
           <strong>No puedes aceptar ni rechazar</strong> algo que no has podido
@@ -279,11 +159,7 @@ las combina con la publicación del documento y no las calcula.
       {/if}
     </div>
   {:else}
-    <!--
-      El caso REAL de este árbol: no hay ningún texto aprobado. No es un error
-      del cliente ni algo que reintentar, y no se rellena con un texto de
-      relleno: no existe todavía un documento sobre el que decidir.
-    -->
+
     <div class="sin-version" role="note">
       <div class="sin-version-titulo">
         <Icono nombre="candado" medida={14} />

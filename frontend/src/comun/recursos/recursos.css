@@ -178,7 +178,6 @@
   .recursos-pantalla button { overflow-wrap:anywhere; }
 }
 
-/* Encuestas: controles accesibles durante la edición y biblioteca separada. */
 .recursos-pantalla:has(.barra-editor){width:100%;max-width:none;padding-inline:clamp(1rem,4vw,4rem)}
 .recursos-pantalla .barra-editor{position:sticky;top:0;z-index:8;background:var(--surface-canvas);padding:.75rem;border:1px solid var(--trazo-suave);border-radius:var(--radius-sm)}
 .recursos-pantalla .acciones-editor-izquierda{display:flex;align-items:center;flex-wrap:wrap;gap:.5rem}
@@ -197,7 +196,6 @@
  .recursos-pantalla .acciones-editor-izquierda button,.recursos-pantalla .barra-editor>.pestanas-recurso button{white-space:normal}
 }
 
-/* Cabeceras y metadatos uniformes en las tarjetas de encuestas. */
 .recursos-pantalla .tarjeta-gestion{display:flex;flex-direction:column;gap:14px;padding:16px;box-sizing:border-box}
 .recursos-pantalla .tarjeta-gestion .cabecera-tarjeta{height:44px;min-height:44px;padding-right:56px;gap:12px}
 .recursos-pantalla .indicadores-tarjeta{display:flex;align-items:center;gap:10px;margin-left:auto}

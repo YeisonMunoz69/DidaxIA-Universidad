@@ -1,8 +1,3 @@
-"""Medidas propias de interacción: contratos nuevos, no escalas psicológicas.
-
-Versionadas y recalculables sobre evidencia elegible de límites y derivadas.
-Las definiciones anteriores conservan sus códigos, fórmulas e instrumentos.
-"""
 from dominio.kpi.contratos import DefinicionKPI, Dimension, Instrumento, MadurezMetodologica, Unidad
 from dominio.modelo.senales_interaccion import VERSION
 
@@ -29,7 +24,6 @@ def _definir(clave, nombre, criterio, denominador="mensajes analizables", *, mat
                                regla_de_puntuacion="p = casos observados / oportunidades elegibles",
                                minimo_de_observaciones=5),
     )
-
 
 CATALOGO = (
     _definir("ayuda", "Solicitudes de ayuda reconocidas", "mensajes con solicitud reconocida de explicación, guía, comprobación u otra ayuda"),

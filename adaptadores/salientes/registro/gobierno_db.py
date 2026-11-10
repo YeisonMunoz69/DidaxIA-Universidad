@@ -1,62 +1,3 @@
-"""
-gobierno_db.py — Supresión solicitada, retención y auditoría (migración 12)
-============================================================================
-
-Los tres repositorios PostgreSQL del gobierno de datos reversible de `EQ-022` y
-`EQ-023`, contra `solicitud_supresion`, `politica_retencion` y
-`auditoria_operacion`.
-
-⚠️ Ninguno borra nada
-------------------------------
-`AdaptadorSolicitudesDeSupresionPostgres` abre, cancela y consulta. **No tiene un
-método que elimine**, y no es un olvido: el cierre V-B decidirá qué textos se
-borran, qué se conserva seudonimizado hasta el límite de retención y qué métricas
-pueden anonimizarse de forma irreversible. Dejar aquí media ejecución sería peor
-que no tenerla: alguien la completaría sin esa decisión.
-
-⚠️ La auditoría va DENTRO de la transacción · hito R5
---------------------------------------------------------------------
-Hasta el cierre V-B, `rutas/gobierno.py` llamaba a `_auditar()` **después** de la
-operación, en otra conexión, capturando el fallo y siguiendo. `EQ-023` dice lo
-contrario, y la auditoría V-B lo devolvió como quinto invariante:
-
-    «Una operación auditable no puede informar éxito sin auditoría. Abrir o
-    cancelar una supresión, consultar conversaciones ajenas y cambiar permisos
-    deben persistir operación y auditoría en una misma transacción, o no
-    ocurrir.»
-
-Ahora `abrir()` y `cancelar()` reciben el actor y escriben su constancia con el
-mismo cursor, dentro de la misma transacción: si el `INSERT` de auditoría falla,
-el trámite no queda abierto ni cancelado. La redacción del `INSERT` vive una sola
-vez en `auditoria_sql.py`.
-
-La notificación por correo sigue **fuera** de la transacción y sigue sin
-decidirla: `EQ-024` es explícito en que el canal no es una garantía. Lo que sí
-cambió es que su resultado se representa —`aviso_enviado`— en vez de fingirse.
-
-⚠️ La doble aprobación necesita dos peticiones · hito R5
---------------------------------------------------------------------
-`AdaptadorPropuestasPostgres` es la pieza que faltaba. La primera petición crea
-una propuesta pendiente con su payload canónico y su huella; la segunda, de otro
-administrador autenticado, la aprueba. Aprobar comprueba el rol, recomputa la
-huella, **aplica el efecto** y audita, todo en una transacción. Ver su docstring.
-
-Cancelar sí es un UPDATE, y por qué
-------------------------------------------------
-`solicitud_supresion` no lleva el disparador de inmutabilidad de la migración 11
-porque su estado **es** su ciclo de vida: se solicita, se cancela o se resuelve.
-Lo que la protege es el índice único parcial —un solo trámite abierto por
-titular— y el CHECK que exige coherencia entre estado y cierre. Lo inmutable son
-los actos de consentimiento, que sí llevan el disparador.
-
-La auditoría, en cambio, es inmutable
---------------------------------------------------
-`auditoria_operacion` lleva el disparador: un registro que se puede editar no
-audita nada.
-
-
-"""
-
 from __future__ import annotations
 
 import hashlib
@@ -98,7 +39,7 @@ from dominio.modelo.supresion import (
 from dominio.puertos.almacen import EscrituraRechazada, ReferenciaDesconocida
 from dominio.puertos.gobierno import OperacionAuditada, Retencion
 
-#: Las columnas de una solicitud, en el orden en que `_desde_fila()` las espera.
+
 _CAMPOS = """
     id, sujeto_google, estado, solicitada_en, solicitada_por,
     cancelable_hasta, resolver_antes_de, extension_hasta, extension_motivo, cerrada_en
@@ -131,26 +72,12 @@ def _desde_fila(fila: tuple) -> SolicitudDeSupresion:
         secuencia=identificador,
     )
 
-
 class AdaptadorSolicitudesDeSupresionPostgres(RepositorioPostgres):
-    """`PuertoSolicitudesDeSupresion` sobre `solicitud_supresion`."""
 
     def abrir(
         self, sujeto_google: str, *, reautenticada_en: datetime, frase: str, actor: str = ""
     ) -> SolicitudDeSupresion:
-        """Abre el trámite si `EQ-022` lo permite, y lo deja auditado.
 
-        Las tres condiciones se comprueban **antes** de escribir y con la fila de
-        la persona bloqueada, de modo que dos peticiones simultáneas no puedan
-        abrir dos trámites: el índice único parcial las atraparía igual, pero con
-        un choque de clave en vez de un motivo utilizable.
-
-        `actor` es quien pide la supresión —hoy siempre el propio titular— y sale
-        de la sesión, nunca del cuerpo. Su constancia se escribe con el mismo
-        cursor: si falla, el trámite no queda abierto (hito R5). `reautenticada_en`
-        llega ya **acreditada por el servidor**; este repositorio comprueba que
-        siga siendo reciente, no que exista.
-        """
         ahora = datetime.now(UTC)
         if not reautenticacion_reciente(reautenticada_en, ahora):
             raise EscrituraRechazada(
@@ -176,7 +103,7 @@ class AdaptadorSolicitudesDeSupresionPostgres(RepositorioPostgres):
                      solicitada_en, cancelable_hasta, resolver_antes_de)
                 VALUES (%s, %s, %s, true, %s, %s, %s)
                 RETURNING {_CAMPOS}
-                """,  # noqa: S608 — `_CAMPOS` es una constante de este módulo
+                """,
                 (
                     sujeto_google,
                     sujeto_google,
@@ -187,8 +114,7 @@ class AdaptadorSolicitudesDeSupresionPostgres(RepositorioPostgres):
                 ),
             )
             solicitud = _desde_fila(cur.fetchone())
-            # `EQ-023` · misma transacción. Conteos e identificadores, nunca la
-            # frase que la persona escribió ni su correo.
+
             anotar(
                 cur,
                 "supresion.solicitada",
@@ -199,15 +125,9 @@ class AdaptadorSolicitudesDeSupresionPostgres(RepositorioPostgres):
             return solicitud
 
     def cancelar(self, sujeto_google: str, *, ahora: datetime, actor: str = "") -> bool:
-        """`EQ-022` · 24 horas. `False` si no había nada abierto.
-
-        Igual que `abrir()`: la constancia va en la misma transacción, así que un
-        fallo de auditoría deja el trámite **abierto**. Es lo correcto — decirle a
-        alguien que canceló algo que sigue en curso es el peor de los dos errores.
-        """
         with self._escritura() as cnx, cnx.cursor() as cur:
             cur.execute(
-                f"SELECT {_CAMPOS} FROM solicitud_supresion "  # noqa: S608
+                f"SELECT {_CAMPOS} FROM solicitud_supresion "
                 "WHERE sujeto_google = %s AND estado = 'solicitada' FOR UPDATE",
                 (sujeto_google,),
             )
@@ -236,7 +156,7 @@ class AdaptadorSolicitudesDeSupresionPostgres(RepositorioPostgres):
     def abierta_de(self, sujeto_google: str) -> SolicitudDeSupresion | None:
         with self._conexion() as cnx, cnx.cursor() as cur:
             cur.execute(
-                f"SELECT {_CAMPOS} FROM solicitud_supresion "  # noqa: S608
+                f"SELECT {_CAMPOS} FROM solicitud_supresion "
                 "WHERE sujeto_google = %s AND estado = 'solicitada' "
                 "ORDER BY solicitada_en DESC, id DESC LIMIT 1",
                 (sujeto_google,),
@@ -247,19 +167,13 @@ class AdaptadorSolicitudesDeSupresionPostgres(RepositorioPostgres):
     def historial(self, sujeto_google: str) -> tuple[SolicitudDeSupresion, ...]:
         with self._conexion() as cnx, cnx.cursor() as cur:
             cur.execute(
-                f"SELECT {_CAMPOS} FROM solicitud_supresion "  # noqa: S608
+                f"SELECT {_CAMPOS} FROM solicitud_supresion "
                 "WHERE sujeto_google = %s ORDER BY solicitada_en ASC, id ASC",
                 (sujeto_google,),
             )
             return tuple(_desde_fila(f) for f in cur.fetchall())
 
-
 class AdaptadorRetencionPostgres(RepositorioPostgres):
-    """`PuertoRetencion` sobre `politica_retencion`.
-
-    ⚠️ La tabla nace vacía y `vigente()` devuelve una `Retencion` **sin fecha**:
-    la sustentación no existe todavía y una inventada sería peor que ninguna.
-    """
 
     def vigente(self) -> Retencion:
         with self._conexion() as cnx, cnx.cursor() as cur:
@@ -277,14 +191,7 @@ class AdaptadorRetencionPostgres(RepositorioPostgres):
     def fijar(
         self, sustentacion_en: datetime, *, registrada_por: str, meses_despues: int = 6
     ) -> Retencion:
-        """Registra una política nueva; no edita la anterior.
 
-        `EQ-023` reserva las políticas a la doble aprobación. Este adaptador
-        **no** la comprueba —no puede: no conoce la auditoría— y por eso la ruta
-        que lo llama exige el registro auditado con segundo aprobador antes de
-        llegar aquí. La separación es deliberada: un repositorio que decidiera
-        permisos sería un segundo sitio donde se decide quién puede qué.
-        """
         if meses_despues <= 0:
             raise EscrituraRechazada("el plazo de retención tiene que ser positivo")
         with self._escritura() as cnx, cnx.cursor() as cur:
@@ -296,10 +203,9 @@ class AdaptadorRetencionPostgres(RepositorioPostgres):
             )
         return Retencion(sustentacion_en=sustentacion_en, meses_despues=meses_despues)
 
-
 _ZONA_AUDITORIA = ZoneInfo("America/Bogota")
 
-def _identidad_presentada(  # noqa: PLR0913 -- fila estable del read model
+def _identidad_presentada(
     identificador, nombre, correo, facultad, programa, semestre, roles,
     *, rol_comprobado: str = "",
 ) -> dict | None:
@@ -324,7 +230,6 @@ def _identidad_presentada(  # noqa: PLR0913 -- fila estable del read model
             or f"Identidad conservada únicamente para trazabilidad · {identificador}"
         ),
     }
-
 
 def _operacion_presentada(fila: tuple) -> dict:
     (
@@ -374,9 +279,7 @@ def _operacion_presentada(fila: tuple) -> dict:
         },
     }
 
-
 class AdaptadorAuditoriaPostgres(RepositorioPostgres):
-    """`PuertoAuditoria` sobre `auditoria_operacion`. Sólo añade."""
 
     def registrar(
         self,
@@ -388,12 +291,7 @@ class AdaptadorAuditoriaPostgres(RepositorioPostgres):
         exige_doble_aprobacion: bool = False,
         aprobada_por: str | None = None,
     ) -> OperacionAuditada:
-        """Deja constancia. La doble aprobación de `EQ-023` se exige aquí.
 
-        No hay aprobación automática: si la operación la exige y no llega un
-        segundo aprobador **distinto del actor**, se rechaza. El CHECK de la
-        tabla lo vuelve a exigir, para que no dependa de pasar por aquí.
-        """
         if exige_doble_aprobacion and not aprobada_por:
             raise EscrituraRechazada(
                 "esta operación exige la aprobación de un segundo administrador (EQ-023)"
@@ -458,13 +356,13 @@ class AdaptadorAuditoriaPostgres(RepositorioPostgres):
                 in cur.fetchall()
             )
 
-    def consultar_institucional(  # noqa: PLR0913 -- filtros del puerto explícitos
+    def consultar_institucional(
         self, actor: str, pagina: int, tamano: int, *,
         operacion: str = "", actor_filtro: str = "", sujeto_filtro: str = "",
         desde: datetime | None = None, hasta: datetime | None = None,
         categoria: str = "", doble_aprobacion: str = "",
     ) -> dict:
-        """Consulta sensible: permiso, auditoría y lectura comparten transacción."""
+
         if pagina < 1 or tamano < 1 or tamano > 100:
             raise ValueError("paginación no admitida")
         parametros = self._parametros(
@@ -493,7 +391,7 @@ class AdaptadorAuditoriaPostgres(RepositorioPostgres):
         self, actor: str, *, filtros: dict, confirmado: bool,
         corte_instante: datetime,
     ) -> tuple[bytes, dict]:
-        """Genera, audita y confirma el corte antes de devolver sus bytes."""
+
         parametros = self._parametros(**filtros)
         with self._escritura() as cnx, cnx.cursor() as cur:
             exigir_investigador_administrador(cur, actor)
@@ -548,7 +446,7 @@ class AdaptadorAuditoriaPostgres(RepositorioPostgres):
         }
 
     @staticmethod
-    def _parametros(  # noqa: PLR0913 -- normaliza el contrato público de filtros
+    def _parametros(
         *, operacion: str = "", actor_filtro: str = "", sujeto_filtro: str = "",
         desde: datetime | None = None, hasta: datetime | None = None,
         categoria: str = "", doble_aprobacion: str = "",
@@ -604,7 +502,7 @@ class AdaptadorAuditoriaPostgres(RepositorioPostgres):
             SELECT count(*), min(a.momento), max(a.momento), count(DISTINCT a.actor),
                    count(*) FILTER (WHERE a.exige_doble_aprobacion)
               FROM auditoria_operacion a {joins} {condicion}
-            """,  # noqa: S608 -- fragmentos constantes
+            """,
             params,
         )
         total, primero, ultimo, actores, dobles = cur.fetchone()
@@ -613,7 +511,7 @@ class AdaptadorAuditoriaPostgres(RepositorioPostgres):
             SELECT a.operacion, count(*)
               FROM auditoria_operacion a {joins} {condicion}
              GROUP BY a.operacion ORDER BY a.operacion
-            """,  # noqa: S608 -- fragmentos constantes
+            """,
             params,
         )
         conteos = [(codigo, int(cantidad)) for codigo, cantidad in cur.fetchall()]
@@ -627,7 +525,7 @@ class AdaptadorAuditoriaPostgres(RepositorioPostgres):
               FROM auditoria_operacion a {joins} {condicion}
              ORDER BY a.momento DESC, a.id DESC
              LIMIT %(tamano)s OFFSET %(desplazamiento)s
-            """,  # noqa: S608 -- fragmentos constantes
+            """,
             {**params, "tamano": tamano, "desplazamiento": (pagina - 1) * tamano},
         )
         operaciones = [_operacion_presentada(fila) for fila in cur.fetchall()]
@@ -660,7 +558,7 @@ class AdaptadorAuditoriaPostgres(RepositorioPostgres):
             f"""WITH {PRESENTACION_PERSONAS_SQL}
             SELECT sujeto_google, nombre, correo, facultad, programa, semestre, roles
               FROM presentacion WHERE sujeto_google = %s
-            """,  # noqa: S608 -- CTE constante
+            """,
             (identificador,),
         )
         fila = cur.fetchone()
@@ -670,9 +568,6 @@ class AdaptadorAuditoriaPostgres(RepositorioPostgres):
             "roles": [], "naturaleza_roles": "actuales",
         }
 
-
-#: Las columnas de una propuesta, en el orden en que `_propuesta_desde_fila()`
-#: las espera. Una sola definición para las consultas que la leen.
 _CAMPOS_PROPUESTA = """
     id, operacion, payload, propuesta_por, propuesta_en, estado, aprobada_por, aprobada_en
 """
@@ -691,36 +586,9 @@ def _propuesta_desde_fila(fila: tuple) -> Propuesta:
         secuencia=identificador,
     )
 
-
 class AdaptadorPropuestasPostgres(RepositorioPostgres):
-    """La doble aprobación de `EQ-023` sobre `propuesta_administrativa`.
-
-    ⚠️ **Este adaptador aplica el efecto de lo que aprueba**, y conviene decir
-    por qué, porque rompe la costumbre del árbol de que un repositorio sólo
-    escriba en su propia tabla.
-
-    `EQ-023` exige que *«aprobación, cambio de política y auditoría se confirmen
-    atómicamente»*. Atómicamente significa **una transacción**, y una transacción
-    significa **una conexión**. Repartir los tres pasos entre tres repositorios
-    —cada uno con la suya— es exactamente lo que producía el defecto que este
-    hito corrige: piezas que se confirman por separado y un éxito informado
-    aunque una fallara.
-
-    Así que el efecto se aplica aquí, con el mismo cursor, y la lista de qué se
-    puede aplicar es **cerrada** (`_EFECTOS`). No es un despachador genérico: una
-    propuesta con una operación que este módulo no sabe ejecutar se rechaza al
-    crearse, en el dominio, y nunca llega a quedar pendiente para siempre.
-    """
 
     def crear(self, operacion: str, payload: dict, *, propuesta_por: str) -> Propuesta:
-        """La **primera** petición autenticada. Deja la propuesta pendiente.
-
-        No aplica nada y no acepta ningún aprobador: quien propone no puede
-        afirmar que otro aprobó, y el modo de garantizarlo es que esta operación
-        no tenga dónde escribirlo.
-        """
-        # El tipo del dominio valida la operación antes de tocar la base: una
-        # propuesta que nadie sabría aplicar no llega a existir.
         propuesta = Propuesta(operacion=operacion, payload=payload, propuesta_por=propuesta_por)
         with self._escritura() as cnx, cnx.cursor() as cur:
             exigir_persona(cur, propuesta_por)
@@ -731,7 +599,7 @@ class AdaptadorPropuestasPostgres(RepositorioPostgres):
                     (operacion, payload, huella, propuesta_por)
                 VALUES (%s, %s::jsonb, %s, %s)
                 RETURNING {_CAMPOS_PROPUESTA}
-                """,  # noqa: S608 — `_CAMPOS_PROPUESTA` es constante de este módulo
+                """,
                 (
                     propuesta.operacion,
                     json.dumps(propuesta.payload),
@@ -742,31 +610,11 @@ class AdaptadorPropuestasPostgres(RepositorioPostgres):
             return _propuesta_desde_fila(cur.fetchone())
 
     def aprobar(self, identificador: int, *, aprobador: str) -> Propuesta:
-        """La **segunda** petición autenticada, de otra persona. Aplica y audita.
-
-        Todo en una transacción, y el orden es el contrato:
-
-        1. **comprobar el rol del aprobador ahora**, no cuando se propuso: un rol
-           retirado entre las dos peticiones no puede seguir aprobando;
-        2. **bloquear la fila** con `FOR UPDATE`, para que dos aprobaciones
-           simultáneas no apliquen el efecto dos veces;
-        3. **comprobar que puede aprobarla** —que no es suya y que sigue
-           pendiente—, con la regla del dominio;
-        4. **recomputar la huella** del contenido almacenado y compararla con la
-           guardada. Es lo que convierte «lo aprobado es lo propuesto» en algo
-           comprobable: si la fila se hubiera alterado entre las dos peticiones,
-           aquí no cuadraría;
-        5. **aplicar el efecto**;
-        6. **auditar** con los dos actores;
-        7. **cerrar la propuesta**.
-
-        Si cualquiera falla, no se confirma ninguno.
-        """
         with self._escritura() as cnx, cnx.cursor() as cur:
             exigir_persona(cur, aprobador)
             exigir_investigador_administrador(cur, aprobador)
             cur.execute(
-                f"SELECT {_CAMPOS_PROPUESTA}, huella FROM propuesta_administrativa "  # noqa: S608
+                f"SELECT {_CAMPOS_PROPUESTA}, huella FROM propuesta_administrativa "
                 "WHERE id = %s FOR UPDATE",
                 (identificador,),
             )
@@ -782,9 +630,7 @@ class AdaptadorPropuestasPostgres(RepositorioPostgres):
                 raise EscrituraRechazada(str(error)) from None
 
             if huella_de(propuesta.operacion, propuesta.payload) != guardada:
-                # No puede pasar por el camino normal —nada edita esta tabla—, y
-                # por eso se comprueba: si pasara, alguien cambió el contenido
-                # entre proponer y aprobar, y lo aprobado no sería lo propuesto.
+
                 raise EscrituraRechazada(
                     "el contenido de la propuesta no coincide con su huella"
                 )
@@ -795,7 +641,7 @@ class AdaptadorPropuestasPostgres(RepositorioPostgres):
                 _OPERACION_AUDITADA[propuesta.operacion],
                 actor=propuesta.propuesta_por,
                 detalle={"propuesta": propuesta.secuencia, "huella": guardada},
-                # `exige_doble_aprobacion` lo deriva `anotar()` de este aprobador.
+
                 aprobada_por=aprobador,
             )
             cur.execute(
@@ -804,7 +650,7 @@ class AdaptadorPropuestasPostgres(RepositorioPostgres):
                    SET estado = 'aprobada', aprobada_por = %s, aprobada_en = now()
                  WHERE id = %s
                 RETURNING {_CAMPOS_PROPUESTA}
-                """,  # noqa: S608 — `_CAMPOS_PROPUESTA` es constante de este módulo
+                """,
                 (aprobador, identificador),
             )
             return _propuesta_desde_fila(cur.fetchone())
@@ -812,7 +658,7 @@ class AdaptadorPropuestasPostgres(RepositorioPostgres):
     def consultar(self, identificador: int) -> Propuesta | None:
         with self._conexion() as cnx, cnx.cursor() as cur:
             cur.execute(
-                f"SELECT {_CAMPOS_PROPUESTA} FROM propuesta_administrativa "  # noqa: S608
+                f"SELECT {_CAMPOS_PROPUESTA} FROM propuesta_administrativa "
                 "WHERE id = %s",
                 (identificador,),
             )
@@ -820,24 +666,14 @@ class AdaptadorPropuestasPostgres(RepositorioPostgres):
             return _propuesta_desde_fila(fila) if fila else None
 
     def pendientes(self) -> tuple[Propuesta, ...]:
-        """Las que esperan un segundo administrador, de la más reciente atrás."""
         with self._conexion() as cnx, cnx.cursor() as cur:
             cur.execute(
-                f"SELECT {_CAMPOS_PROPUESTA} FROM propuesta_administrativa "  # noqa: S608
+                f"SELECT {_CAMPOS_PROPUESTA} FROM propuesta_administrativa "
                 "WHERE estado = 'pendiente' ORDER BY propuesta_en DESC, id DESC"
             )
             return tuple(_propuesta_desde_fila(f) for f in cur.fetchall())
 
-
 def _fijar_retencion(cur: Any, propuesta: Propuesta) -> None:
-    """El efecto de `retencion.fijar`, con el mismo cursor de la aprobación.
-
-    `registrada_por` es **quien propuso**, no quien aprueba: la política la
-    propone alguien y el segundo la autoriza. Guardar al aprobador aquí haría
-    perder de vista de quién fue la iniciativa, que es la mitad de lo que una
-    auditoría de doble aprobación tiene que poder reconstruir — la otra mitad la
-    guarda `auditoria_operacion.aprobada_por`.
-    """
     sustentacion = datetime.fromisoformat(str(propuesta.payload["sustentacion_en"]))
     if sustentacion.tzinfo is None:
         sustentacion = sustentacion.replace(tzinfo=UTC)
@@ -850,18 +686,7 @@ def _fijar_retencion(cur: Any, propuesta: Propuesta) -> None:
         (sustentacion, meses, propuesta.propuesta_por),
     )
 
-
-#: Qué hace cada operación al aprobarse. **Lista cerrada**, y del mismo módulo:
-#: un despachador que aceptara nombres de fuera convertiría la aprobación en una
-#: forma de ejecutar lo que sea.
-#:
-#: Sus claves tienen que ser exactamente las de
-#: `OPERACIONES_CON_DOBLE_APROBACION`; una prueba lo comprueba, porque una
-#: operación proponible que nadie sabe aplicar quedaría pendiente para siempre.
 _EFECTOS = {"retencion.fijar": _fijar_retencion}
 
-#: Con qué nombre queda cada operación en `auditoria_operacion`. Aparte de
-#: `_EFECTOS` porque son dos cosas distintas —qué se hace y cómo se llama lo
-#: hecho— y derivarlo del nombre de la operación con un `split()` habría atado el
-#: registro de auditoría a la forma de una cadena.
+
 _OPERACION_AUDITADA = {"retencion.fijar": "retencion.fijada"}

@@ -1,5 +1,3 @@
-"""Gobierno curricular de sondeos, exclusivo del equipo investigador."""
-
 from __future__ import annotations
 
 from fastapi import APIRouter, Request

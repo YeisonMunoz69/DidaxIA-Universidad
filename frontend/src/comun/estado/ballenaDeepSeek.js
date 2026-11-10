@@ -12,9 +12,6 @@ const COLORES_MAR = [
   ['#0c41ac','#010817','#FFFFFF']
 ];
 
-/** Canvas 2D del prototipo. El navegador compone las texturas prerenderizadas;
- * no se crean filtros, texturas ni lectores de estilo dentro de cada fotograma.
- * La cinemática depende de segundos, también en pantallas de 120 Hz. */
 export function crearOceano(canvas, contenedor) {
   const win = canvas.ownerDocument.defaultView;
   const doc = canvas.ownerDocument;
@@ -45,7 +42,6 @@ export function crearOceano(canvas, contenedor) {
     const brillo = estilo.getPropertyValue('--accent-glow').trim() || 'rgba(77,107,254,0.25)';
     const papel = estilo.getPropertyValue('--surface-paper').trim() || '#141923';
     fondo = ctx.createLinearGradient(0, 0, 0, alto);
-    // Conserva el cielo nocturno del prototipo; sólo él y los halos heredan la cuenta.
     fondo.addColorStop(0,mezclar(mezclar('#020713',papel,.025),acento,.08));
     fondo.addColorStop(.6,mezclar('#061638',acento,.18));
     fondo.addColorStop(1,mezclar('#0c2d68',acento,.32));
@@ -122,7 +118,6 @@ export function crearOceano(canvas, contenedor) {
     for (let i=0; i<BANDAS; i++) {
       const frac=i/(BANDAS-1), fase=t*3.6-frac*Math.PI*1.5;
       const onda=(Math.sin(fase)+.15*Math.sin(fase*2))*p.tamano*.11*Math.pow(frac,1.85);
-      // Rebanadas contiguas: último límite exacto para no cortar ni estirar la cola.
       ctx.drawImage(textura,i*8,0,8,512,i*p.tamano/BANDAS,onda,p.tamano/BANDAS+.25,p.tamano);
     }
     ctx.restore();
@@ -178,7 +173,6 @@ export function crearOceano(canvas, contenedor) {
   const observadorTamano = new win.ResizeObserver(redimensionar);
   observadorTamano.observe(contenedor);
   const observadorTema = new win.MutationObserver(()=>{paleta();dibujar();});
-  // Lee tokens heredados también cuando un panel cambia su propia paleta.
   for (let nodo=contenedor; nodo; nodo=nodo.parentElement) observadorTema.observe(nodo,{attributes:true,attributeFilter:['class','style','data-theme']});
   const observadorVista = win.IntersectionObserver ? new win.IntersectionObserver(([entrada])=>{visible=entrada.isIntersecting;sincronizar();}) : null;
   observadorVista?.observe(contenedor);
@@ -194,7 +188,6 @@ export function crearOceano(canvas, contenedor) {
     },
     salpicar(x, y) {
       if (destruido || !ancho || !alto) return;
-      // En pausa/reducción se muestra una fuente quieta; nunca reinicia el bucle.
       fuente(x??ancho*.5,y??alto*.58,28);
       if (modo==='offline') radar(x??ancho*.5,y??alto*.58);
       dibujar();

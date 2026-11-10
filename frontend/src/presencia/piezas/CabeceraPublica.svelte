@@ -1,30 +1,4 @@
-<!--
-La cabecera de la superficie pública.
 
-Marca, navegación entre las cuatro páginas y la acción principal —«Entrar al
-tutor»—, que sale de `nucleo/configuracion/origenes.js` y no de un `href`
-escrito a mano.
-
-NO ES `CabeceraGlobal.svelte`, Y NO PODÍA REUTILIZARSE
---------------------------------------------------------
-Aquélla depende del rol, del árbol, del carril, del menú «Más» y del estado de
-la sesión: esas cosas aquí no existen. Reutilizarla habría metido la sesión en
-una página anónima. El interruptor visual sí se comparte como pieza aislada:
-guarda únicamente el tema y no alcanza ningún dato privado.
-
-ENLACES DE VERDAD, SIN ENRUTADOR
------------------------------------
-Cada página es un `<a href>` normal y el navegador recarga. No hay historia
-manipulada, ni estado que sincronizar, ni una biblioteca de enrutado: cuatro
-documentos estáticos no la justifican, y el resultado es que el botón de
-atrás, «abrir en pestaña nueva» y copiar el enlace funcionan sin escribir una
-línea para ello. En producción `Caddyfile` devuelve `indice.html` para
-cualquier camino, igual que ya hace `vite.config.js` en desarrollo.
-
-
-Lenguaje declarado en OE3-Implementacion/13-Lenguaje-de-Diseno.md
-
--->
 <script>
   import Icono from '../../comun/base/Icono.svelte';
   import { PAGINAS } from '../rutas.js';
@@ -37,7 +11,6 @@ Lenguaje declarado en OE3-Implementacion/13-Lenguaje-de-Diseno.md
   import { ejecutarTransicionCircularDeTema } from '../../nucleo/preferencias/transicionDeTema.js';
 
   let {
-    /** El camino que se está pintando, para marcar el enlace vigente. */
     actual = '/',
     temaOscuro = false,
     colores = COLOR_INICIAL,
@@ -142,9 +115,6 @@ Lenguaje declarado en OE3-Implementacion/13-Lenguaje-de-Diseno.md
 
   li { max-inline-size: none; }
 
-  /* Los enlaces de navegación no van dentro de una frase, así que `2.5.8`
-     sí les aplica y `base.css` no se lo declara — misma regla y mismo
-     motivo que en `CabeceraGlobal.svelte`. */
   nav a {
     display: inline-flex;
     align-items: center;
@@ -158,8 +128,6 @@ Lenguaje declarado en OE3-Implementacion/13-Lenguaje-de-Diseno.md
 
   nav a:hover { color: var(--accent-main); }
 
-  /* El estado vigente no lo lleva sólo el color: `aria-current` lo anuncia y
-     el subrayado lo dibuja. `WCAG 1.4.1` — nunca el color solo. */
   nav a.vigente {
     color: var(--accent-main);
     border-block-end-color: var(--accent-main);
@@ -207,7 +175,6 @@ Lenguaje declarado en OE3-Implementacion/13-Lenguaje-de-Diseno.md
     background: transparent;
     cursor: pointer;
   }
-  /* Zona táctil amplia; visualmente queda solo el icono, sin caja ni fondo. */
   .elegir-color:focus-visible {
     outline: 2px solid var(--accent-main);
     outline-offset: 2px;
@@ -231,7 +198,6 @@ Lenguaje declarado en OE3-Implementacion/13-Lenguaje-de-Diseno.md
     box-shadow: var(--shadow-soft);
   }
 
-  /* En pantallas móviles se organiza en 2 filas limpias: marca y botón arriba, enlaces abajo */
   @media (max-width: 48rem) {
     .cabecera {
       display: grid;

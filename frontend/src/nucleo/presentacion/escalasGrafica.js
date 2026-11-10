@@ -1,4 +1,3 @@
-/** Marcas de escala legibles incluso cuando el origen sale del viewport. */
 export function marcasDeEscala(minimo, maximo, pixeles) {
   const amplitud = maximo - minimo;
   if (!Number.isFinite(amplitud) || amplitud <= 0 || pixeles <= 0) return [];
@@ -14,9 +13,6 @@ export function marcasDeEscala(minimo, maximo, pixeles) {
   });
 }
 
-/** La retícula y sus rótulos nacen de las mismas coordenadas de la pizarra.
- * Así, al desplazar o ampliar, ninguna cifra queda entre dos líneas.
- */
 export function reticulaDeEscala(caja, ancho, alto) {
   const [izquierda, arriba, derecha, abajo] = caja;
   const x = marcasDeEscala(izquierda, derecha, ancho);

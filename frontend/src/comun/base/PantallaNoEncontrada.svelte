@@ -1,6 +1,4 @@
-<!-- Televisor y antenas adaptados del mockup local 404-animada-retro.html.
-     El mockup era sólo CSS: los canales, Canvas y audio se implementan aquí.
-     Esta pieza no importa sesión, rutas privadas ni el backend. -->
+
 <script>
   import { onMount } from 'svelte';
 
@@ -105,13 +103,12 @@
   function irInicio() { if (alInicio) alInicio(inicio); else globalThis.location?.assign(inicio); }
   function volver() {
     if (alVolver) { alVolver(); return; }
-    // Un historial previo externo no es un retorno seguro dentro del producto.
     try {
       const anterior = globalThis.document?.referrer;
       if (anterior && new URL(anterior).origin === globalThis.location?.origin && globalThis.history?.length > 1) {
         globalThis.history.back(); return;
       }
-    } catch { /* dirección de referencia no válida */ }
+    } catch {  }
     irInicio();
   }
 

@@ -45,7 +45,6 @@
     flushSync(()=>{presentacionActiva=true;contenidoPresentado=null;tituloPresentado=r.titulo;errorPresentacion='';avisoPantalla='';});
     pantallaPresentacion.focus();
     const solicitud=entradaPresentacion;
-    // Se solicita dentro del clic, antes de consultar el recurso: conserva la activación del usuario.
     const entrar=pantallaPresentacion.requestFullscreen||pantallaPresentacion.webkitRequestFullscreen;
     if(entrar){try{Promise.resolve(entrar.call(pantallaPresentacion)).then(()=>{if(presentacionActiva&&matchMedia('(pointer:coarse)').matches)try{Promise.resolve(screen.orientation?.lock?.('landscape')).catch(()=>{});}catch{}}).catch(()=>{avisoPantalla='El navegador no permitió pantalla completa. La presentación ocupa esta ventana.';});}catch{avisoPantalla='La presentación ocupa esta ventana.';}}
     else avisoPantalla='La presentación ocupa esta ventana; este navegador no ofrece pantalla completa.';
@@ -144,7 +143,6 @@
     const correcto = await ejecutar(async () => {
       const enviado = JSON.stringify(recurso);
       const resultado = await api.guardar(JSON.parse(enviado));
-      // Conserva cualquier edición realizada mientras responde el servidor.
       recurso = JSON.stringify(recurso) === enviado ? resultado : { ...recurso, id:resultado.id, revision:resultado.revision };
       guardado = JSON.stringify(resultado);
       aviso = sucio ? 'Se guardaron los cambios enviados. Hay nuevos cambios por guardar.' : 'Borrador guardado en tu cuenta.';
@@ -179,7 +177,6 @@
       if(!archivo.name.toLowerCase().endsWith('.json')||archivo.size>12_000_000)throw new Error('Selecciona una encuesta JSON de hasta 12 MB.');
       let datos;try{datos=JSON.parse(await archivo.text());}catch{throw new Error('El archivo no contiene un JSON válido.');}
       if(!datos||datos.tipo!=='encuesta'||!Array.isArray(datos.contenido?.paginas))throw new Error('El archivo debe contener una encuesta DidaxIa con sus páginas.');
-      // El archivo siempre crea un borrador nuevo. Sus IDs/estado/envíos nunca se importan.
       editar(await api.guardar({tipo:'encuesta',titulo:datos.titulo,descripcion:datos.descripcion??'',contenido:datos.contenido}));
       aviso='Encuesta importada como un nuevo borrador. Revisa preguntas e imágenes antes de publicar.';
       toast.exito('Encuesta importada. No se modificó ninguna publicación existente.');

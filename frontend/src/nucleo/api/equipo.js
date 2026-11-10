@@ -1,4 +1,3 @@
-/** Administración auditada del equipo institucional. */
 import { pedir } from './cliente.js';
 
 export async function listar(buscar = '', { pertenencia = 'todas', clase = '', señal } = {}) {

@@ -1,31 +1,4 @@
-<!--
-Volver a demostrar que eres tú, ahora · `EQ-022`, hito R3 y R7-A.
 
-POR QUÉ ESTO NO ES «ENTRAR» OTRA VEZ
---------------------------------------
-`POST /api/sesion/google` acepta cualquier `id_token` válido según su contrato
-normal: exigirle frescura de segundos convertiría un inicio de sesión legítimo
-con un token de hace un minuto en un fallo sin explicación.
-
-`POST /api/sesion/reautenticar` es otra cosa. Comprueba cinco condiciones y las
-dos últimas son las que importan aquí: que el `sub` sea el de **esta** sesión
-—un token perfectamente firmado de otra cuenta institucional no reautentica a
-ésta— y que Google lo haya **firmado hace un momento**. Sin esa segunda
-comprobación, un token todavía vigente de hace cincuenta minutos habría servido,
-y lo que se acreditaría sería cuándo llegó el token, no cuándo se autenticó la
-persona.
-
-⚠️ EL CLIENTE NO ACREDITA NADA
---------------------------------
-Este componente entrega el `id_token` y ya está. No manda ninguna fecha, no
-guarda el token y no escribe `reautenticada_en` en ningún sitio: la prueba la
-construye el servidor con su propio reloj y `POST /api/datos/supresion` la
-consume sin recibir nada del cuerpo. Una marca de tiempo enviada desde aquí no
-demostraría nada.
-
-
-
--->
 <script>
   import CargadorCubo from '../base/CargadorCubo.svelte';
   import Icono from '../base/Icono.svelte';
@@ -35,12 +8,10 @@ demostraría nada.
   import { preferencias } from '../../nucleo/preferencias/preferencias.svelte.js';
 
   let {
-    /** `(vigentePorSegundos) => void` cuando el servidor acreditó la frescura. */
     alAcreditar,
     cliente = import.meta.env.VITE_GOOGLE_CLIENT_ID ?? ''
   } = $props();
 
-  /** `cargando` · `listo` · `sin-guion` · `enviando`. */
   let fase = $state('cargando');
   let hueco = $state(null);
   let fallo = $state('');
@@ -87,9 +58,6 @@ demostraría nada.
       fase = 'listo';
       const clase = clasificar(e);
       if (clase === 'sin-sesion') {
-        // El servidor distingue en el cuerpo por qué no sirve, y las dos
-        // razones se arreglan de forma distinta: una cuenta equivocada y un
-        // token viejo no son el mismo problema para quien está delante.
         fallo =
           e?.estadoDelServidor === 'sujeto_distinto'
             ? 'Ese acceso es de otra cuenta. Entra con la misma cuenta con la que iniciaste sesión.'
@@ -108,8 +76,6 @@ demostraría nada.
       callback: alRecibirCredencial,
       tema: esOscuro ? 'filled_black' : 'outline',
       ancho: 240,
-      // «Continuar con Google» y no «Iniciar sesión»: no se está entrando, se
-      // está volviendo a demostrar quién es quien ya entró.
       texto: 'continue_with'
     });
   });

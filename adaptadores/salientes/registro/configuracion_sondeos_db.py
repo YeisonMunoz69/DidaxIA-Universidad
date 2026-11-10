@@ -1,5 +1,3 @@
-"""Configuración curricular persistida con auditoría atómica en PostgreSQL."""
-
 from __future__ import annotations
 
 from adaptadores.salientes.registro.auditoria_sql import anotar
@@ -30,7 +28,6 @@ def _configuracion(fila) -> ConfiguracionSondeos:
         actualizado_en=fila[5].isoformat() if fila[5] else None,
     )
 
-
 class AdaptadorConfiguracionSondeosPostgres(RepositorioPostgres):
     def consultar(self) -> ConfiguracionSondeos:
         with self._conexion() as cnx, cnx.cursor() as cur:
@@ -38,14 +35,13 @@ class AdaptadorConfiguracionSondeosPostgres(RepositorioPostgres):
 
     @staticmethod
     def desde_cursor(cur) -> ConfiguracionSondeos:
-        """Lee en la misma instantánea que el diagnóstico operativo."""
         cur.execute(_LECTURA)
         return _configuracion(cur.fetchone())
 
     def cambiar_nodo(self, nodo: str, habilitado: bool, actor: str) -> ConfiguracionSondeos:
         if nodo not in NODOS_CONFIGURABLES or not isinstance(habilitado, bool):
             raise ValueError("nodo o estado no admisible")
-        columna = _COLUMNAS[nodo]  # Lista fija, nunca texto arbitrario del cliente.
+        columna = _COLUMNAS[nodo]
         with self._escritura() as cnx, cnx.cursor() as cur:
             exigir_persona_activa(cur, actor)
             cur.execute(

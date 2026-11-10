@@ -1,5 +1,3 @@
-"""Lectura institucional auditada; no ejecuta ni reanaliza turnos."""
-
 from __future__ import annotations
 
 from contextlib import contextmanager
@@ -18,7 +16,6 @@ from dominio.puertos.almacen import AlmacenNoConfigurado
 
 
 def alcance_mensajes(sujeto, clase, desde, hasta):
-    """Intervalo semiabierto y matrícula histórica, nunca la matrícula actual."""
     condiciones = ["h.identificador_sujeto = %s", "h.contexto_de_uso = 'aprendizaje_estudiante'"]
     valores = [sujeto]
     if desde is not None:
@@ -33,7 +30,6 @@ def alcance_mensajes(sujeto, clase, desde, hasta):
               AND h.momento >= m.desde AND (m.hasta IS NULL OR h.momento < m.hasta))""")
         valores.append(clase)
     return " AND ".join(condiciones), tuple(valores)
-
 
 class ConversacionesInvestigacionPostgres(AdaptadorHistorialPostgres):
     @contextmanager
@@ -60,12 +56,12 @@ class ConversacionesInvestigacionPostgres(AdaptadorHistorialPostgres):
                     WHERE m.estudiante = p.sujeto_google AND (%s = '' OR m.clase = %s))
                 AND {FILTRO_PERSONA_SIN_SUPRESION_SQL}"""
             valores = (incluir_pruebas, buscar, buscar, clase, clase)
-            cur.execute(f"SELECT count(*) FROM persona p WHERE {filtro}", valores)  # noqa: S608
+            cur.execute(f"SELECT count(*) FROM persona p WHERE {filtro}", valores)
             total = cur.fetchone()[0]
             cur.execute(f"""SELECT p.sujeto_google, p.nombre, p.correo,
                     COALESCE(p.es_cuenta_prueba, false)
                 FROM persona p WHERE {filtro}
-                ORDER BY lower(p.nombre), p.sujeto_google LIMIT 20 OFFSET %s""",  # noqa: S608
+                ORDER BY lower(p.nombre), p.sujeto_google LIMIT 20 OFFSET %s""",
                 (*valores, (pagina - 1) * 20))
             estudiantes = [dict(zip(("id", "nombre", "correo", "prueba"), fila, strict=True))
                            for fila in cur.fetchall()]
@@ -81,7 +77,7 @@ class ConversacionesInvestigacionPostgres(AdaptadorHistorialPostgres):
             exigir_sin_supresion(cur, sujeto)
             anotar(cur, "investigacion.conversaciones_listadas", actor=actor,
                    sujeto_afectado=sujeto, detalle={"clase": clase, "pagina": pagina})
-            cur.execute(f"SELECT count(DISTINCT identificador_sesion) FROM historial_turno h WHERE {condicion}", valores)  # noqa: S608
+            cur.execute(f"SELECT count(DISTINCT identificador_sesion) FROM historial_turno h WHERE {condicion}", valores)
             total = cur.fetchone()[0]
             cur.execute(f"""SELECT identificador_sesion, min(momento), max(momento),
                     count(DISTINCT turno),
@@ -89,7 +85,7 @@ class ConversacionesInvestigacionPostgres(AdaptadorHistorialPostgres):
                     {MENSAJE_TITULABLE_SQL}
                 FROM historial_turno h WHERE {condicion}
                 GROUP BY identificador_sesion ORDER BY max(momento) DESC, identificador_sesion
-                LIMIT 50 OFFSET %s""",  # noqa: S608
+                LIMIT 50 OFFSET %s""",
                 (*valores, (pagina - 1) * 50))
             filas = cur.fetchall()
         return ([dict(zip(("sesion", "inicio", "ultimo", "turnos", "primer_mensaje", "mensaje_para_titulo"),

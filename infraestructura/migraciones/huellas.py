@@ -1,5 +1,3 @@
-"""Objetos cuya forma permite reconocer los SQL 01–10 ya aplicados."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -10,7 +8,6 @@ class Huella:
     dominios: tuple[str, ...] = ()
     columnas: tuple[tuple[str, tuple[str, ...]], ...] = ()
     indices: tuple[str, ...] = ()
-
 
 HUELLAS: dict[int, Huella] = {
     1: Huella(

@@ -1,10 +1,10 @@
 \encoding UTF8
--- Rectificación histórica de edad y separación tutoría/investigación · Fase 8
 
 BEGIN;
 
 ALTER TABLE historial_turno
     DROP CONSTRAINT IF EXISTS historial_turno_contexto_de_uso_check;
+
 ALTER TABLE historial_turno
     ADD CONSTRAINT historial_turno_contexto_de_uso_check CHECK (
         contexto_de_uso IN (
@@ -15,6 +15,7 @@ ALTER TABLE historial_turno
 
 ALTER TABLE registro_turno
     DROP CONSTRAINT IF EXISTS registro_turno_contexto_de_uso_check;
+
 ALTER TABLE registro_turno
     ADD CONSTRAINT registro_turno_contexto_de_uso_check CHECK (
         contexto_de_uso IN (
@@ -54,12 +55,14 @@ CREATE TABLE IF NOT EXISTS rectificacion_edad_transicion (
 
 CREATE INDEX IF NOT EXISTS rectificacion_edad_por_sujeto
     ON rectificacion_edad (sujeto_google, registrada_en DESC, id DESC);
+
 CREATE INDEX IF NOT EXISTS rectificacion_edad_transicion_por_tramite
     ON rectificacion_edad_transicion (rectificacion, momento, id);
 
 CREATE OR REPLACE TRIGGER rectificacion_edad_inmutable
     BEFORE UPDATE OR DELETE ON rectificacion_edad
     FOR EACH ROW EXECUTE FUNCTION didaxia_rechazar_modificacion();
+
 CREATE OR REPLACE TRIGGER rectificacion_edad_transicion_inmutable
     BEFORE UPDATE OR DELETE ON rectificacion_edad_transicion
     FOR EACH ROW EXECUTE FUNCTION didaxia_rechazar_modificacion();
@@ -95,13 +98,9 @@ $$;
 
 DROP TRIGGER IF EXISTS consentimiento_cierra_rectificacion_edad
     ON consentimiento_evento;
+
 CREATE TRIGGER consentimiento_cierra_rectificacion_edad
     AFTER INSERT ON consentimiento_evento
     FOR EACH ROW EXECUTE FUNCTION didaxia_cerrar_reconsentimiento_por_edad();
-
-COMMENT ON TABLE rectificacion_edad IS
-    'Actos inmutables de rectificación de edad; nunca sobrescriben consentimientos o asentimientos anteriores.';
-COMMENT ON TABLE rectificacion_edad_transicion IS
-    'Historia append-only del trámite de rectificación y su reconsentimiento.';
 
 COMMIT;

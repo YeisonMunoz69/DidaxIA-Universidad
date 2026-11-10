@@ -26,7 +26,7 @@ Las capturas muestran cuentas, conversaciones y cifras de demostración. Los mar
 
 ## Instalación de la entrega universitaria
 
-La instalación usa Svelte para la interfaz, FastAPI para la API, PostgreSQL con pgvector para los datos y el índice, y Caddy para servir la aplicación y la portada. El archivo `VERSION-ENTREGA.txt` identifica el corte técnico descrito en la monografía y la huella del manifiesto del corpus. Consulte [las fuentes y los permisos por obra](contenido/corpus/FUENTES.md).
+La instalación usa Svelte para la interfaz, FastAPI para la API, PostgreSQL con pgvector para los datos y el índice, y Caddy para servir la aplicación y la portada. El archivo `VERSION-ENTREGA.txt` identifica el corte técnico descrito en la monografía y la huella del manifiesto del corpus. El catálogo de la biblioteca guarda [los permisos por obra](contenido/corpus/fuentes.json) y [la correspondencia de páginas](contenido/corpus/partes.json).
 
 ## 1. Preparar el entorno
 
@@ -87,7 +87,7 @@ RESEND_REMITENTE=
 
 Use una clave del proveedor de generación autorizada para esta instalación. Las solicitudes del tutor pueden incluir pasajes recuperados; confirme que el proveedor y su tratamiento de datos estén autorizados para el material de la Universidad. Para habilitar avisos por correo configure juntos `RESEND_API_KEY` y `RESEND_REMITENTE`, con un remitente verificado. Con ambos valores vacíos los avisos quedan sin envío externo. Configure buzones institucionales atendidos para investigación y privacidad. El modo piloto queda desactivado en el perfil universitario.
 
-Si la VPS ya cuenta con un proxy inverso institucional (servidor que recibe las conexiones HTTPS y las pasa a la aplicación), elija el perfil de VPS compartida. Defina `DIDAXIA_DOMINIO_APP`, `DIDAXIA_DOMINIO_PUBLICO` y `DIDAXIA_DOMINIO_ALIAS` con los nombres DNS respectivos, y `DIDAXIA_PUERTO_HTTP` con el puerto asignado. El proxy termina HTTPS, conserva el encabezado `Host` y reenvía al puerto de bucle local que publica Compose. Mantenga `ORIGEN_APLICACION` y `ORIGEN_PUBLICO` como las direcciones HTTPS que usa el navegador. Revise también `frontend/publico/robots.txt` y `llms.txt`: describen el sitio original y se deben adaptar si la Universidad decide indexar su portada. Para una entrega de acceso restringido, la Universidad controla el acceso en el borde; `robots.txt` no controla quién puede entrar.
+Si la VPS ya cuenta con un proxy inverso institucional (servidor que recibe las conexiones HTTPS y las pasa a la aplicación), elija el perfil de VPS compartida. Defina `DIDAXIA_DOMINIO_APP`, `DIDAXIA_DOMINIO_PUBLICO` y `DIDAXIA_DOMINIO_ALIAS` con los nombres DNS respectivos, y `DIDAXIA_PUERTO_HTTP` con el puerto asignado. El proxy termina HTTPS, conserva el encabezado `Host` y reenvía al puerto de bucle local que publica Compose. Mantenga `ORIGEN_APLICACION` y `ORIGEN_PUBLICO` como las direcciones HTTPS que usa el navegador. Revise `frontend/publico/robots.txt` si la Universidad decide indexar su portada. Para una entrega de acceso restringido, la Universidad controla el acceso en el borde; `robots.txt` no controla quién puede entrar.
 
 ## 4. Aplicar migraciones, cargar el corpus y arrancar
 
@@ -116,7 +116,7 @@ dc up -d --build --wait --wait-timeout 2400
 dc ps -a
 ```
 
-Compose espera a PostgreSQL, ejecuta las migraciones versionadas en `infraestructura/esquema/` y carga los fragmentos admisibles de `contenido/corpus/fragmentos/` con el catálogo `FUENTES.md`. El índice se guarda en PostgreSQL; no se distribuye una base precargada. Si la ingesta falla, se bloquea el inicio del backend. Después se sirve el frontend por Caddy. `migraciones`, `ingesta` y `frontend-build` deben quedar en estado `Exited (0)`; son trabajos de una sola pasada.
+Compose espera a PostgreSQL, ejecuta las migraciones versionadas en `infraestructura/esquema/` y carga los fragmentos admisibles de `contenido/corpus/fragmentos/` con el catálogo `fuentes.json`. El índice se guarda en PostgreSQL; no se distribuye una base precargada. Si la ingesta falla, se bloquea el inicio del backend. Después se sirve el frontend por Caddy. `migraciones`, `ingesta` y `frontend-build` deben quedar en estado `Exited (0)`; son trabajos de una sola pasada.
 
 ```bash
 dc logs --tail=80 migraciones ingesta

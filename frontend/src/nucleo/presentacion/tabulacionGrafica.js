@@ -1,4 +1,3 @@
-/** Puntos de lectura, no una nueva escala de la gráfica. */
 export function destinoNumerico(texto) {
   if (typeof texto === 'number') return Number.isFinite(texto) ? texto : null;
   const limpio = String(texto ?? '').replace(/\\pi|π/g, 'pi').replace(/\s/g, '');
@@ -8,7 +7,6 @@ export function destinoNumerico(texto) {
   return null;
 }
 
-/** La tabla admite coma colombiana y punto, pero no separadores de miles ambiguos. */
 export function leerDecimalDeTabla(texto) {
   const limpio = String(texto ?? '').trim().replace(',', '.');
   if (!/^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$/.test(limpio)) return null;
@@ -40,11 +38,6 @@ export function elegirAbscisas(desde, hasta, destino = null) {
   return Array.from({ length: 10 }, (_, indice) => izquierda + (derecha - izquierda) * indice / 9);
 }
 
-/**
- * Conserva el muestreo explícito de un límite y, para funciones ordinarias,
- * aproxima hasta dos focos visibles (raíz, extremo o discontinuidad). Son
- * abscisas para explorar, no una certificación simbólica de puntos críticos.
- */
 export function elegirAbscisasConFocos(desde, hasta, destino = null, evaluadores = []) {
   const base = elegirAbscisas(desde, hasta, destino);
   const destinoTextual = String(destino ?? '').trim().toLowerCase();
@@ -94,7 +87,6 @@ export function elegirAbscisasConFocos(desde, hasta, destino = null, evaluadores
   return [...puntos].sort((a, b) => a - b).slice(0, 10);
 }
 
-/** Un punto editado no queda restringido por el intervalo que propuso la tabla. */
 export function aplicarAbscisasManuales(propuestas, manuales = {}) {
   return propuestas.map((valor, indice) => {
     const manual = manuales[indice];

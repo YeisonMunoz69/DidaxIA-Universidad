@@ -1,4 +1,4 @@
-<!-- DD-14: ocultar la gráfica conserva siempre su descripción textual. -->
+
 <script>
   import InterruptorDePreferencia from '../../comun/preferencias/InterruptorDePreferencia.svelte';
   import { preferencias } from '../../nucleo/preferencias/preferencias.svelte.js';

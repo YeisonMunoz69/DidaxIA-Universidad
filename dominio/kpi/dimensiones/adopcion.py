@@ -1,18 +1,3 @@
-"""
-adopcion.py — Dimensión A del catálogo v1.1: adopción y permanencia
-====================================================================
-
-Los siete indicadores que el encargo enumera bajo «A. Adopción y permanencia».
-Los siete son calculables hoy: `historial_turno` y `clase_matricula_historial` existen
-desde las migraciones 05 y 08, y el contexto de uso de `EQ-031` desde la 17.
-
-Las cuatro palabras que sostienen esta dimensión —turno válido, sesión, regreso
-y población elegible— están definidas una sola vez en
-`dominio/kpi/definiciones.py`, y aquí se citan.
-
-
-"""
-
 from __future__ import annotations
 
 from dominio.kpi.contratos import DefinicionKPI, Dimension, Unidad
@@ -25,8 +10,7 @@ from dominio.kpi.definiciones import (
     TURNO_VALIDO,
 )
 
-#: Las tablas de las que sale toda esta dimensión. En una constante porque
-#: repetir la tupla en siete entradas la habría dejado divergir.
+
 FUENTES = ("historial_turno", "clase_matricula_historial", "clase")
 
 _LIMITE_UNA_CLASE = (

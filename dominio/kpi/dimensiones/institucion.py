@@ -1,37 +1,3 @@
-"""
-institucion.py — Dimensión F del catálogo v1.1: docentes e institución
-=======================================================================
-
-La dimensión que sólo el investigador consulta. Trece indicadores: ocho
-calculables hoy, tres que dependen de la telemetría de versiones que esta
-entrega instrumenta, uno que espera un segundo cambio de corpus para tener
-sentido y **uno que no se calcula por decisión del equipo**.
-
-El indicador que no se calcula, y por qué
---------------------------------------------------
-El encargo pide, bajo la letra F, *«uso del espacio Tutor por docentes»*.
-`EQ-031` decidió lo contrario en 2026-09-06, y con nombre propio:
-
-    «ese uso queda excluido de matrícula, evaluación estudiantil, vectores
-    conductuales o afectivos, inferencias, alertas, supervisión docente, **KPI**,
-    conjuntos de investigación y entrenamiento»
-
-Y el propio encargo lo repite en sus límites: *«conversaciones de
-tutor_profesional quedan excluidas de KPI, evaluación e investigación»*. Las dos
-frases del mismo encargo no pueden cumplirse a la vez, así que el catálogo
-declara el indicador con estado `calculo_no_aplicable` y explica la decisión
-que lo excluye, en vez de calcularlo en silencio o borrarlo del catálogo como si
-nadie lo hubiera pedido. Resolverlo es una decisión del equipo, no de esta
-entrega.
-
-Lo que sí queda medido de esa población es la **operación**: la migración 17
-separa el contexto de uso en `registro_turno`, y el resumen de operación que ya
-existe cuenta registros y latencias por contexto sin atribuir aprendizaje a
-nadie. Eso no es un KPI de esta dimensión y no se mezcla aquí.
-
-
-"""
-
 from __future__ import annotations
 
 from dominio.kpi.contratos import (
@@ -43,8 +9,7 @@ from dominio.kpi.contratos import (
 )
 from dominio.kpi.definiciones import MUESTRA_MINIMA_DISTRIBUCION, POBLACION_ELEGIBLE
 
-#: Toda la dimensión es institucional: un docente no consulta agregados de la
-#: institución, y eso se decide en el catálogo antes que en la ruta.
+
 SOLO_INSTITUCIONAL = (Alcance.INSTITUCIONAL,)
 
 USO_TUTOR_POR_DOCENTES = DefinicionKPI(

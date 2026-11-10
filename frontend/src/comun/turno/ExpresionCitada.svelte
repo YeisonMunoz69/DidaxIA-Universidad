@@ -1,15 +1,4 @@
-<!--
-Matemática que el tutor MENCIONA sin afirmarla. `ADR-014` §5.4.
 
-SE DISTINGUE VISUALMENTE de lo que el sistema afirma, porque no son lo mismo:
-una expresión suelta **no puede ser verdadera ni falsa**, así que no hay nada
-que el motor haya comprobado sobre ella. Su sello es `generado` y este rótulo
-dice lo mismo con palabras, porque el color solo no lo sostiene.
-
-
-Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
-
--->
 <script>
   import { getContext } from 'svelte';
   import { copiaDeFormula, CONTEXTO_COPIA_FORMULAS } from './copiaDeFormula.js';

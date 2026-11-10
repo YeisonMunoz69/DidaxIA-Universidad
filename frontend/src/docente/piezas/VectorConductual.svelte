@@ -1,35 +1,4 @@
-<!--
-La representación del vector · EXISTE SOLO AQUI.
 
-No está en comun/ a propósito, y no es una cuestión de organización sino
-una barrera: un componente en comun/ es importable desde cualquier sitio,
-y bastaría un import distraído para que apareciera en la pantalla del
-estudiante. Colocado bajo docente/, ese import se ve raro al leerlo y la
-prueba de contrato lo detecta. NO MOVER A comun/.
-
-LA CONFIANZA VA DENTRO, NO AL LADO
------------------------------------
-`ConfianzaDelDiagnostico` se renderiza **desde aquí**, no desde quien nos usa.
-Si dependiera de que la ruta se acuerde de ponerla, existiría un camino por el
-que el vector se pinta desnudo — y un diagnóstico sin su incertidumbre invita a
-leerlo como certeza. Aquí no hay ese camino: quien pinta el vector pinta la
-confianza.
-
-CÓMO SE NOMBRA CADA RASGO, Y POR QUÉ ASÍ
------------------------------------------
-`RP-20` exige formulaciones del tipo «indicios» y nunca del tipo «tienes
-ansiedad matemática». El criterio se aplica igual aquí aunque el destinatario
-sea el docente: la frase que el docente lee es la que después le repite al
-estudiante. Por eso los rótulos hablan de lo observado —«señales de tensión al
-resolver»— y no del estado de la persona.
-
-Y NO HAY BARRA DE COLOR SOLO. Cada rasgo lleva su cifra y su rótulo, porque el
-color solo no comunica nada a quien no lo percibe y esto es justo la
-información que más se malinterpreta.
-
-
-
--->
 <script>
   import ConfianzaDelDiagnostico from './ConfianzaDelDiagnostico.svelte';
   import Icono from '../../comun/base/Icono.svelte';
@@ -42,24 +11,11 @@ información que más se malinterpreta.
   import { visibleEnTablero } from '../../comun/kpi/visibilidad.js';
 
   let {
-    /**
-     * El vector tal como lo emite el servidor, por su propia ruta.
-     * `RP-04` define los rasgos; aquí solo se presentan.
-     */
     vector = null
   } = $props();
   let seleccionado = $state(null);
   let ayudaAbierta = $state(false);
 
-  /**
-   * Cómo se llama cada rasgo en pantalla.
-   *
-   * La clave es la del servidor; el rótulo describe LO OBSERVADO. Un rasgo que
-   * el servidor mande y esta tabla no conozca se muestra con su clave en
-   * crudo: ocultarlo dejaría al docente sin parte de lo que el sistema infiere
-   * sin que nadie se entere, que es el mismo criterio del hueco visible de
-   * `Bloque.svelte`.
-   */
   const ROTULO = {
     'PS-Anx':             'Señales de tensión al resolver',
     FAH:                  'Señales de reticencia a pedir ayuda',
@@ -167,7 +123,6 @@ información que más se malinterpreta.
   .detalle-indicio { max-block-size: 70vh; overflow-y: auto; color: var(--ink-secondary); }
   @media (max-width: 34rem) { .rasgo { grid-template-columns: 1fr; } dd { justify-content: space-between; } }
 
-  /* Un rasgo que esta tabla no conoce se ve, no se oculta. */
   .desconocido { font-family: var(--fuente-mono); color: var(--semantic-warning); }
 
   dd {

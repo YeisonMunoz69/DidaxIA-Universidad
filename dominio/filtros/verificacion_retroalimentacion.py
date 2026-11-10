@@ -1,5 +1,3 @@
-"""Verificador optativo: exige retroalimentación antes de ampliar la explicación."""
-
 from dataclasses import replace
 
 from dominio.filtros.verificacion import FiltroVerificacion

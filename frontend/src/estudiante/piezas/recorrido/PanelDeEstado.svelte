@@ -1,46 +1,15 @@
-<!--
-Los estados del recorrido que no son un formulario · tabla de `EQ-016`.
 
-Bloqueo por rechazo, bloqueo por revocación, eliminación solicitada y
-mantenimiento. Los cuatro tienen la misma forma —qué pasó, qué significa, qué
-se puede hacer— y por eso comparten componente en vez de repetir cuatro
-tarjetas casi iguales.
-
-⚠️ LAS TRES COSAS QUE ESTA PANTALLA NO PUEDE HACER
-----------------------------------------------------
-1. **No representa el mantenimiento como falta de consentimiento.** `EQ-024` lo
-   prohíbe: un 503 significa «no puedo comprobarlo», no «no has autorizado». Un
-   estado que se enseña como pendiente le pediría a alguien volver a decidir
-   algo que quizá ya decidió.
-2. **No inventa plazos.** El límite del representante y las fechas del trámite
-   de supresión vienen del servidor y se muestran tal cual llegan; el navegador
-   no los calcula ni los completa cuando faltan.
-3. **No promete lo que no hay.** Volver a aceptar sólo se ofrece si existe una
-   versión requerida publicada; hoy no la hay en ninguna base de este árbol.
-
-
-
--->
 <script>
   import Icono from '../../../comun/base/Icono.svelte';
   import Boton from '../../../comun/base/Boton.svelte';
   import { navegar } from '../../../enrutado/navegar.js';
 
   let {
-    /** El `acceso` calculado por el servidor. Nunca uno deducido aquí. */
     acceso,
-    /** Vuelve a preguntar el estado. Se ofrece cuando reintentar tiene sentido. */
     alReintentar = null,
-    /** Contenido extra que la pantalla quiera colgar debajo (la reaceptación). */
     children = null
   } = $props();
 
-  /**
-   * Qué se dice en cada estado.
-   *
-   * Un objeto y no una cadena de `{#if}`: los cuatro textos se leen juntos, que
-   * es la única forma de notar si uno promete algo que otro niega.
-   */
   const TEXTOS = {
     bloqueado_por_rechazo: {
       icono: 'cerrar',
@@ -140,8 +109,6 @@ tarjetas casi iguales.
     border-radius: var(--radius-sm);
   }
 
-  /* El tono es un borde de acento, no un fondo saturado: el lenguaje del
-     proyecto no usa bloques de color plano para decir «atención». */
   .panel.bloqueo { border-inline-start: 3px solid var(--semantic-error); }
   .panel.tramite { border-inline-start: 3px solid var(--accent-main); }
   .panel.mantenimiento { border-inline-start: 3px solid var(--ink-tertiary); }
@@ -209,12 +176,6 @@ tarjetas casi iguales.
     margin-block-start: 2px;
   }
 
-  /* A 360 px las acciones se apilan en vez de desbordar la tarjeta.
-
-     30rem y no un corte propio: `D-31` decidió que las bandas tienen una sola
-     fuente «o en dos meses habrá siete bandas distintas», y este árbol ya usa
-     30rem para el mismo caso —una tarjeta angosta— en otras cinco hojas.
-     Añadir un 26rem habría sido la sexta banda. */
   @media (max-width: 30rem) {
     .acciones :global(.boton) { inline-size: 100%; }
   }

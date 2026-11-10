@@ -1,13 +1,5 @@
-/**
- * Proyecciones del material visible de una conversación.
- *
- * El hilo sigue siendo la única fuente. Estas funciones no acumulan estado ni
- * inventan relaciones de evidencia: seleccionan gráficas, notación y conceptos
- * que los turnos ya contienen, conservando su orden.
- */
 import { esNombreHumano } from './identificadores.js';
 
-/** @param {{tipo?: string, contenido?: string, alternativo?: string}[]} bloques */
 function bloquesDeGaleria(bloques, indiceDeTurno, contexto = {}) {
   return bloques
     .filter((bloque) => bloque?.tipo === 'grafica' || bloque?.tipo === 'notacion')
@@ -19,7 +11,6 @@ function bloquesDeGaleria(bloques, indiceDeTurno, contexto = {}) {
     }));
 }
 
-/** @param {{turno?: {bloques?: object[]}}[]} hilo */
 export function itemsDeGaleria(hilo = []) {
   return (hilo ?? []).flatMap((entrada, indice) => {
     const turno = entrada?.turno;
@@ -31,7 +22,6 @@ export function itemsDeGaleria(hilo = []) {
   });
 }
 
-/** @param {{indiceDeTurno: number}[]} items */
 export function agruparItemsDeGaleria(items = []) {
   const porTurno = new Map();
   for (const item of items) {
@@ -44,12 +34,10 @@ export function agruparItemsDeGaleria(items = []) {
   }));
 }
 
-/** @param {{tipo?: string}[]} items */
 export function comprimirGraficas(items = []) {
   return items.filter((item) => item?.tipo === 'grafica').length > 1;
 }
 
-/** @param {string | undefined} contenido */
 export function traeDerivada(contenido) {
   try {
     return Boolean(JSON.parse(contenido ?? '')?.derivada_js);
@@ -58,7 +46,6 @@ export function traeDerivada(contenido) {
   }
 }
 
-/** Expresiones que acompañan a cada curva, sin inferir fórmulas del código JS. */
 export function formulasDeGrafica(contenido) {
   try {
     const datos = JSON.parse(contenido ?? '');
@@ -81,11 +68,6 @@ export function formulasDeGrafica(contenido) {
   }
 }
 
-/**
- * Conceptos humanos invocados por los turnos, sin confundir referencias
- * bibliográficas `F-*` con nombres pedagógicos.
- * @param {{turno?: {conceptos?: object[], citas?: object[]}}[]} hilo
- */
 export function conceptosDelHilo(hilo = []) {
   const conceptos = new Map();
   for (const entrada of hilo ?? []) {

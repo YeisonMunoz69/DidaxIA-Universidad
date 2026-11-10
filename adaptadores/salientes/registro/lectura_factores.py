@@ -1,5 +1,3 @@
-"""Recuperación de trazas para pendientes; no infiere evidencia ausente."""
-
 from adaptadores.salientes.registro.lectura_trazas_anteproyecto import leer_trazas
 
 

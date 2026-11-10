@@ -30,9 +30,7 @@
         <ul>{#each bloque.items as item}<li>{@render linea(item)}</li>{/each}</ul>
       {/if}
     {:else if bloque.tipo === 'tabla'}
-      <!-- svelte-ignore a11y_no_noninteractive_tabindex
-           La región es la que desplaza horizontalmente; debe poder recibir
-           foco para que el teclado alcance todas las columnas. -->
+
       <div class="tabla-desplazable" tabindex="0" role="region" aria-label="Tabla del documento">
         <table>
           <thead><tr>{#each bloque.cabecera as celda}<th scope="col">{@render linea(fragmentosMarkdown(celda))}</th>{/each}</tr></thead>

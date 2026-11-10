@@ -1,5 +1,3 @@
-"""Visor reservado al investigador, separado del historial propio."""
-
 from datetime import UTC, datetime
 
 from fastapi import APIRouter, Request
@@ -33,7 +31,6 @@ def filtros(parametros):
            for k in ('buscar', 'clase')):
         raise ValueError('filtro demasiado largo')
     return dict(clase=parametros.get('clase', ''), desde=desde, hasta=hasta, pagina=pagina)
-
 
 def crear_router(sesiones, almacen, puerta, catalogo=None):
     router = APIRouter()

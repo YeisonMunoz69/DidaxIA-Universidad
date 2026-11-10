@@ -1,5 +1,3 @@
-"""Reconocimiento estructural de una base creada antes del ledger."""
-
 from __future__ import annotations
 
 import re
@@ -19,19 +17,16 @@ class Estado(StrEnum):
     PRESENTE = "presente"
     PARCIAL = "parcial"
 
-
 @dataclass(frozen=True, slots=True)
 class Inspeccion:
     version: int
     estado: Estado
     detalle: str = ""
 
-
 def _normalizar(texto: str | None, esquema: str) -> str | None:
     if texto is None:
         return None
     return re.sub(rf'(?:(?:"{re.escape(esquema)}")|{re.escape(esquema)})\.', "<local>.", texto)
-
 
 def _columna(cur: Any, esquema: str, tabla: str, columna: str) -> tuple[Any, ...] | None:
     cur.execute(
@@ -55,7 +50,6 @@ def _columna(cur: Any, esquema: str, tabla: str, columna: str) -> tuple[Any, ...
     tipo = f"<local>.{fila[6]}" if fila[5] == "d" and fila[4] == esquema else fila[0]
     return (_normalizar(tipo, esquema), fila[1], fila[2], _normalizar(fila[3], esquema))
 
-
 def _indice(cur: Any, esquema: str, nombre: str) -> str | None:
     cur.execute(
         """
@@ -67,7 +61,6 @@ def _indice(cur: Any, esquema: str, nombre: str) -> str | None:
     )
     fila = cur.fetchone()
     return _normalizar(fila[0], esquema) if fila else None
-
 
 def _dominio(cur: Any, esquema: str, nombre: str) -> tuple[Any, ...] | None:
     cur.execute(
@@ -87,7 +80,6 @@ def _dominio(cur: Any, esquema: str, nombre: str) -> tuple[Any, ...] | None:
     if not fila:
         return None
     return (_normalizar(fila[0], esquema), fila[1], tuple(fila[2]))
-
 
 def _restricciones(cur: Any, esquema: str, tablas: tuple[str, ...]) -> dict[str, Any]:
     if not tablas:
@@ -111,7 +103,6 @@ def _restricciones(cur: Any, esquema: str, tablas: tuple[str, ...]) -> dict[str,
         for tabla, nombre, tipo, definicion in cur.fetchall()
     }
 
-
 def _capturar(cur: Any, esquema: str, huella: Huella) -> dict[str, Any]:
     firmas: dict[str, Any] = {}
     for dominio in huella.dominios:
@@ -122,7 +113,6 @@ def _capturar(cur: Any, esquema: str, huella: Huella) -> dict[str, Any]:
     for indice in huella.indices:
         firmas[f"indice:{indice}"] = _indice(cur, esquema, indice)
     return firmas
-
 
 def _comparar(canon: dict[str, Any], actual: dict[str, Any]) -> tuple[Estado, str]:
     presentes = [nombre for nombre, firma in actual.items() if firma is not None]
@@ -139,13 +129,7 @@ def _comparar(canon: dict[str, Any], actual: dict[str, Any]) -> tuple[Estado, st
         return Estado.PARCIAL, "; ".join(partes)
     return Estado.PRESENTE, ""
 
-
 def inspeccionar(cur: Any, migraciones: tuple[Migracion, ...], esquema: str) -> tuple[Inspeccion, ...]:
-    """Compara el esquema con una referencia creada desde los SQL actuales.
-
-    La referencia vive en un esquema aleatorio de la misma transacción y se
-    elimina antes de devolver. Nunca lee ni altera filas del esquema objetivo.
-    """
     temporal = f"didaxia_referencia_{uuid.uuid4().hex[:12]}"
     cur.execute(sql.SQL("CREATE SCHEMA {}").format(sql.Identifier(temporal)))
     resultados: list[Inspeccion] = []
@@ -153,9 +137,7 @@ def inspeccionar(cur: Any, migraciones: tuple[Migracion, ...], esquema: str) -> 
         for migracion in migraciones:
             huella = HUELLAS.get(migracion.version)
             if huella is None:
-                # Las huellas sólo adoptan la línea base histórica 01–10. Una
-                # migración futura nace bajo ledger y, por definición, aquí
-                # todavía está ausente.
+
                 resultados.append(Inspeccion(migracion.version, Estado.AUSENTE))
                 continue
             tablas = tuple(dict.fromkeys(tabla for tabla, _ in huella.columnas))

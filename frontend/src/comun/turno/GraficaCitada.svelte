@@ -1,23 +1,4 @@
-<!--
-Referencia a una gráfica, no la gráfica misma.
 
-El servidor emite el bloque `grafica` siempre que el cálculo simbólico lo
-permite —`08-Contrato-del-Turno.md` §12, `_bloque_grafica()` en
-`turno.py`—, así que casi todo turno con una derivada válida traía uno. Con
-el tablero de verdad —`Grafica.svelte`, interactivo, 135px— repetido
-turno tras turno, la conversación se llenaba de tableros entre las
-respuestas y no era ella la que se seguía leyendo.
-
-El tablero de verdad sigue existiendo: vive en `GaleriaDeTrabajo.svelte`,
-el panel de «Material de Apoyo», que ya recorre el mismo hilo. Esto es la
-mitad que queda en el hilo — dice que hay una gráfica y de qué es, sin
-volver a dibujarla — y `alternativo` es lo único que hace falta para
-decirlo, porque ya es la descripción completa que el servidor exige por
-`RU-10`.
-
-
-
--->
 <script>
   import Icono from '../base/Icono.svelte';
   import Notacion from './Notacion.svelte';

@@ -1,4 +1,4 @@
-<!-- Indicador compacto mientras el servidor valida la identidad de Google. -->
+
 <span class="cargador" role="status" aria-label="Verificando tu cuenta con Google">
   <svg viewBox="0 0 48 48" aria-hidden="true">
     <circle class="orbita orbita-1" cx="24" cy="24" r="20" />

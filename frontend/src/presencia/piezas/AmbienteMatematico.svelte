@@ -1,4 +1,4 @@
-<!-- Ambiente animado compartido por Inicio y las páginas públicas. Sin video ni red. -->
+
 <div class="ambiente" aria-hidden="true">
   <svg class="curvas" viewBox="0 0 1440 900" preserveAspectRatio="none">
     <path class="curva curva-principal" d="M-100 600 C 180 180, 520 730, 805 420 S 1250 130, 1540 450" />

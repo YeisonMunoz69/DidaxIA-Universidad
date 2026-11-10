@@ -1,5 +1,3 @@
-"""Agregación por hilo sin cruzar sujetos ni sumar porcentajes individuales."""
-
 from collections import defaultdict
 from dataclasses import replace
 
@@ -65,7 +63,6 @@ def resumir_factores(registros, *, desde, hasta):
             total["reglas_numerador"] += f["reglas"]["numerador"]
             total["mensajes"] += resumen["mensajes_completos"]
     return totales
-
 
 def calcular_factores(resumen, contexto, *, individual=False):
     resultados = []

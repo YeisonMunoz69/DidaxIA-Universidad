@@ -1,4 +1,3 @@
-"""Recursos y participación. Publicar, cerrar y responder comparten cerrojo."""
 from __future__ import annotations
 
 import secrets
@@ -29,14 +28,11 @@ from dominio.puertos.almacen import EscrituraRechazada
 class RecursoNoEncontrado(LookupError):
     pass
 
-
 class RecursoConflicto(ValueError):
     pass
 
-
 def _id():
     return secrets.token_urlsafe(12)
-
 
 class RecursosPostgres(DestinatariosRecursos, RepositorioPostgres):
     def _estudiante(self, cur, actor):
@@ -161,7 +157,6 @@ class RecursosPostgres(DestinatariosRecursos, RepositorioPostgres):
             return self._recurso(cur, identificador)
 
     def ampliar_cursos(self, actor, identificador, clases, revision, envio, audiencia='estudiantes'):
-        """Añade destinatarios al envío abierto sin modificar contenido ni respuestas."""
         clases = validar_destinos(clases, audiencia)
         with self._conexion() as cnx, cnx.cursor() as cur:
             self._investigador(cur, actor)
@@ -219,7 +214,7 @@ class RecursosPostgres(DestinatariosRecursos, RepositorioPostgres):
     def eliminar(self, actor, identificador):
         with self._conexion() as cnx, cnx.cursor() as cur:
             self._investigador(cur, actor)
-            # El mismo cerrojo usado por visitar/responder evita borrar mientras llegan datos.
+
             recurso = self._recurso(cur, identificador)
             cur.execute("SELECT (%s <> 'encuesta' AND EXISTS (SELECT 1 FROM recurso_publicacion p JOIN recurso_visita v ON v.publicacion=p.id WHERE p.recurso=%s)) "
                         'OR EXISTS (SELECT 1 FROM recurso_publicacion p JOIN recurso_respuesta a ON a.publicacion=p.id WHERE p.recurso=%s)',
@@ -247,13 +242,13 @@ class RecursosPostgres(DestinatariosRecursos, RepositorioPostgres):
             return [dict(id=f[0], titulo=f[1], tipo=f[2], descripcion=f[3], estado=f[4], clase=f[5],
                          publicada_en=f[6].isoformat(), vista=f[7], respondida=f[8], nueva=f[9], envio=f[10], audiencia=f[11]) for f in cur.fetchall()]
 
-    def _publicacion(self, cur, actor, rol, identificador, incluir_contenido=True):  # noqa: C901, PLR0912 -- autorización por audiencia y rol
+    def _publicacion(self, cur, actor, rol, identificador, incluir_contenido=True):
         cur.execute('SELECT recurso FROM recurso_publicacion WHERE id=%s', (identificador,))
         fila = cur.fetchone()
         if not fila:
             raise RecursoNoEncontrado('Publicación no disponible.')
         r = self._recurso(cur, fila[0]) if incluir_contenido else self._recurso(cur, fila[0], incluir_contenido=False)
-        # Leer el estado del envío después del cerrojo compartido con cerrar/publicar.
+
         cur.execute('SELECT recurso,clase,envio,revision_aviso,publicada_en,estado,audiencia,destinatario,cerrada_en,retirada_en FROM recurso_publicacion WHERE id=%s', (identificador,))
         fila = cur.fetchone()
         if not fila or fila[9] is not None:

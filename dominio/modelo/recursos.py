@@ -1,4 +1,3 @@
-"""Validación de encuestas completas y diapositivas; independiente de HTTP y BD."""
 from __future__ import annotations
 
 import math
@@ -14,14 +13,12 @@ TIPOS_PREGUNTA = {'texto', 'parrafo', 'unica', 'multiple', 'desplegable', 'escal
 class RecursoInvalido(ValueError):
     pass
 
-
 def texto(valor, limite=5000, obligatorio=False):
     if not isinstance(valor, str) or '\x00' in valor or len(valor) > limite:
         raise RecursoInvalido('El texto no es válido o supera la longitud permitida.')
     if obligatorio and not valor.strip():
         raise RecursoInvalido('Completa los títulos y las preguntas.')
     return valor.strip()
-
 
 def enlace_seguro(valor):
     if not valor:
@@ -32,7 +29,6 @@ def enlace_seguro(valor):
         raise RecursoInvalido('Los enlaces deben usar http, https o mailto.')
     return valor
 
-
 def _validar_exclusivas(pregunta):
     if 'exclusivas' not in pregunta:
         return
@@ -40,8 +36,7 @@ def _validar_exclusivas(pregunta):
     if pregunta['tipo'] != 'multiple' or not isinstance(opciones, list) or any(not isinstance(o, str) or o not in pregunta['opciones'] for o in opciones):
         raise RecursoInvalido('Las opciones excluyentes deben pertenecer a una pregunta de selección múltiple.')
 
-
-def validar_recurso(cuerpo, *, publicable=False):  # noqa: C901, PLR0912 -- límites por tipo de pregunta
+def validar_recurso(cuerpo, *, publicable=False):
     tipo = cuerpo.get('tipo')
     if not isinstance(tipo, str) or tipo not in {'encuesta', 'diapositivas'}:
         raise RecursoInvalido('Tipo de recurso desconocido.')
@@ -96,8 +91,7 @@ def validar_recurso(cuerpo, *, publicable=False):  # noqa: C901, PLR0912 -- lím
             raise RecursoInvalido('La encuesta admite hasta 300 preguntas.')
     return {'tipo': tipo, 'titulo': titulo, 'descripcion': descripcion, 'contenido': contenido}
 
-
-def validar_diapositivas(contenido):  # noqa: C901 -- validación de dimensiones, texto, imagen y enlaces
+def validar_diapositivas(contenido):
     slides = contenido.get('slides')
     if not isinstance(slides, list) or not 1 <= len(slides) <= 100:
         raise RecursoInvalido('La presentación debe tener entre 1 y 100 diapositivas.')
@@ -130,9 +124,7 @@ def validar_diapositivas(contenido):  # noqa: C901 -- validación de dimensiones
                 ):
                     raise RecursoInvalido('Usa imágenes PNG, JPEG o WebP incrustadas.')
 
-
 def _validar_figura(item):
-    """Geometría propia y cerrada; nunca se almacena SVG ejecutable del usuario."""
     if not isinstance(item.get('figure'), str) or item['figure'] not in {
         'arrow', 'double-arrow', 'line', 'rectangle', 'ellipse', 'triangle', 'diamond', 'check', 'cross', 'bracket',
     }:
@@ -151,9 +143,7 @@ def _validar_figura(item):
     if 'dashed' in item and type(item['dashed']) is not bool:
         raise RecursoInvalido('Revisa el trazo de la figura.')
 
-
 def _validar_estilo_elemento(item):
-    """Estilos opcionales: conserva las presentaciones anteriores sin migrarlas."""
     for campo, minimo, maximo in (
         ('opacity', 0, 100), ('lineHeight', .8, 3), ('letterSpacing', -2, 12),
         ('borderWidth', 0, 16), ('brightness', 25, 200), ('contrast', 25, 200),
@@ -177,8 +167,7 @@ def _validar_estilo_elemento(item):
     ):
         raise RecursoInvalido('Revisa el color del borde del elemento.')
 
-
-def validar_respuestas(contenido, respuestas):  # noqa: C901, PLR0912 -- validación cerrada de nueve tipos
+def validar_respuestas(contenido, respuestas):
     if not isinstance(respuestas, dict):
         raise RecursoInvalido('Envía las respuestas de la encuesta completa.')
     preguntas = [p for pagina in contenido['paginas'] for p in pagina['preguntas']]
@@ -218,7 +207,6 @@ def validar_respuestas(contenido, respuestas):  # noqa: C901, PLR0912 -- validac
                 raise RecursoInvalido('Elige un valor dentro de la escala.')
         limpias[p['id']] = valor
     return limpias
-
 
 def resultados(contenido, respuestas):
     salida = []

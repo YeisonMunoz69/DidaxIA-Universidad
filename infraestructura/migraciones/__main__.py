@@ -1,5 +1,3 @@
-"""CLI deliberadamente limitado al laboratorio efímero de la sesión 2A."""
-
 from __future__ import annotations
 
 import argparse
@@ -33,7 +31,6 @@ def main() -> int:
         f"adoptadas={list(resultado.adoptadas)} aplicadas={list(resultado.aplicadas)}"
     )
     return 0
-
 
 if __name__ == "__main__":
     raise SystemExit(main())

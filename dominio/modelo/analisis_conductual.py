@@ -1,5 +1,3 @@
-"""Tres factores en modo experimental; no cambia el catálogo ni los sondeos."""
-
 from collections import Counter
 
 from dominio.deteccion.patrones import extraer
@@ -11,7 +9,6 @@ from dominio.modelo.senales_interaccion import observar
 
 
 def analizar_conversacion(turnos, *, desde=None, hasta=None):
-    """Turnos completos de UN hilo, en orden; cada turno recibe como máximo un voto."""
     pendientes, decisiones, registros = {}, [], []
     for numero, turno in enumerate(turnos, 1):
         if turno.get("error") or turno.get("degradado") or not turno.get("mensaje", "").strip():
@@ -50,7 +47,6 @@ def analizar_conversacion(turnos, *, desde=None, hasta=None):
             "mensajes_completos": len(decisiones), "factores": _resumir(decisiones),
             "decisiones": decisiones, "instrumento_original": resumir_trazas(registros)}
 
-
 def _par_verificable(pendientes, intento):
     if intento is None:
         return {}
@@ -60,16 +56,14 @@ def _par_verificable(pendientes, intento):
             "misma": bool(anterior and veredicto == "invalida"
                           and "".join(propuesta.lower().split()) == anterior["propuesta"])}
 
-
 def _guardar_correccion(pendientes, intento, trazas, numero):
     if intento is None or intento[2] != "invalida":
         return
-    # Exige constancia de entrega; elegir una estrategia no prueba que se entregó.
+
     if _metadatos(trazas, "verificación simbólica").get("correccion_del_resultado_entregada") is True:
         pendientes["".join(intento[0].lower().split())] = {
             "propuesta": "".join(intento[1].lower().split()), "turno": numero,
         }
-
 
 def _resumir(decisiones):
     salida = []

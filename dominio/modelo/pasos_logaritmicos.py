@@ -1,8 +1,3 @@
-"""Anclar transformaciones con una función conocida sin reemplazar la tarea.
-
-Se conserva el alcance literal de la igualdad; la referencia y su dominio los
-calcula el adaptador CAS. Nunca se toma una expansión logarítmica como derivada final.
-"""
 import re
 
 from dominio.modelo.notacion_entrada import normalizar_escritura_matematica
@@ -30,7 +25,7 @@ def leer_paso_logaritmico(estado, mensaje):
         elif m := re.search(rf'{log}\s*=\s*(.+)', s):
             tipo, texto = 'log', re.split(r'(?:eso\s+queda|queda)\s+', m[1], flags=re.I)[-1]
         if tipo and texto:
-            # f en una propuesta sólo puede referirse a la función del hilo.
+
             texto = re.sub(rf'\b{n}(?:\({argumento}\))?(?![a-zA-Z])', '(' + actual['ejercicio']['expresion'] + ')', texto)
             partes = [leer_propuesta(p, variable) for p in texto.split('=')]
             if 1 <= len(partes) <= 8 and all(partes):
@@ -38,14 +33,12 @@ def leer_paso_logaritmico(estado, mensaje):
                 estado.update(acto='paso_usuario', propuesta=propuesta, aclaracion='', alcance='parcial',
                               paso_usuario=dict(transformacion=tipo, tarea_id=estado['activa'], transiciones=partes[:-1]))
                 return True
-        # Mencionar f'/f o ln f en una discusión no abre otra tarea ni afirma un resultado.
+
         estado.update(acto='dialogar', propuesta='', aclaracion='')
         return True
     return False
 
-
 def _ultimo_termino(estado, mensaje, variable):
-    """Referir el término escrito de una expansión ya comprobada, nunca inventarlo."""
     from dominio.modelo.respuesta_en_contexto import leer_propuesta
 
     marca = re.search(r'\bel\s+[uú]ltimo(?:\s+t[eé]rmino)?\s*(?:[.,…:]+|(?:me\s+)?da\s+|queda\s+|es\s+)(.+)',

@@ -1,4 +1,4 @@
-<!-- Panel derecho de la biblioteca: ficha seleccionada o invitación inicial. -->
+
 <script>
   import DetalleDeConcepto from './DetalleDeConcepto.svelte';
   import { temaDeConcepto } from '../../nucleo/lectura/conceptos.js';

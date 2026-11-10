@@ -1,5 +1,3 @@
-"""Graficadora de consulta para cualquier rol con sesión autenticada."""
-
 from __future__ import annotations
 
 from fastapi import APIRouter, Request

@@ -1,4 +1,3 @@
-/** Periodo con extremos en la zona declarada; conserva horas y fin excluido. */
 export function describirPeriodo(periodo) {
   if (!periodo?.desde || !periodo?.hasta) return 'Periodo no disponible';
   const zona = periodo.zona_horaria || 'America/Bogota';

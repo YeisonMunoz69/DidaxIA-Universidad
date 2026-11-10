@@ -1,10 +1,3 @@
-"""Hechos mínimos de consumo de IA y cálculo reproducible de su estimación.
-
-No es un KPI educativo. Es un módulo financiero-operativo: las tarifas y la
-TRM son datos externos versionados, mientras que los 51 KPI describen señales
-de adopción, aprendizaje, recuperación, supervisión, conducta e institución.
-"""
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -16,7 +9,6 @@ from uuid import UUID
 
 @dataclass(frozen=True)
 class RegistroConsumoIA:
-    """Una llamada real, sin prompt, respuesta, llave ni sujeto personal."""
 
     llamada: UUID
     instante_utc: datetime
@@ -56,13 +48,10 @@ class RegistroConsumoIA:
     def medido(self) -> bool:
         return self.entrada_total is not None and self.salida is not None
 
-
 @runtime_checkable
 class RegistradorConsumoIA(Protocol):
     def registrar(self, registro: RegistroConsumoIA) -> bool:
-        """Inserta una sola vez. ``False`` significa duplicado idempotente."""
         ...
-
 
 @dataclass(frozen=True)
 class TarifaIA:
@@ -86,9 +75,7 @@ class TarifaIA:
             and (self.vigente_hasta is None or instante < self.vigente_hasta)
         )
 
-
 def franja_tarifaria_deepseek(instante: datetime) -> str:
-    """Franja oficial UTC; no describe las horas de mayor uso de DidaxIA."""
     utc = instante.astimezone(UTC)
     if utc.weekday() >= 5:
         return "fuera_pico"
@@ -97,11 +84,10 @@ def franja_tarifaria_deepseek(instante: datetime) -> str:
         return "pico"
     return "fuera_pico"
 
-
 def costo_estimado_usd(
     registro: RegistroConsumoIA, tarifa: TarifaIA | None
 ) -> Decimal | None:
-    """Estimación por llamada; nunca se presenta como cargo de facturación."""
+
     if registro.local:
         return Decimal("0")
     if tarifa is None:

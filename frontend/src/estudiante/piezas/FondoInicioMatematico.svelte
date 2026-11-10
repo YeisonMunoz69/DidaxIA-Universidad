@@ -1,4 +1,4 @@
-<!-- Ambiente matemático del estado vacío. Es decorativo y no intercepta gestos. -->
+
 <div class="ambiente" aria-hidden="true">
   <div class="halo halo-a"></div>
   <div class="halo halo-b"></div>

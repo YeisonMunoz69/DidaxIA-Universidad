@@ -1,5 +1,3 @@
-"""Informe determinista del corte institucional de auditoría."""
-
 from __future__ import annotations
 
 from io import BytesIO
@@ -23,7 +21,6 @@ def _pie(canvas, doc) -> None:
     canvas.drawRightString(A4[0] - 1.7 * cm, 1.05 * cm, f"Página {doc.page}")
     canvas.restoreState()
 
-
 def _persona(detalle: dict | None) -> str:
     detalle = detalle or {}
     identidad = detalle.get("etiqueta") or detalle.get("nombre") or detalle.get("identificador")
@@ -40,9 +37,7 @@ def _persona(detalle: dict | None) -> str:
         partes.append(ubicacion)
     return " · ".join(str(parte) for parte in partes if parte)
 
-
 def generar_informe_auditoria(datos: dict) -> bytes:
-    """Genera el corte explícito; nunca consulta el reloj ni la base."""
     estilos, _, _ = _estilos()
     memoria = BytesIO()
     documento = BaseDocTemplate(

@@ -1,6 +1,3 @@
--- Reportes de problemas aportados por usuarios durante el piloto.
--- El texto y la captura son datos privados; ninguna vista pública los sirve.
-
 CREATE TABLE IF NOT EXISTS reporte_usuario (
     id                  bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     reportado_por       text NOT NULL REFERENCES persona(sujeto_google) ON DELETE CASCADE,
@@ -38,10 +35,6 @@ CREATE TABLE IF NOT EXISTS reporte_usuario (
 
 CREATE INDEX IF NOT EXISTS reporte_usuario_por_estado
     ON reporte_usuario (estado, creado_en DESC, id DESC);
+
 CREATE INDEX IF NOT EXISTS reporte_usuario_por_reportante
     ON reporte_usuario (reportado_por, creado_en DESC, id DESC);
-
-COMMENT ON TABLE reporte_usuario IS
-    'Incidencias privadas del piloto; captura normalizada sin metadatos y acceso autenticado.';
-COMMENT ON COLUMN reporte_usuario.captura IS
-    'Captura WebP re-codificada; nunca se sirve desde una ruta pública.';

@@ -1,4 +1,3 @@
-"""Biblioteca del investigador, lectura docente y bandeja del estudiante."""
 from __future__ import annotations
 
 import json

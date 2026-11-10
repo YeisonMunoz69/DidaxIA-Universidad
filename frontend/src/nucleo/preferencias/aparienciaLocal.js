@@ -1,6 +1,3 @@
-/** Última apariencia confirmada de este navegador; sin identidad ni datos de sesión.
- * La portada utiliza otra clave y no importa este módulo.
- */
 import { normalizarColores } from './colores.js';
 
 const CLAVE='didaxia.aplicacion.apariencia.v1';
@@ -15,5 +12,5 @@ export function leerAparienciaLocal() {
 }
 export function recordarAparienciaLocal(datos) {
   try { globalThis.localStorage?.setItem(CLAVE,JSON.stringify(normalizar(datos))); }
-  catch { /* El almacenamiento bloqueado no impide aplicar ni guardar en la cuenta. */ }
+  catch {  }
 }

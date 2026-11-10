@@ -1,29 +1,22 @@
-﻿ruta,función,origen,bytes,sha256
-contenido/conceptos/LEEME.md,Ficha de concepto y mapa,versionado,5961,9ae1eac63a230042508a169cfdad155302e76701c81de5bc49de931dacf88210
-contenido/conceptos/MAPA-M01-M24.md,Ficha de concepto y mapa,versionado,22994,aeb3e9fc5a6cd0c7f4dc1524de8088d6131fdbad6aa952c47f823a32f01ca596
-contenido/conceptos/c-composicion-de-funciones.md,Ficha de concepto y mapa,versionado,3584,fcd48cb3180c4a322b16c2d0190ca9f03e7e08277e4a0e7e0c1480557fdb1671
-contenido/conceptos/c-diferencia-de-potencias.md,Ficha de concepto y mapa,versionado,3658,617e19d2839fbcd208c162835cc6c22a975cc702f95571d8e061873aa3719819
-contenido/conceptos/c-identidades-trigonometricas.md,Ficha de concepto y mapa,versionado,3856,ea36f98985177a9e29030f5a045b7042091c94954f1eb753965d62759c7e943f
-contenido/conceptos/c-m06.md,Ficha de concepto y mapa,versionado,4557,0b9bfcb3cdaf0fcc51fc0993c3b70a70fbc6393b9dfee93bdd1ebf0997a0806e
-contenido/conceptos/c-m09.md,Ficha de concepto y mapa,versionado,4525,4c5fa5bd77c95aad40ac4e0b15c7839339a39694af9e9d1be9ff661d3f9aabde
-contenido/conceptos/c-m10.md,Ficha de concepto y mapa,versionado,4723,32c2d724ac1e2a9c8eca7b786bd39d6926c7276844d8bcbc00312ce49268d6c4
-contenido/conceptos/c-m11.md,Ficha de concepto y mapa,versionado,4818,521da196d4a3a49f7f6c6f1b64277e1d2a4e431b5f4b328ab40dd26606df0930
-contenido/conceptos/c-m12.md,Ficha de concepto y mapa,versionado,4739,eaecdbd63e27f825e8f8bb0f309ccb1601e0fe6a5a31e7d270108c87ebed1922
-contenido/conceptos/c-m14.md,Ficha de concepto y mapa,versionado,4573,ddccd13630346d6e25d6dc33da5f7630447c14fa6b8842e94c83367db24ddf41
-contenido/conceptos/c-m16.md,Ficha de concepto y mapa,versionado,4584,d1d320f3add373d1288838384b05718b55ee9deb20207b84ecbdc1df07792198
-contenido/conceptos/c-m18.md,Ficha de concepto y mapa,versionado,4596,28150f15cb0cc50cba9a6c1ef87d05b4e6ea05ca8085fdde6ad32b3bed36baea
-contenido/conceptos/c-m21.md,Ficha de concepto y mapa,versionado,3046,1ff58d4e39f9eb1d0e14335441a9be25d251f5e32c1eaf529d12e66bc681df19
-contenido/conceptos/c-m22.md,Ficha de concepto y mapa,versionado,3362,0100978e9ffe7311bd831dd6ecbe5f0301f4bc6335a054db92e192c1b085406f
-contenido/conceptos/c-m23.md,Ficha de concepto y mapa,versionado,3363,7d139b5e7222b3c2b30f1435bd8b609cce6d82245df82af08e4e313ac89bb9b2
-contenido/conceptos/c-n05-derivadas-basicas.md,Ficha de concepto y mapa,versionado,3919,7c59d41cb022e881b077dff69d8f7ae66626a2d0686ef20a4e918035e76d1fad
-contenido/conceptos/c-pendiente-como-derivada.md,Ficha de concepto y mapa,versionado,3704,ad48f7b573ec499c3eec3552de0a16a8f9284660ab252b02d7018f342ef77ba1
-contenido/conceptos/c-razon-y-proporcion.md,Ficha de concepto y mapa,versionado,3654,edac1b74bff64b4d6a4dd984d235900ef6b5fb39d89498e51d9e855564322ca2
-contenido/conceptos/c-variable-de-derivacion.md,Ficha de concepto y mapa,versionado,3529,0173753cdd3567f927f42be4749f7630aca9078c143c16abdfe47a979873b3b8
-contenido/corpus/ESTRATEGIA-DE-EXTRACCION.md,Documentación de extracción y formato,versionado,22627,28d5efe3a0a2a88d8aaf4153ddb214067e5c4d5cb301e352aefd6961eef1c85e
-contenido/corpus/FORMATO-DEL-CORPUS.md,Documentación de extracción y formato,versionado,25175,26cec191292432a8efb3d0e563ec874dd7959a1bb3ce0035a1ff1edf75037d34
-contenido/corpus/FUENTES.md,"Catálogo de obras, permisos y claves de ingesta",versionado,29728,bec52806fa658ae0ed1dea02589e0f3177c4c0ec418f22263cbb27bb490330ce
-contenido/corpus/LEEME.md,Documentación de extracción y formato,versionado,10779,9ca4bc2778c536b506d01423e7ee8f25c168399422b84b981d352a849f953261
-contenido/corpus/PARTES.md,Catálogo de partes para la biblioteca,versionado,8689,64cc1303fffaa6a7c2b5326e9cb3e0eaf45925a9f79592b33003ea7b49463bcb
+ruta,función,origen,bytes,sha256
+contenido/conceptos/c-composicion-de-funciones.md,Ficha de concepto y mapa,versionado,2062,3a17c0378788022e0c06d7e365074fbee74b007077679330661715f537997180
+contenido/conceptos/c-diferencia-de-potencias.md,Ficha de concepto y mapa,versionado,1997,f28e427a516b6e011acc44063ee4821950d2a850dd8659ac52e9960b33ef4f9b
+contenido/conceptos/c-identidades-trigonometricas.md,Ficha de concepto y mapa,versionado,2162,20d663ce502794e2efb493615386d8b922ecb0b4753b72d54179b18459647c54
+contenido/conceptos/c-m06.md,Ficha de concepto y mapa,versionado,2666,73d00ca44d650d44fe7f59b7c57cc7f436b3c418fcd227ffc761b1322e66ac03
+contenido/conceptos/c-m09.md,Ficha de concepto y mapa,versionado,2673,bbfc93c2ebdb335eea563dc76f69f665757c46895065602a697cf2136bd133c9
+contenido/conceptos/c-m10.md,Ficha de concepto y mapa,versionado,2925,2872977c7b884aabf5021bb9004d0acc88e60ad9b2cfd6142d6869902cc9dc31
+contenido/conceptos/c-m11.md,Ficha de concepto y mapa,versionado,2997,5beae241904fff6327a2702b20593a65515a1848f3d22eebd667dc70d8db961b
+contenido/conceptos/c-m12.md,Ficha de concepto y mapa,versionado,2863,28c1efe6237cf088c4e537df03a7ecb3dce74bcce319cc64ad6005a0a4ba4e9d
+contenido/conceptos/c-m14.md,Ficha de concepto y mapa,versionado,2640,70e6d027f1698ee113e724625d2b7bdf329912b82b50ff7744efcfa52d49acaf
+contenido/conceptos/c-m16.md,Ficha de concepto y mapa,versionado,2788,059d252e20da2ca99cac319043366aacb17623f71cfdf6951c76860cc52aab3b
+contenido/conceptos/c-m18.md,Ficha de concepto y mapa,versionado,2555,4b2c149ee60a429de0f4eca1cf81660e60ed85b5a6d20399740d9cb61ffa7d9e
+contenido/conceptos/c-m21.md,Ficha de concepto y mapa,versionado,1683,32203ab0b2bc75245431d2ad98ccec3955a4a45e46e71f2597fdbbab0364a9d5
+contenido/conceptos/c-m22.md,Ficha de concepto y mapa,versionado,1875,df2da27b91808805cbc3a4950efa88a35abfb9b0296d3b5057e4b58fff3d75e8
+contenido/conceptos/c-m23.md,Ficha de concepto y mapa,versionado,1854,fe0c0a417c0d161229a8ba67036d6ba157c78ead2f7c06412372fa9ff5b00dc6
+contenido/conceptos/c-n05-derivadas-basicas.md,Ficha de concepto y mapa,versionado,2430,a32ee5641ca052d61d30a60bae2321d73886b9d959d14fd977f07037d60a2c5e
+contenido/conceptos/c-pendiente-como-derivada.md,Ficha de concepto y mapa,versionado,2124,4541eab2c1c6fda6a0f71582ccc6d6a58d54307d7406786933350ed85fc4ed77
+contenido/conceptos/c-razon-y-proporcion.md,Ficha de concepto y mapa,versionado,1973,24fa80405bf77c442861da669cacaa78969644fd4a47d05073b0d08e2d669dd9
+contenido/conceptos/c-variable-de-derivacion.md,Ficha de concepto y mapa,versionado,2004,52a2518e7c3ad1b06ec4238b475721d1e03a00a43f77255b95a68bc5d45c15ee
 contenido/corpus/_obras-md/LEI/1_1.md,Transcripción para lectura y procedencia,versionado,29500,a4c2957e732a230e62d4c8ced82c883ad701276c9b533b606d0f7b02ce3a5aa2
 contenido/corpus/_obras-md/LEI/1_10.md,Transcripción para lectura y procedencia,versionado,23030,b38ee7fc7e43acec34372e5e16ab4362c03ad3404e02be1ff221b6bbb8a55ca4
 contenido/corpus/_obras-md/LEI/1_2.md,Transcripción para lectura y procedencia,versionado,22901,e761fdb9901badc46eb1400c2a38c85e0407fd1243bcefa942692cd554955606
@@ -647,25 +640,25 @@ contenido/corpus/fragmentos/f-270.md,Fragmento y metadatos de ingesta,versionado
 contenido/corpus/fragmentos/f-271.md,Fragmento y metadatos de ingesta,versionado,902,c9526091f7b183580afe2ef03d1f04e59a0847dc4b1597c66231fc1c5bbd4e50
 contenido/corpus/fragmentos/f-272.md,Fragmento y metadatos de ingesta,versionado,979,54cf1fbfa11d762bc0f21097f133369b80332aca7e519564cde552072e426baa
 contenido/corpus/fragmentos/f-273.md,Fragmento y metadatos de ingesta,versionado,1126,030c0afafb7b0e241d0e00ed80c35c6723186bdf873e5fde0c93735b3daa45f1
-contenido/grafo/NODOS-CANDIDATOS.md,Grafo curricular y documentación,versionado,31998,3e3c85597a4fa05de59ba7e5890d201f74766255cc229ad48774a84068dbb4c8
+contenido/corpus/fuentes.json,Catálogo de biblioteca,versionado,1439,8e45a40211c4e58053b43d505c572726ee98a487229e43319aa0a807fe7ea864
+contenido/corpus/partes.json,Catálogo de biblioteca,versionado,23214,fc84430c2a4e9e685bf42f0758cea97ebeba1f9a749b823d9cc90a40cf585b60
 contenido/grafo/grafo.json,Grafo curricular y documentación,versionado,34043,a95fdd1eb7a443be749834dbe8712e37b868facb61ddaaa30e221e6b159d091e
-contenido/plantillas/LEEME.md,Plantilla pedagógica o su guía,versionado,8376,8c04294fc6d22be8b3aa6959ff5db934fca9041477a701b4c6f269b6f85a8632
-contenido/plantillas/p-autorregulacion.md,Plantilla pedagógica o su guía,versionado,3636,175b7b895838441ab09c1972dcf98826d4ed6bea75056b83c74eb7c813bc0785
-contenido/plantillas/p-retroalimentacion-autoconcepto.md,Plantilla pedagógica o su guía,versionado,4016,e6e7806af345c0d1c678641670e61aefdbaf48ac5d5fc637fe195d182e76a48c
-contenido/plantillas/p-scaffolding-kq1-kq5.md,Plantilla pedagógica o su guía,versionado,3923,195cf5320a0cf260b89f62132dd65657d0052eaad281a0a01d505fadd471246a
-contenido/plantillas/p-socratica-apos.md,Plantilla pedagógica o su guía,versionado,4620,bef2a0d260ab1e390cb63ce99221fae671fc78e4447df15a241a677be071168c
-contenido/plantillas/p-two-tier.md,Plantilla pedagógica o su guía,versionado,9729,898f31c3913b218f10b6e1643eae477cdba998a5dc905f7d41ba2b15fe44d31b
-contenido/plantillas/s-m06.md,Plantilla pedagógica o su guía,versionado,2949,fc81a3f29f55d77be9c4315444f027538250da40b647f06acaad6cb7de04b5e1
-contenido/plantillas/s-m09.md,Plantilla pedagógica o su guía,versionado,2766,385199377293a5663845568c673cf1e7f300b98ca43d9f0684e5d30ff1d0f6f4
-contenido/plantillas/s-m10.md,Plantilla pedagógica o su guía,versionado,2804,de84344adc570d56e2eae273aae8f39d027b08605b4e26b29dc9ac544fe91ec2
-contenido/plantillas/s-m11.md,Plantilla pedagógica o su guía,versionado,2622,c48d2e731ecabb2728e2a06259d2343066822eff27e2f4b58fb6cbe61f5e9202
-contenido/plantillas/s-m12.md,Plantilla pedagógica o su guía,versionado,2985,4d2ddb99185344267793d2474fee627720af67a0d1c379aa048df69b620fb928
-contenido/plantillas/s-m14.md,Plantilla pedagógica o su guía,versionado,2838,fab5add55d23bf1cd2a30c33c2709e8f0c3a82e75e81d749d6ef6cd0b640624e
-contenido/plantillas/s-m16.md,Plantilla pedagógica o su guía,versionado,2851,a3570933759b7fb2425024473c0d971874714aed3eff4727ac2ff608ae1dcf6f
-contenido/plantillas/s-m18.md,Plantilla pedagógica o su guía,versionado,2776,9d78210bcfd9b445673f9d621505a9c8ca2110c77810fda9481a74a2b9c6738a
-contenido/plantillas/s-m21.md,Plantilla pedagógica o su guía,versionado,3103,b0e6f2c3a993ab30d97ba10bad1a016131592ff4308a89f70818a4673cdd9857
-contenido/plantillas/s-m22.md,Plantilla pedagógica o su guía,versionado,2877,32fd2822360a5d139e069b542880f1effdf41be1b6cfe004861545e0d71237f3
-contenido/plantillas/s-m23.md,Plantilla pedagógica o su guía,versionado,3007,099a6b63173b7579897087172d0ee9a4761c8e6c20f1ffa9ade619e7cb0aa01f
+contenido/plantillas/p-autorregulacion.md,Plantilla pedagógica o su guía,versionado,1412,9a24fee5d17b1c93af7e14939dafd101df1ef5e74cd22c80e1523a805319fc4e
+contenido/plantillas/p-retroalimentacion-autoconcepto.md,Plantilla pedagógica o su guía,versionado,1804,51442d6cfba50cedb09e6083e9ab8030a6c11225f4a062c69cfa5ce09dd789a5
+contenido/plantillas/p-scaffolding-kq1-kq5.md,Plantilla pedagógica o su guía,versionado,809,4fbe5f10742de7944eaa35471c241897936b12d6a80952684f0377087e974c83
+contenido/plantillas/p-socratica-apos.md,Plantilla pedagógica o su guía,versionado,1066,2daa6cb740b836faff8551c1a73e19e23d0c3f56e70ab02afdfd6e02ec24cdbe
+contenido/plantillas/p-two-tier.md,Plantilla pedagógica o su guía,versionado,2883,1b94e72db931f86f566d6f493c78702cd756ddb09f2ac7334424806c8ac220de
+contenido/plantillas/s-m06.md,Plantilla pedagógica o su guía,versionado,732,c5d7df1f57161804c1a30e198575b27886c9575a09a3960cd21a5344995ace2b
+contenido/plantillas/s-m09.md,Plantilla pedagógica o su guía,versionado,611,f733d673de875fa9ab0c984998e1684e59bea1a281c1682267c3dc1ce35f3d84
+contenido/plantillas/s-m10.md,Plantilla pedagógica o su guía,versionado,572,1ca6f87d08d8a5c9df3a3da2361b8710d931aa322504cc98de817a25d627ca3f
+contenido/plantillas/s-m11.md,Plantilla pedagógica o su guía,versionado,618,ff0cdab1ec62f24e1c86f3d338045ff644097fa58c06df055276d6b5bba85198
+contenido/plantillas/s-m12.md,Plantilla pedagógica o su guía,versionado,1023,a5d8e2bd90ce7eedb7d5fc286b06683c200b64607eaf051e16534462faff8f8c
+contenido/plantillas/s-m14.md,Plantilla pedagógica o su guía,versionado,656,7da9de1ae738901325f8520df7d8c2bcf97a7d7f7c8b395c007776cf6d37d6a5
+contenido/plantillas/s-m16.md,Plantilla pedagógica o su guía,versionado,574,31aca47af8d8e77b72433526614aa514e469ab997a236a77b042b3b3e38a0197
+contenido/plantillas/s-m18.md,Plantilla pedagógica o su guía,versionado,511,5bf402e967c27d750fffff21d81b62d50189cc37ae2302474cc988683b2c425f
+contenido/plantillas/s-m21.md,Plantilla pedagógica o su guía,versionado,736,04a5ff9cdd98ab9c47400eeeb3f2cc931293d5c09a431e97e95bb0cc697c53a0
+contenido/plantillas/s-m22.md,Plantilla pedagógica o su guía,versionado,516,55fc952b05f3416d3a32aed71b34d3a945b611d59463dc936399236b06098419
+contenido/plantillas/s-m23.md,Plantilla pedagógica o su guía,versionado,697,776e9754afcdc223c839249e779e9eda564eed65f67a324c0d7aab7a70e77292
 contenido/recursos/base.json,Material didáctico o formulario base sin diligenciar,versionado,590266,6ad1a68b115d3f5bb1a698a8df1ca106fc4ecad57caf314b00e70de2a1e7d2ca
 contenido/recursos/encuesta-asistencia.json,Material didáctico o formulario base sin diligenciar,versionado,1339,134dc8f4194b753ec550425066ede0e07b5095f1e0698f36cdf0d8154b4d9d35
 contenido/recursos/encuesta-evaluacion-docente.json,Material didáctico o formulario base sin diligenciar,versionado,1030,fb4ed9c06064ab9885321693e5ad89aded32bdc3a60a00b8e0747a8dd9ba1798

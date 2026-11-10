@@ -1,5 +1,3 @@
-"""Transporte optativo que acota la lectura incluso si llegan fragmentos vacíos."""
-
 import time
 import urllib.error
 import urllib.request
@@ -23,7 +21,7 @@ class TransporteAcotado:
             with abrir_con_reintento_dns(peticion, self.tiempo) as respuesta:
                 return ResultadoHTTP(respuesta.status, self._leer(respuesta, limite))
         except urllib.error.HTTPError as exc:
-            # Acotar también los cuerpos de error; no revelar ni imprimir el cuerpo.
+
             try:
                 with exc:
                     return ResultadoHTTP(exc.code, self._leer(exc.fp, limite))
@@ -41,9 +39,7 @@ class TransporteAcotado:
             restante = limite - time.monotonic()
             if restante <= 0:
                 raise TimeoutError()
-            # HTTPResponse expone read1: devuelve el fragmento disponible en vez
-            # de esperar a reunir todo el cuerpo. Ajustar el socket por lectura
-            # evita que los espacios de keep-alive renueven el presupuesto.
+
             socket = getattr(getattr(respuesta.fp, "raw", None), "_sock", None)
             if socket is not None:
                 socket.settimeout(restante)

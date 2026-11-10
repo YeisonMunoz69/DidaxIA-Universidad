@@ -1,4 +1,4 @@
-<!-- Fase 8 · Superficie institucional de KPI reproducibles y auditados. -->
+
 <script>
   import CargadorCubo from '../../comun/base/CargadorCubo.svelte';
   import { menuDesplegable } from '../../comun/base/menuDesplegable.js';
@@ -167,8 +167,6 @@
     if (!consultaAplicada || filtrosPendientes) {
       throw new Error('Aplica primero los filtros para que el PDF coincida con el tablero.');
     }
-    // GET /kpi omite los controles vacíos. El PDF debe consultar exactamente
-    // el mismo alcance; enviar "" como filtro hace que ConsultaKPI lo rechace.
     const nombres = [
       'facultad', 'programa', 'docente', 'semestre', 'concepto',
       'version_corpus', 'version_modelo'

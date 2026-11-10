@@ -1,46 +1,13 @@
-/**
- * Quién hace DidaxIa, qué es y qué no es. **La única copia.**
- *
- * La marca, los autores, la relación con la institución y los límites del
- * tutor aparecen en la portada y en los tres documentos públicos. Escritos
- * cuatro veces, la cuarta copia habría dicho algo distinto de las otras tres
- * —y en un texto que habla de tratamiento de datos, «algo distinto» no es un
- * descuido de redacción.
- *
- * ⚠️ **LA MARCA SE ESCRIBE `DidaxIa`**, como fija `ESTADO-ACTUAL.md` §10.1, y
- * `MARCA` es la única copia de ese nombre en la superficie pública. La
- * aplicación venía escribiéndolo de otra forma en su pestaña, en el carril, en
- * la cabecera y en dos recorridos; se unificó en toda la interfaz y
- * `pruebas/contrato/marca.prueba.js` impide que reaparezca.
- *
- * Lo que NO se tocó son los nombres técnicos que no ve nadie: el archivo
- * `Didaxia.png` de `publico/`, la clave `didaxia` del juego de iconos, el
- * dominio `didaxia.pro` y las funciones `didaxia_*` del esquema. Renombrarlos
- * habría sido una sustitución ciega con riesgo real y sin ninguna ganancia.
- *
- * ⚠️ **NI ESCUDO NI LOGOTIPO DE UNIMAYOR.** §10.1 lo prohíbe sin autorización
- * expresa. La relación con la Institución se explica en texto y distingue la
- * firma física de las solicitudes del periodo de evaluación formativa.
- *
- */
 
-/** El nombre del proyecto, tal como `D0` §10.1 lo escribe. */
 export const MARCA = 'DidaxIa';
 
-/** Qué es, en una frase. Es la que abre la portada y la pestaña. */
 export const DESCRIPCION = 'Tutor de apoyo para el estudio del cálculo diferencial.';
 
-/**
- * Los dos autores, en el orden en que el proyecto los nombra.
- */
 export const AUTORES = Object.freeze([
   'Yeison Javier Muñoz Gómez',
   'Fabián Armando Hoyos Cerón'
 ]);
 
-/**
- * Autores con su perfil profesional de LinkedIn.
- */
 export const AUTORES_CON_LINKEDIN = Object.freeze([
   Object.freeze({
     nombre: 'Yeison Javier Muñoz Gómez',
@@ -70,22 +37,13 @@ export const AUTORES_CON_LINKEDIN = Object.freeze([
 
 export const MATERIALES_ESTUDIO = 'https://github.com/YeisonMunoz69/didaxia-research-artifacts/tree/v0.1.0';
 
-/** Cómo se nombra a la Institución. Sin escudo, sin logotipo y sin siglas solas. */
 export const INSTITUCION = 'Institución Universitaria Colegio Mayor del Cauca';
 
-/** El propósito, académico e investigativo, sin promesas de producto. */
 export const PROPOSITO = Object.freeze([
   'DidaxIa es un trabajo de grado que nace de una revisión sistemática de literatura sobre tutores inteligentes y tuvo una evaluación formativa voluntaria con estudiantes universitarios de cálculo diferencial.',
   'Su objetivo es acompañar el estudio: sostener una conversación sobre un ejercicio, nombrar la regla que interviene y mostrar de dónde sale lo que afirma. La evaluación describe uso y percepción; no demuestra un efecto causal sobre el aprendizaje.'
 ]);
 
-/**
- * Los límites. **Se enuncian antes de invitar a entrar, no en letra pequeña.**
- *
- * Es lo mismo que `AvisoPermanente.svelte` sostiene dentro del tutor: un
- * sistema automatizado tiene que ser reconocible como tal desde el primer
- * contacto.
- */
 export const LIMITES = Object.freeze([
   'No sustituye al docente. Lo que se acuerde en clase manda sobre lo que diga el tutor.',
   'No garantiza que toda respuesta sea correcta. Es un sistema y puede equivocarse, incluso cuando se explica con seguridad.',
@@ -93,30 +51,23 @@ export const LIMITES = Object.freeze([
   'No evalúa, no califica y no decide nada sobre la situación académica de nadie.'
 ]);
 
-/** Cómo se entra, en pocas palabras. El detalle vive en `/condiciones`. */
 export const ACCESO = Object.freeze([
   'Se entra únicamente con la cuenta institucional de correo. No hay acceso anónimo ni registro con una cuenta personal.',
   'El nombre y el correo los aporta el proveedor de identidad de la Institución; el tutor no los pide ni los edita.',
   'Antes de usar el tutor se confirman algunos datos del perfil y se decide sobre el tratamiento de la información.'
 ]);
 
-/**
- * El estado real del piloto, separado de las demostraciones ficticias de la
- * interfaz. Los resultados y sus denominadores se detallan en investigación.js.
- */
 export const ESTADO_DEL_PILOTO =
   'La evaluación formativa universitaria se realizó entre el 16 de septiembre y el 9 de ' +
   'octubre de 2026, con participación voluntaria. Sus resultados describen uso, satisfacción ' +
   'y autopercepción, y no establecen un efecto causal sobre el aprendizaje.';
 
-/** Relación académica del proyecto con la Institución. */
 export const RELACION_INSTITUCIONAL =
   `DidaxIa se desarrolla como trabajo de grado en la ${INSTITUCION} y su evaluación formativa ` +
   'se realizó con participación universitaria voluntaria. Las solicitudes institucionales ' +
   'del prototipo fueron firmadas físicamente el 27 de agosto de 2026; esa fecha es distinta ' +
   'del periodo de evaluación.';
 
-/** Vector SVG de la paleta con pincel para la selección de color de la portada. */
 export const ICONO_PALETA_PINCEL_SVG = `
   <g id="paleta">
     <path d="M 270 148 C 170 142 65 210 65 330 C 65 460 160 550 280 550 C 380 550 435 480 395 440 C 355 400 330 365 330 330 C 330 295 385 240 415 285 C 435 315 445 280 435 240 C 415 165 350 152 270 148 Z" fill="#edf6fc" stroke="#111116" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" />

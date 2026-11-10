@@ -1,5 +1,3 @@
-"""Contrato persistente de reportes de problemas aportados por usuarios."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -25,9 +23,8 @@ class Reporte:
     actualizado_en: datetime
     reportante: dict | None = None
 
-
 class PuertoReportes(Protocol):
-    def crear(  # noqa: PLR0913 -- contrato de los campos del formulario
+    def crear(
         self, *, actor: str, rol: str, categoria: str, titulo: str,
         descripcion: str, pasos: str, ruta: str, captura: bytes | None,
     ) -> Reporte: ...

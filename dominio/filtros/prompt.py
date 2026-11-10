@@ -1,49 +1,3 @@
-"""
-prompt.py — Filtro 7 · construcción del prompt
-==============================================
-
-`ADR-001` §6.3 lo sitúa en la **ruta caliente**: el prompt condiciona la
-respuesta del turno y no puede componerse en frío. Es el filtro que el puerto de
-generación da por hecho —`dominio/puertos/generacion.py` dice *«el texto del
-prompt lo construye el filtro 7 (…). Aquí solo se envía»*—, de modo que este
-filtro es el único sitio donde el contexto del turno se convierte en instrucción.
-
-Qué ensambla, y de dónde sale cada parte
-----------------------------------------
-- **El rol**, que en la fase 4 depende de **la estrategia** y no del nivel. Ver
-  abajo.
-- **Lo recuperado** (`ctx.recuperacion`), si es utilizable. En modo sin fuente
-  —`ADR-006` U3— **no se inyecta contexto**, y se deja dicho en el prompt en vez
-  de callarlo.
-- **La orientación del precómputo** (`ctx.precomputo`), y solo en su forma
-  truncada: `ADR-013` §7.3 lo llama la mitigación de `R-22` —el riesgo de que el
-  desarrollo se filtre al estudiante— y advierte que *«truncar es más fuerte que
-  instruir»*: aquí se hacen las dos.
-- **El repertorio del contenido**, cuando la estrategia lo lleva. Cuál toca lo
-  decide `dominio/pedagogia/andamiaje.py`.
-- **Los modificadores**, que dicen **cómo** se responde sin cambiar **qué**.
-- **La frase visible**, cuando la estrategia cambió (política G).
-
-🔴 El rol lo fija la estrategia · fase 4
--------------------------------------------
-Hasta aquí había dos roles —el socrático y el de corrección de `D-20`— y el
-nivel de divulgación elegía entre ellos. La primera línea del prompt decía *«no
-resuelves el ejercicio por él»* en todos los turnos que no fueran nivel 3,
-incluidos aquellos en los que el estudiante había pedido **explícitamente** una
-explicación.
-
-Ahora hay una instrucción por estrategia. No es cosmética: `PM-B06` midió que
-una demostración concreta vence a una instrucción abstracta, y `D-20` volvió a
-verlo. Si el rol dice «pregunta» y la política decidió «explica», gana el rol.
-
-⚠️ **Corregido el 2026-08-12 · un docstring mintió durante dos días.** Decía
-que las secuencias socráticas *«viven en `contenido/plantillas/` (aún por
-escribir)»*. Estaban escritas desde el 2026-08-10 —dieciséis archivos,
-`PM-C14`— y **nadie las leía**. Se deja anotado porque es el modo de fallo más
-caro que ha tenido este proyecto: no un error que revienta, sino dos puntas
-construidas que nada unía.
-"""
-
 from __future__ import annotations
 
 import re
@@ -57,15 +11,10 @@ from dominio.pedagogia.andamiaje import Andamiaje, elegir
 from dominio.pedagogia.politica import DecisionPedagogica
 from dominio.puertos.plantillas import PuertoPlantillas
 
-#: Cuántas piezas del repertorio entran al prompt. Las plantillas traen de 5 a
-#: 15 y no todas aplican al mismo turno: son el repertorio, no un guion. Se
-#: acota para que no desplace al contexto recuperado ni a las reglas de formato.
+
 _TOPE_DE_PREGUNTAS = 6
 
-#: La parte del rol que **no cambia con la estrategia**, y no puede cambiar:
-#: quien verifica es el filtro 9 y corre después, así que ninguna estrategia
-#: —tampoco el desarrollo— autoriza a presentar un resultado como comprobado.
-#: `ERS-01` §6.4: ninguna decisión crítica se delega al generador.
+
 _COMUN = (
     "No presentes ningún resultado matemático como comprobado: el sistema lo "
     "verifica por separado, después de tu respuesta. No inventes fuentes ni "
@@ -73,8 +22,7 @@ _COMUN = (
     "al estudiante de tú."
 )
 
-#: 🔴 **Una instrucción por estrategia.** Es la traducción de `QUE_HACE` a una
-#: orden para el generador, y la primera línea del prompt en cada turno.
+
 _ROL_DE_LA_ESTRATEGIA = {
     E.RESPUESTA_FACTUAL_BREVE: (
         "Eres un tutor de cálculo diferencial. Contesta **en una o dos frases** "
@@ -140,17 +88,7 @@ _ROL_DE_LA_ESTRATEGIA = {
     ),
 }
 
-#: El contrato de `ADR-014` §5.1, pedido al modelo · `PM-B17`, 2026-08-10.
-#:
-#: **La regla que más cuesta y más vale es C1.** Que ninguna expresión
-#: matemática aparezca fuera de una referencia es lo que hace detectable lo no
-#: declarado; sin ella el contrato entero es decorativo.
-#:
-#: ⚠️ **EL NIVEL SE LE DA, NO SE LE PREGUNTA.** `ADR-014` §5.1 es explícito: el
-#: nivel de divulgación es *«el que el arbitraje fijó **antes** de generar; el
-#: generador lo recibe, no lo decide»*. La primera versión de esta plantilla
-#: —2026-08-10— dejaba elegir al modelo, y la primera medición lo destapó: **las
-#: doce respuestas salieron en nivel 1**.
+
 _FORMATO = (
     "FORMATO DE LA RESPUESTA. Devuelve únicamente un objeto JSON con esta forma "
     "y sin texto alrededor:\n"
@@ -177,9 +115,7 @@ _FORMATO = (
     "nombrar una expresión, ponla en «citadas» y cítala** — para eso está.\n"
     "2. Toda referencia {{id}} que escribas debe existir en «afirmaciones», y "
     "toda afirmación que declares debe estar citada en la narración.\n"
-    # Los dos huecos se rellenan con `str.replace` y no con `str.format`: el
-    # propio texto lleva llaves —el JSON del ejemplo y la referencia `{{a1}}`—
-    # y `format` las interpretaría como campos suyos.
+
     "3. «nivel» vale exactamente NIVEL_PEDIDO, y no lo eliges tú: te lo damos.\n"
     "REGLA_DEL_NIVEL\n"
     "4. «izquierda» y «derecha» son expresiones matemáticas en notación "
@@ -191,13 +127,7 @@ _FORMATO = (
     "EJEMPLO\n"
 )
 
-#: ⚠️ TODOS LOS EJEMPLOS USAN LA REGLA DEL PRODUCTO A PROPÓSITO · `PM-B06`.
-#: Hasta el 2026-08-12 usaban `sen(x^2)`, que es la pregunta canónica del
-#: proyecto. Con el andamiaje conectado se midió y el modelo **devolvía la
-#: narración del ejemplo palabra por palabra**: ninguna instrucción compite con
-#: una demostración concreta.
-#:
-#: 🔴 **Y se inyecta UNO SOLO, el del nivel pedido** · `D-20`, 2026-08-13.
+
 _EJEMPLO_DE_NIVEL = {
     1: "Ejemplo de nivel 1, con una expresión citada:\n"
        '{"narracion": "En {{c1}} hay dos cosas multiplicándose. '
@@ -225,9 +155,7 @@ _EJEMPLO_DE_NIVEL = {
        '"citadas": [{"id": "c1", "expresion": "x*cos(x)"}], "nivel": 3}',
 }
 
-#: De dónde tiene que salir la pregunta, y si tiene que haberla. Tres estados
-#: desde `D-20`; en la fase 4 los decide **la estrategia** en vez del nivel,
-#: que es la misma corrección aplicada a su causa.
+
 _CON_ANDAMIAJE = "con-andamiaje"
 _SIN_ANDAMIAJE = "sin-andamiaje"
 _SIN_PREGUNTA = "sin-pregunta"
@@ -243,16 +171,7 @@ _DE_DONDE_SALE_LA_PREGUNTA = {
                    "estudiante trajo y no sobre la del ejemplo.",
 }
 
-#: `DEC-R3` · el ALCANCE, que es lo que el nivel por sí solo no dice.
-#:
-#: El nivel dice **cuánto** se puede revelar; el alcance dice **de qué**. Una
-#: petición explícita de teoría o de ejemplo abre el nivel 2, y abrirlo sin
-#: decir sobre qué autorizaría al generador a resolver el ejercicio que el
-#: estudiante tiene delante — que es exactamente lo que `DEC-R3` no concede.
-#:
-#: Sólo se escribe para el alcance análogo: en el del ejercicio activo no hay
-#: nada que restringir más allá de lo que el nivel ya fija, y añadir una
-#: prohibición que no aplica enseñaría al modelo a desobedecerla.
+
 _ALCANCE_ANALOGO_EN_EL_PROMPT = (
     "ALCANCE DE LO QUE PUEDES REVELAR\n"
     "El estudiante ha pedido que se le explique o que se le ponga un ejemplo, y "
@@ -266,9 +185,7 @@ _ALCANCE_ANALOGO_EN_EL_PROMPT = (
     "resuelve."
 )
 
-#: Las estrategias en las que el turno **no se cierra con una pregunta**. Es la
-#: lista que hace falsa la frase «socrática por defecto»: todo lo que no está
-#: en `ESTRATEGIAS_SOCRATICAS` ni es una aclaración, explica.
+
 _NO_PREGUNTAN = frozenset(
     {
         E.RESPUESTA_FACTUAL_BREVE,
@@ -280,8 +197,7 @@ _NO_PREGUNTAN = frozenset(
     }
 )
 
-#: Lo que se dice de cada nivel. Va aparte del formato porque **depende del
-#: turno**: el arbitraje fija el nivel y esta tabla lo traduce a la instrucción.
+
 _REGLA_DE_NIVEL = {
     1: "   El nivel 1 es de sondeo: **no lleva NINGUNA afirmación** y la lista "
        "va vacía. Es `ADR-014` C4 — en este nivel no se declara ningún "
@@ -307,15 +223,7 @@ def _necesidad_corrob(ctx):
     indicacion = indicaciones.get(ctx.necesidad_pedagogica, "")
     return "AYUDA SOLICITADA CORROBORADA (no es un diagnóstico): " + indicacion if indicacion else ""
 
-
 class FiltroPrompt(Filtro):
-    """Filtro 7 de `ADR-001` §6.3.
-
-    `plantillas` es opcional y por inyección, como cualquier puerto: sin él
-    —una prueba, un despliegue sin `contenido/`— el filtro sigue construyendo
-    el prompt con su andamio genérico. Que la pedagogía falte degrada la
-    respuesta; no rompe el turno.
-    """
 
     nombre = "construcción del prompt"
     ruta = "caliente"
@@ -331,10 +239,7 @@ class FiltroPrompt(Filtro):
 
         frase = decision.frase_visible
         if frase:
-            # Política G · lo que el estudiante puede ver es **qué** va a hacer
-            # el tutor. Nunca por qué: ninguna señal, puntuación ni umbral
-            # cruza a la respuesta, y no puede cruzar porque la frase la elige
-            # una tabla indexada por estrategia.
+
             partes.append(
                 "ABRE TU RESPUESTA con esta idea, dicha con tus palabras y en una "
                 f"sola frase: «{frase}»"
@@ -421,17 +326,11 @@ class FiltroPrompt(Filtro):
             "invitación a verlo en el siguiente turno."
         )
 
-        # `DEC-R3` · el alcance va junto al mensaje y no al final: lo que
-        # restringe es qué ejercicio se resuelve, y el modelo tiene que leerlo
-        # con el ejercicio delante.
         if ctx.alcance_divulgacion == ALCANCE_ANALOGO:
             partes.append(_ALCANCE_ANALOGO_EN_EL_PROMPT)
 
         partes.append("MENSAJE DEL ESTUDIANTE:\n" + ctx.texto_estudiante.strip())
 
-        # El formato va AL FINAL y no junto al rol, a propósito: es lo último
-        # que el modelo lee antes de responder, y las instrucciones de forma se
-        # sostienen mejor ahí que a 2 000 caracteres de distancia.
         nivel = ctx.nivel_divulgacion
         hay_repertorio = andamiaje.principal is not None and andamiaje.principal.utilizable
         if estrategia in _NO_PREGUNTAN:
@@ -456,15 +355,11 @@ class FiltroPrompt(Filtro):
             "sin_fuente": sin_fuente,
             "nivel_divulgacion": ctx.nivel_divulgacion,
             "alcance_divulgacion": ctx.alcance_divulgacion,
-            # Si el movimiento de ESTE turno es preguntar. Se deriva de la
-            # estrategia y no de si hay repertorio: una práctica guiada sin
-            # repertorio no pregunta, sostiene el paso. Es la lectura operativa
-            # de «socrática no es universal», y por eso se registra.
+
             "pide_preguntar": estrategia in E.ESTRATEGIAS_SOCRATICAS
             or estrategia == E.ACLARACION_BREVE,
             "orientacion_de_la_pregunta": de_donde,
-            # `RF-REG-06` pide poder reconstruir la decisión pedagógica, no
-            # solo su resultado: el filtro 12 se lleva esto al registro.
+
             "andamiaje": andamiaje.principal.clave if andamiaje.principal else "",
             "andamiaje_motivo": andamiaje.motivo,
             "andamiaje_concepcion": andamiaje.concepcion,
@@ -473,7 +368,6 @@ class FiltroPrompt(Filtro):
             "frase_visible": frase,
         }
         return replace(ctx, prompt=prompt), meta
-
 
 def _peticiones_cotidianas(ctx: ContextoTurno) -> list[str]:
     texto = ctx.texto_estudiante.lower()
@@ -491,20 +385,11 @@ def _peticiones_cotidianas(ctx: ContextoTurno) -> list[str]:
         indicaciones.append("CONTINUACIÓN PEDIDA: aporta un primer paso concreto y explica por qué sirve. No exijas responder una pregunta antes de ayudar. Puedes cerrar con una sola pregunta de continuación si no pidió menos preguntas.")
     return indicaciones
 
-
 def _rol(estrategia: str) -> str:
-    """La primera línea del prompt: qué clase de tutor es en ESTE turno."""
     cabecera = _ROL_DE_LA_ESTRATEGIA.get(estrategia, _ROL_DE_LA_ESTRATEGIA[E.ACLARACION_BREVE])
     return cabecera + "\n" + _COMUN
 
-
 def _contexto(ctx: ContextoTurno) -> tuple[str, int, bool]:
-    """La sección de contexto, cuántos fragmentos lleva y si operó sin fuente.
-
-    Devuelve una nota explícita en modo sin fuente, y no una cadena vacía a
-    secas: callar que no hay material sería perder la señal que `ADR-006` U3
-    encadena.
-    """
     recuperacion = ctx.recuperacion
     sin_fuente = bool(recuperacion.sin_fuente) if recuperacion is not None else False
 
@@ -521,19 +406,7 @@ def _contexto(ctx: ContextoTurno) -> tuple[str, int, bool]:
         lineas.append(f.texto.strip())
     return "\n".join(lineas), len(recuperacion.fragmentos), sin_fuente
 
-
 def _andamiaje(andamiaje: Andamiaje) -> str:
-    """El contenido de `PM-C14` elegido, como instrucción para el generador.
-
-    Se inyectan **preguntas**, nunca correcciones — ver
-    `dominio/pedagogia/andamiaje.py` sobre por qué esa distinción es lo que
-    mantiene honesta la lectura probabilística del motor simbólico.
-
-    Las `‹RANURAS›` viajan tal cual y con instrucción de qué son: sin ella el
-    modelo escribiría literalmente «Mira esta parte: ‹TROZO›», que es el modo
-    de fallo evidente de inyectar plantillas parametrizadas sin decir que lo
-    están.
-    """
     if not andamiaje.utilizable:
         return ""
 
@@ -569,15 +442,7 @@ def _andamiaje(andamiaje: Andamiaje) -> str:
     )
     return "\n".join(lineas)
 
-
 def _modificadores(modificadores: tuple[str, ...]) -> str:
-    """Cómo se dice, sin cambiar qué se dice.
-
-    Es donde `nivel_intervencion` se vuelve visible en el prompt. Va **después**
-    del repertorio y **antes** del mensaje, en el mismo sitio y por el mismo
-    motivo: es lo que el modelo debe tener en la cabeza al leer lo que el
-    estudiante escribió.
-    """
     if not modificadores:
         return ""
     lineas = ["CÓMO LO DICES. No cambia qué respondes, sólo la forma:"]
@@ -589,26 +454,13 @@ def _modificadores(modificadores: tuple[str, ...]) -> str:
         return ""
     return "\n".join(lineas)
 
-
 def _procedencia(fragmento) -> str:
-    """`obra` y página, para que el generador pueda citar de dónde salió algo.
-
-    El rango se marca como tal —`p.201-204`— porque `DD-21` distingue la página
-    exacta de la aproximada, y una cita no puede tratar una estimación como si
-    fuera exacta.
-    """
     p = fragmento.procedencia
     if p.pagina_hasta is not None:
         return f"{p.obra} p.{p.pagina}-{p.pagina_hasta}"
     return f"{p.obra} p.{p.pagina}"
 
-
 def _orientacion(ctx: ContextoTurno) -> tuple[str, bool]:
-    """La orientación privada del precómputo, en su forma truncada (`R-22`).
-
-    Solo la regla crítica y las concepciones candidatas: nombrar la regla y
-    lo que conviene vigilar orienta al tutor **sin darle el resultado**.
-    """
     if ctx.precomputo is None or not ctx.precomputo.ok:
         return "", False
 
@@ -630,11 +482,9 @@ def _orientacion(ctx: ContextoTurno) -> tuple[str, bool]:
     )
     return cabecera + "\n" + "\n".join(lineas), True
 
-
 def _orientacion_del_intento(ctx: ContextoTurno) -> str:
-    """Instrucción específica para un acierto final o una transformación."""
     if ctx.retroalimentacion_del_intento is not None:
-        import json  # noqa: PLC0415
+        import json
 
         base = ctx.retroalimentacion_del_intento
         objeto = {"narracion": base.narracion, "nivel": 2,
@@ -679,9 +529,7 @@ def _orientacion_del_intento(ctx: ContextoTurno) -> str:
         )
     return ""
 
-
 def _historial(historial: tuple[dict, ...]) -> str:
-    """Los turnos recientes de la conversación para no perder el contexto."""
     if not historial:
         return ""
     lineas = [

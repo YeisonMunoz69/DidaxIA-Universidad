@@ -1,29 +1,3 @@
-"""
-recuperacion.py — Dimensión C del catálogo v1.1: recuperación y calidad
-========================================================================
-
-Ocho indicadores. Seis salen de tablas y productores que existen —incluida la
-apertura de fuentes emitida por `Turno.svelte`—, uno espera un productor de
-interfaz distinto y uno espera una revisión humana.
-
-Qué significa «turno elegible» aquí
---------------------------------------------
-Un turno válido **cuya voz del sistema existe**: sin respuesta no hubo
-recuperación que medir. Un turno degradado sí es elegible y cuenta como turno
-sin material, porque el estudiante hizo la pregunta y el sistema no la pudo
-respaldar — esconderlo mejoraría la cifra por el peor motivo posible.
-
-Qué significa «bloque verificable»
--------------------------------------------
-Un bloque de tipo `notacion`. Es el único que el emisor puede sellar como
-`verificado` (`adaptadores/entrantes/http/turno.py::_bloques_desde_respuesta`):
-la prosa y las expresiones citadas salen siempre como `generado` porque, según
-`ADR-014` §5.4, una expresión suelta no puede ser verdadera ni falsa. Contarlas
-en el denominador haría que la tasa bajara al escribir más texto.
-
-
-"""
-
 from __future__ import annotations
 
 from dominio.kpi.contratos import DefinicionKPI, Dimension, Instrumentacion, Unidad

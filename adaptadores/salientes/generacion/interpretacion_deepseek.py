@@ -1,5 +1,3 @@
-"""Llamada semántica separada del generador, con plazo y salida acotados."""
-
 import json
 import os
 from dataclasses import replace
@@ -109,18 +107,15 @@ def _entrada_del_evaluador(entrada, factores_habilitados, solo_factores):
         contexto["catalogo"] = CATALOGO
     if factores_habilitados:
         contexto["rubrica"] = RUBRICA
-    # El turno actual queda separado y al final, después de todos los antecedentes.
+
     return {"contexto_previo": contexto, "mensaje_actual": entrada["mensaje"]}
 
-
 class FalloInterpretacion(ValueError):
-    """Código local seguro: nunca contiene mensajes ni cuerpos del proveedor."""
 
     def __init__(self, codigo, explicacion, *, detalle_codigo=None):
         super().__init__(explicacion)
         self.codigo = codigo
         self.detalle_codigo = detalle_codigo
-
 
 def _contenido_validado(respuesta):
     if respuesta.estado != 200:
@@ -142,7 +137,6 @@ def _contenido_validado(respuesta):
         raise
     except (ValueError, KeyError, IndexError, TypeError, AttributeError) as exc:
         raise FalloInterpretacion("salida_proveedor_invalida", "el proveedor no devolvió el JSON esperado") from exc
-
 
 class InterpretacionDeepSeek:
     def __init__(self, *, transporte=None, modelo="", tiempo_maximo_s=12, factores_conductuales=False, solo_factores=False):
@@ -202,14 +196,14 @@ pregunta pendiente; atiende esa intención sin borrar la actividad. El servidor 
             ],
         }
         respuesta = self.transporte.enviar(json.dumps(solicitud).encode())
-        # La validación produce sólo códigos y explicaciones locales seguros.
+
         contenido, modelo = _contenido_validado(respuesta)
         if solo_factores:
             try:
                 factores = validar_factores(contenido.get("factores"), entrada["mensaje"])
             except (ValueError, AttributeError) as exc:
                 raise FalloInterpretacion("salida_conductual_invalida", "lectura de factores no evaluable", detalle_codigo=CODIGOS_RECHAZO.get(str(exc), 'estructura_invalida')) from exc
-            # La relectura no genera intervenciones; estos campos no proceden del proveedor.
+
             return LecturaSemantica(
                 clase="ambigua", evidencia=entrada["mensaje"][:240],
                 motivo="Lectura histórica exclusiva de factores.", modelo=modelo or self.modelo,
@@ -223,11 +217,9 @@ pregunta pendiente; atiende esa intención sin borrar la actividad. El servidor 
             try:
                 lectura = replace(lectura, factores=validar_factores(contenido.get("factores"), entrada["mensaje"]))
             except ValueError as exc:
-                # Una rúbrica inválida no borra una intención válida ni se imputa como cero.
-                # Los mensajes del validador son constantes locales, sin contenido del proveedor.
+
                 lectura = replace(lectura, error_factores=f"salida_conductual_invalida: {exc}")
         return lectura
-
 
 def validar_lectura(datos: dict, mensaje: str, modelo: str = "") -> LecturaSemantica:
     if not isinstance(datos, dict) or datos.get("clase") not in CATALOGO:

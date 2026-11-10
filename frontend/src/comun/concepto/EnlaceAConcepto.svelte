@@ -1,29 +1,7 @@
-<!--
-DD-13 · El nombre de un concepto, pulsable.
 
-SI EL CLIENTE NO CONOCE EL IDENTIFICADOR, MUESTRA EL NOMBRE SIN ENLACE en
-lugar de ocultarlo. Que el banco vaya por detrás del generador es información
-útil, no un fallo que tapar: si un concepto se cita y no existe en el banco,
-alguien debería enterarse.
-
-No decide qué concepto es relevante. El servidor manda los que invocó.
-
-CÓMO SE SABE SI SE CONOCE. Por si trae `id`, y por nada más. El contrato §6.bis
-manda `id` y `nombre`; un concepto sin `id` es uno que el generador citó y el
-banco no tiene. Comprobarlo contra una lista local de identificadores sería
-mantener aquí una copia del banco, y `DD-13` puso el banco en `contenido/` para
-que no hubiera copias.
-
-
-Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
-Origen de esta pieza: OE3-Implementacion/09-Aportes-de-la-Consulta-Docente.md
-
--->
 <script>
   let {
-    /** { id, nombre } — contrato §6.bis */
     concepto,
-    /** Se invoca con el identificador cuando el concepto se puede abrir. */
     alAbrir = null
   } = $props();
 
@@ -82,6 +60,5 @@ Origen de esta pieza: OE3-Implementacion/09-Aportes-de-la-Consulta-Docente.md
     font-size: 13px;
   }
 
-  /* No se oculta: que el banco vaya por detrás es información, no un fallo. */
   .nota { font-size: 11px; color: var(--ink-tertiary); margin-top: 2px; }
 </style>

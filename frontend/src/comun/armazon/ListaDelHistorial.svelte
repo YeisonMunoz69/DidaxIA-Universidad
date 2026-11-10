@@ -1,4 +1,4 @@
-<!-- Lista desplazable y estados del historial; la acción de cada grupo es delegada. -->
+
 <script>
   import CargadorCubo from '../base/CargadorCubo.svelte';
   import { sesion } from '../../nucleo/sesion/sesion.svelte.js';
@@ -16,9 +16,6 @@
 
   function verHistorial(sesionId) {
     historial.ver(sesionId);
-    // `EQ-031` · con el espacio activo, por el mismo motivo que en
-    // `BotonNuevaConversacion.svelte`: abrir una charla del historial no puede
-    // sacar a un profesional del espacio Tutor donde la estaba leyendo.
     navegar(inicioDe(sesion.rol, espacio.activo));
     carrilAbierto = false;
   }

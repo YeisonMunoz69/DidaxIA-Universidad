@@ -1,4 +1,3 @@
-"""Tarea, objetivos y respuesta comparten una única revisión operativa."""
 import json
 import re
 from copy import deepcopy
@@ -35,7 +34,6 @@ def proyectar(ctx, estado):
                    limite_destino=activo.get("destino", "") if activo else "",
                    limite_variable=activo.get("variable", "x") if activo else "x")
 
-
 class FiltroContinuidadEntrada(Filtro):
     nombre = "carga de tarea conversacional"
     ruta = "caliente"
@@ -45,7 +43,6 @@ class FiltroContinuidadEntrada(Filtro):
         recuperar_materiales_emitidos(estado, ctx.historial_reciente)
         return proyectar(ctx, estado), {"version": estado["version"], "revision": estado["revision"],
                                        "tarea": estado["activa"], "acto": estado["acto"]}
-
 
 class FiltroContinuidadResolver(Filtro):
     nombre = "alineación de tarea y respuesta"
@@ -75,13 +72,7 @@ class FiltroContinuidadResolver(Filtro):
             "aclaracion": bool(estado.get("aclaracion")),
         }
 
-
 def _practica_contextual(estado, mensaje, voces):
-    """La práctica explícita hereda la operación de la invitación inmediata.
-
-    Una definición aislada sigue requiriendo operación. No se usa una mención
-    remota de derivadas para decidir qué significa cualquier función nueva.
-    """
     if (estado.get('acto') != 'definir' or not voces
             or not re.search(r'\bpracticar\b', mensaje, re.I)
             or re.search(r'\bl[ií]mite|\bevalua|\bintegr', mensaje, re.I)):
@@ -91,8 +82,7 @@ def _practica_contextual(estado, mensaje, voces):
     peticion = anterior.get('estudiante', '')
     invita_a_derivar = re.search(r'\bderiv\w*\b', invitacion, re.I)
     if not invita_a_derivar and re.search(r'\bregla\s+de\s+la\s+potencia\b', invitacion, re.I):
-        # «Identifica el exponente» también es una invitación a derivar si
-        # procede del ejemplo inmediatamente anterior de derivación.
+
         previo = voces[-2] if len(voces) > 1 else {}
         invita_a_derivar = re.search(r'\bderiv\w*\b',
             previo.get('estudiante', '') + ' ' + previo.get('tutor', ''), re.I)
@@ -109,7 +99,6 @@ def _practica_contextual(estado, mensaje, voces):
                         variable=funcion['variable'], referencia=f"{nombre}:{funcion['revision']}"), mensaje, nombre)
     estado.update(acto='iniciar', aclaracion='')
     return estado
-
 
 class FiltroContinuidadObjetivo(Filtro):
     nombre = "selección del objetivo conversacional"
@@ -137,7 +126,7 @@ class FiltroContinuidadObjetivo(Filtro):
         objetivo = next((p for p in planes if p["id"] not in tarea["pasos_resueltos"]), None)
         if objetivo:
             objetivo = {**objetivo, "tarea_id": tarea["id"]}
-        # Consultas conceptuales o preferencias de explicación no se convierten en un examen.
+
         preguntar = (estado["acto"] in ("iniciar", "responder", "retomar")
                      and not (ctx.intencion_detalle and ctx.intencion_detalle.pide_menos_preguntas)
                      and ctx.necesidad_pedagogica not in ("resumir", "explicar_razon", "ver_grafica"))
@@ -147,7 +136,6 @@ class FiltroContinuidadObjetivo(Filtro):
             "tarea": estado["activa"], "objetivo": objetivo["id"] if objetivo else "",
             "pregunta": bool(objetivo and preguntar),
         }
-
 
 class FiltroContinuidadPrompt(Filtro):
     nombre = "contrato conversacional del generador"
@@ -217,9 +205,7 @@ class FiltroContinuidadPrompt(Filtro):
         mensajes.append({"role": "user", "content": ctx.texto_estudiante})
         return replace(ctx, prompt=seccion + ctx.prompt, mensajes_generacion=tuple(mensajes)), {"tarea": estado["activa"], "version": estado["version"]}
 
-
 def _con_pregunta(ctx, respuesta, objetivo, cas):
-    # Matemática citada incompatible no puede respaldar una explicación de otra tarea.
     compatible = respuesta is not None
     if respuesta and not ctx.retroalimentacion_del_intento:
         permitidas = [ctx.ejercicio_activo["expresion"], objetivo["expresion"],
@@ -231,7 +217,7 @@ def _con_pregunta(ctx, respuesta, objetivo, cas):
             compatible = False
     if not compatible:
         respuesta = RespuestaGenerada(narracion="Continuemos con la tarea que estamos trabajando.", nivel_divulgacion=1)
-    # El generador no es quien decide ni persiste la siguiente pregunta.
+
     narracion = re.sub(r"¿[^?]*\?", "", respuesta.narracion).strip()
     narracion = re.sub(r"[^.!?]*\?", "", narracion).strip()
     identificador = "c_objetivo_activo"
@@ -246,12 +232,11 @@ def _con_pregunta(ctx, respuesta, objetivo, cas):
             ExpresionCitada(identificador, objetivo["expresion"]),
         )
     narracion += " " + pregunta
-    # Retirar citas que pertenecían a una pregunta descartada.
+
     citadas = tuple(c for c in citadas if "{{" + c.identificador + "}}" in narracion)
     afirmaciones = tuple(a for a in respuesta.afirmaciones if "{{" + a.identificador + "}}" in narracion)
     respuesta = replace(respuesta, narracion=narracion, citadas=citadas, afirmaciones=afirmaciones)
     return respuesta
-
 
 def _con_lectura_explicita(respuesta, estado):
     if estado.get('aclaracion'):
@@ -263,7 +248,6 @@ def _con_lectura_explicita(respuesta, estado):
             respuesta = replace(respuesta, narracion=prefijo + respuesta.narracion,
                 citadas=respuesta.citadas + (ExpresionCitada(identificador, estado[clave]),))
     return respuesta
-
 
 class FiltroContinuidadSalida(Filtro):
     nombre = "validación de continuidad y progreso"
@@ -290,9 +274,7 @@ class FiltroContinuidadSalida(Filtro):
         if respuesta is None or not respuesta.narracion.strip():
             respuesta = _orientacion_sin_respuesta(ctx)
         respuesta = _con_lectura_explicita(respuesta, estado)
-        # La poda previa puede conservar prosa que aún incumple C1, por ejemplo
-        # un número junto a la conjunción «y». No abortar ni borrar la tarea por
-        # una explicación defectuosa; reemplazarla sin emitir matemática suelta.
+
         problemas = respuesta.problemas()
         if problemas:
             respuesta = _recuperar_contrato(ctx, self.cas)
@@ -310,9 +292,7 @@ class FiltroContinuidadSalida(Filtro):
             "respaldo_contrato": bool(problemas), "motivos_respaldo": problemas,
         }
 
-
 def _orientacion_sin_respuesta(ctx):
-    """Una poda de matemática insegura no debe dejar al estudiante sin respuesta."""
     texto = ctx.texto_estudiante.lower()
     if (ctx.continuidad or {}).get('acto') == 'dialogar' and ('ln' in texto or 'logaritmo' in texto):
         narracion = ('Podemos continuar con derivación logarítmica manteniendo la función original. '
@@ -326,7 +306,6 @@ def _orientacion_sin_respuesta(ctx):
     else:
         narracion = 'Necesito el enunciado y la operación que quieres trabajar para ayudarte con precisión.'
     return RespuestaGenerada(narracion=narracion, nivel_divulgacion=1)
-
 
 def _recuperar_contrato(ctx, cas):
     if ctx.resultado_verificado:

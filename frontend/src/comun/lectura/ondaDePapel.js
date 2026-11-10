@@ -1,4 +1,3 @@
-/** Una hoja flexible con una sola textura; CSS 3D queda como respaldo sin WebGL. */
 import { prepararMalla, raicesVisibles } from './mallaDePapel.js';
 export const DURACION_HOJA_MS = 2000;
 export function prepararHoja(pagina, sentido) {
@@ -26,7 +25,6 @@ export function prepararHoja(pagina, sentido) {
         return { cancelar, reproducir(fin) {
             if (terminada) return;
             const inicio = performance.now();
-            // La línea de tiempo se puede pausar; la deformación vive en la malla.
             animacion = malla.hoja.animate?.([{ transform: 'translateZ(0)' }, { transform: 'translateZ(0)' }], { duration: DURACION_HOJA_MS, fill: 'forwards' });
             const finalizar = () => { if (!terminada) { cancelar(); fin(); } };
             function pintar(ahora) {
@@ -39,8 +37,6 @@ export function prepararHoja(pagina, sentido) {
             }
             fotograma = requestAnimationFrame(pintar);
             animacion?.finished.then(finalizar, () => {});
-            // El respaldo no interrumpe una pausa explícita de la línea de
-            // tiempo (inspección de fotogramas); al reanudar vuelve a vigilar.
             const vigilar = () => {
                 if (terminada) return;
                 if (animacion?.playState === 'paused') temporizador = setTimeout(vigilar, 250);
@@ -49,7 +45,6 @@ export function prepararHoja(pagina, sentido) {
             temporizador = setTimeout(vigilar, DURACION_HOJA_MS + 80);
         } };
     }
-    // Respaldo accesible para dispositivos sin aceleración gráfica.
     const hoja = document.createElement('div');
     hoja.className = 'hoja-en-giro';
     Object.assign(hoja.style, { position: 'absolute', inset: '0', transformStyle: 'preserve-3d', transformOrigin: sentido === 'anterior' ? 'right center' : 'left center', willChange: 'transform' });

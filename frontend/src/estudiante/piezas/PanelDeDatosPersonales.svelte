@@ -1,28 +1,12 @@
-<!--
-Los datos registrados, y tus derechos sobre ellos · RU-06, RP-19.
 
-Dos columnas: qué hay registrado en la sesión actual, y qué se puede hacer
-con ello. Ley 1581.
-
-Sacado de `MisDatos.svelte` el 2026-08-22, junto con `ReciboDeSupresion.
-svelte` —la misma sesión de partir esa ruta en sus estados—: son dos
-pantallas que nunca conviven, y cada una vive en su propio archivo.
-
-
-
--->
 <script>
   import { ayudaContextual } from '../../comun/base/ayudaContextual.js';
   import Icono from '../../comun/base/Icono.svelte';
 
   let {
-    /** Lo que devolvió `datos.consultar()`. */
     mios,
-    /** Perfil canónico del onboarding: facultad, programa y semestre no viven en la sesión. */
     perfil = null,
-    /** URL blob privada creada por la pantalla, nunca una URL pública persistente. */
     foto = null,
-    /** Omite los campos del recorrido estudiantil en la cuenta profesional. */
     modoProfesional = false,
     alGuardarFoto = async () => {},
     alRetirarFoto = async () => {}

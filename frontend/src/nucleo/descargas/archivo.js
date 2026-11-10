@@ -1,6 +1,3 @@
-/** Solicitar una descarga no permite saber si el SO llegó a guardarla.
- * Mantener el enlace y ofrecer apertura/compartir evita un fallo silencioso.
- */
 export const ARCHIVO_DISPONIBLE = 'didaxia:archivo-disponible';
 
 export function descargarBlob(blob, nombre, {
@@ -38,8 +35,6 @@ export function descargarBlob(blob, nombre, {
     let comparte = false;
     try { comparte = Boolean(navegador?.share && navegador?.canShare?.({files:[archivo]})); }
     catch { comparte = false; }
-    // Async graph/PDF generation may have consumed the original user gesture.
-    // Keep the real file ready and request a fresh tap instead of a blocked share.
     if (comparte && navegador.userActivation?.isActive === false) {
       avisar(true);
       liberar();

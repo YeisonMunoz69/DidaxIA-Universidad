@@ -1,70 +1,3 @@
-"""
-estado_vigente_db.py — La consulta determinista de las tres dimensiones
-=========================================================================
-
-`PuertoEstadoVigente` contra la migración 11. Es la lectura que sostiene el
-cálculo de acceso de `EQ-016`: perfil, consentimiento, asentimiento y evidencia
-del representante, resueltos **en una sola consulta** para que las cuatro cosas
-describan el mismo instante.
-
-Por qué una consulta y no cuatro
------------------------------------------
-Cuatro consultas sucesivas pueden ver cuatro estados distintos: entre la segunda
-y la tercera alguien revoca, y el resultado combina un consentimiento vigente con
-un asentimiento posterior a la revocación. Nadie escribió nunca ese estado y aun
-así se presentaría como el actual. Con una sola sentencia y sus CTE, PostgreSQL
-resuelve todo sobre el mismo instante.
-
-Qué significa «determinista» aquí
-------------------------------------------
-Dos cosas, y la segunda la añadió la revisión:
-
-1. **entre eventos** · dos actos del mismo sujeto con `momento` idéntico —cosa
-   que ocurre cuando dos escrituras caen en la misma transacción o en el mismo
-   microsegundo— producen siempre el mismo estado. `ORDER BY momento DESC` no
-   basta: PostgreSQL puede devolverlos en cualquier orden, así que todas las
-   subconsultas desempatan con la identidad monótona de la fila.
-2. **entre versiones** · la versión REQUERIDA de cada alcance se elige con la
-   regla de `SQL_VERSION_REQUERIDA` —vigente ahora, y `vigente_desde DESC,
-   codigo DESC` como desempate—, que vive en `base_postgres.py` y la comparte con
-   `AdaptadorVersionesDeConsentimientoPostgres`. Dos redacciones de esa regla
-   acabarían eligiendo versiones distintas el día que se publiquen dos el mismo
-   día.
-
-Qué cambió tras la revisión
-------------------------------------
-La consulta devolvía el último acto y nada más, de modo que un consentimiento
-otorgado sobre una versión ya retirada se presentaba como vigente. Ahora trae
-además:
-
-- **la versión requerida** de cada alcance, para que el dominio pueda distinguir
-  «aceptó» de «aceptó lo que hoy se pide»;
-- **la categoría de edad** con la que se emitió el último consentimiento, que es
-  como se detecta que alguien cumplió 18 (`EQ-021`);
-- **la versión del último asentimiento**;
-- el último intento de evidencia **de la versión requerida del representante**, y
-  no el último a secas: una autorización firmada sobre un texto anterior no
-  autoriza el que rige hoy.
-
-Lo que esta consulta NO decide
----------------------------------------
-No calcula el acceso. Devuelve los hechos y `dominio/modelo/acceso.py` los
-interpreta: el día que una regla cambie, cambia en el dominio y no en un `SELECT`.
-Tampoco deriva el estado del representante con SQL propio — construye el último
-intento y llama a `estado_representante()`, para que memoria y base no puedan
-discrepar en la derivación.
-
-`eliminacion_solicitada` ya tiene fuente (hito B3)
---------------------------------------------------------
-Sale de `solicitud_supresion` (migración 12) y entra en **esta** consulta, no en
-otra: `EQ-022` bloquea el acceso durante el trámite, y leerlo aparte permitiría
-habilitar a quien acaba de solicitarlo. `to_regclass` la hace opcional para que
-un despliegue sin la migración 12 siga pudiendo leer el estado; allí es `false`,
-que es lo cierto — no hay trámite porque no hay dónde registrarlo.
-
-
-"""
-
 from __future__ import annotations
 
 from datetime import UTC, datetime
@@ -82,16 +15,7 @@ from dominio.modelo.menores import (
     estado_representante,
 )
 
-#: Una sentencia, un instante. Cada subconsulta que elige «el último» desempata
-#: con el identificador monótono además de con la fecha.
-#:
-#: ⚠️ **Corregido en el hito A2.** Esta consulta llevaba tres CTE con la regla de
-#: la versión requerida **copiada**, y `base_postgres.py` llevaba una cuarta
-#: copia. Cuatro redacciones de la misma regla son cuatro reglas en cuanto
-#: alguien corrige una, y eso es exactamente lo que la revisión encontró: el
-#: adaptador y el cálculo de acceso podían hablar de versiones distintas. Ahora
-#: las tres llaman a `didaxia_version_requerida()`, que vive en la migración 11 y
-#: es la única definición.
+
 _CONSULTA = """
 WITH p AS (
     SELECT * FROM persona WHERE sujeto_google = %(sujeto)s
@@ -125,13 +49,7 @@ ultima_revision AS (
      ORDER BY revisada_en DESC, id DESC LIMIT 1
 ),
 supresion_abierta AS (
-    -- `EQ-022` · durante el tramite no se permite usar el tutor. Entra en ESTA
-    -- consulta y no en otra para que el estado siga describiendo un solo
-    -- instante: leerlo aparte permitiria habilitar a quien acaba de solicitar.
     --
-    -- `to_regclass` la vuelve opcional: un despliegue sin la migracion 12 no
-    -- tiene la tabla, y el estado tiene que seguir leyendose. Sin ella, `false`,
-    -- que es lo cierto — no hay tramite porque no hay donde registrarlo.
     SELECT EXISTS (
         SELECT 1 FROM solicitud_supresion
          WHERE sujeto_google = %(sujeto)s AND estado = 'solicitada'
@@ -186,30 +104,20 @@ SELECT p.sujeto_google, p.correo, p.nombre, p.edad_declarada, p.facultad, p.prog
   FROM p
 """
 
-#: Cuántas columnas describen el perfil al principio de la fila.
+
 _COLUMNAS_DE_PERFIL = 8
-#: Cuántas describen el bloque intermedio: límite, tres versiones requeridas,
-#: estado/versión/categoría/id del consentimiento y estado/versión del
-#: asentimiento.
+
+
 _COLUMNAS_DE_ESTADO = 10
 
 
 class AdaptadorEstadoVigentePostgres(RepositorioPostgres):
-    """`PuertoEstadoVigente`. Devuelve hechos; el dominio los interpreta."""
 
     def estado_vigente(self, sujeto_google: str) -> EstadoVigente | None:
-        """El estado de las tres dimensiones, o `None` si no hay persona.
-
-        `None` significa **sólo** que no existe la fila de identidad. Un almacén
-        caído levanta `AlmacenNoDisponible` y un esquema sin migrar levanta
-        `AlmacenNoConfigurado`: la sesión 3 puede así mostrar mantenimiento en
-        vez de mandar a alguien a repetir un onboarding que ya hizo.
-        """
         with self._conexion() as cnx, cnx.cursor() as cur:
             return self.desde_cursor(cur, sujeto_google)
 
     def desde_cursor(self, cur, sujeto_google: str) -> EstadoVigente | None:
-        """La misma política dentro de una lectura auditada ya abierta."""
         cur.execute(_CONSULTA, {"sujeto": sujeto_google})
         fila = cur.fetchone()
         if fila is None:
@@ -230,8 +138,7 @@ class AdaptadorEstadoVigentePostgres(RepositorioPostgres):
             estado_asentimiento,
             version_asentimiento,
         ) = fila[_COLUMNAS_DE_PERFIL : _COLUMNAS_DE_PERFIL + _COLUMNAS_DE_ESTADO]
-        # Las dos últimas columnas son los estados de supresión y rectificación;
-        # el resto del bloque final describe el intento de evidencia.
+
         *columnas_del_intento, eliminacion_solicitada, tutoria_academica = fila[
             _COLUMNAS_DE_PERFIL + _COLUMNAS_DE_ESTADO :
         ]
@@ -271,20 +178,12 @@ class AdaptadorEstadoVigentePostgres(RepositorioPostgres):
                 representante=requerida_representante,
             ),
             limite_representante=limite,
-            # `EQ-022`, hito B3 · durante el trámite no se permite usar el tutor.
+
             eliminacion_solicitada=bool(eliminacion_solicitada),
             tutoria_academica_sin_investigacion=bool(tutoria_academica),
         )
 
     def _asentimiento(self, estado: str | None, *, requerido: bool) -> EstadoAsentimiento:
-        """Sin eventos, `PENDIENTE` para un menor y `NO_REQUERIDO` para el resto.
-
-        Y `NO_REQUERIDO` para un adulto **aunque tenga eventos**: quien dio su
-        asentimiento a los 17 conserva la fila, pero a los 18 esa dimensión ya no
-        le corresponde y no puede seguir bloqueándole. Es la misma precedencia que
-        `HistorialDeAsentimiento.estado`, y una prueba de integración comprueba
-        que las dos derivaciones coincidan.
-        """
         if not requerido:
             return EstadoAsentimiento.NO_REQUERIDO
         if estado:
@@ -333,8 +232,4 @@ class AdaptadorEstadoVigentePostgres(RepositorioPostgres):
             secuencia=evidencia_id,
         )
 
-
-#: Se importa para que quede constancia de que los tres alcances de la consulta
-#: son exactamente los del enumerado del dominio; una prueba lo comprueba contra
-#: el SQL en vez de contra esta línea.
 _ALCANCES_DE_LA_CONSULTA = tuple(a.value for a in Alcance)

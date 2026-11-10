@@ -1,5 +1,3 @@
-"""Cliente mínimo del servicio SDMX oficial del Banco de la República."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -18,7 +16,6 @@ FUENTE = "Banco de la República · servicio SDMX de TRM"
 class Transporte(Protocol):
     def obtener(self, url: str) -> bytes: ...
 
-
 class TransporteUrllib:
     def obtener(self, url: str) -> bytes:
         import urllib.request
@@ -27,12 +24,10 @@ class TransporteUrllib:
         with urllib.request.urlopen(peticion, timeout=15) as respuesta:
             return respuesta.read()
 
-
 @dataclass(frozen=True)
 class ObservacionTRM:
     fecha: date
     pesos_por_usd: Decimal
-
 
 class ClienteTRMBanrep:
     def __init__(self, transporte: Transporte | None = None) -> None:
@@ -58,9 +53,7 @@ class ClienteTRMBanrep:
         url = f"{BASE}/{flujo}/all?{urlencode(parametros)}"
         return _extraer(self._transporte.obtener(url))
 
-
 def _extraer(documento: bytes) -> tuple[ObservacionTRM, ...]:
-    """Acepta SDMX genérico y compacto sin acoplarse a prefijos XML."""
     raiz = ElementTree.fromstring(documento)
     salida: dict[date, Decimal] = {}
     for elemento in raiz.iter():

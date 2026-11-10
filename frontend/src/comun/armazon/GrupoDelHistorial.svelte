@@ -1,4 +1,4 @@
-<!-- Grupo cronológico de conversaciones con sus metadatos compactos. -->
+
 <script>
   import Icono from '../base/Icono.svelte';
   import TituloDeConversacion from './TituloDeConversacion.svelte';

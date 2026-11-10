@@ -1,20 +1,3 @@
-/**
- * Las condiciones públicas del servicio · `D0` §10.1 y §10.2.
- *
- * ⚠️ **NO ES ASESORÍA JURÍDICA NI UN CONTRATO.** Describe cómo funciona el
- * tutor y qué se espera de quien lo usa, en el idioma en que se le habla a un
- * estudiante. No fija cláusulas de responsabilidad, no limita acciones legales
- * y no sustituye el reglamento de la Institución.
- *
- * ⚠️ **NO PROMETE DISPONIBILIDAD.** El sistema falla cerrado cuando la base o
- * el almacenamiento crítico no responden (`ESTADO-ACTUAL.md` §10.4), y decirlo
- * es más honesto que un porcentaje de servicio que nadie mide.
- *
- * Mismo formato que `privacidad.js` y `investigacion.js`; lo pinta
- * `piezas/DocumentoPublico.svelte`. Ver la cabecera de `privacidad.js` para el
- * porqué de tener el texto como datos.
- *
- */
 import { MARCA } from './proyecto.js';
 
 export const CONDICIONES = Object.freeze({

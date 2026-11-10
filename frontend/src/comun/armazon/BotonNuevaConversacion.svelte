@@ -1,4 +1,4 @@
-<!-- Inicia una conversación real: rota la sesión del servidor y vuelve al hilo vivo. -->
+
 <script>
   import { ayudaContextual } from '../base/ayudaContextual.js';
   import Icono from '../base/Icono.svelte';
@@ -18,9 +18,6 @@
     try {
       await sesion.reiniciarConversacion();
       historial.volver();
-      // `EQ-031` · CON el espacio activo. Sin él, «Nueva conversación» mandaba
-      // a un docente en espacio Tutor a su cola de supervisión: `inicioDe(rol)`
-      // a secas responde por el espacio PREDETERMINADO del rol, no por el suyo.
       navegar(inicioDe(sesion.rol, espacio.activo));
     } finally {
       empezando = false;

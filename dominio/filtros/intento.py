@@ -1,104 +1,3 @@
-"""
-intento.py — Filtro 6.6 · ¿lo que el estudiante propuso, cuadra?
-====================================================================
-
-La política C de la fase 4 dice de `intento_resolucion`: *«verificar primero;
-si es correcto, reconocerlo y reducir apoyo; si hay concepción sustentada, usar
-KQ/conflicto conceptual; si es error local, orientar el paso concreto»*. Las
-tres ramas empiezan por **verificar**, y hasta ahora nadie verificaba lo que el
-estudiante escribía: el motor simbólico sólo miraba la respuesta del generador
-(filtro 9) y el turno 1 de un ítem de dos niveles (filtro 6.75).
-
-La consecuencia estaba medida en el banco: una **respuesta correcta escrita en
-forma no canónica** —`cos(x)^2 - sen(x)^2` donde el libro dice `cos(2x)`— era
-indistinguible de un error, y la concepción candidata del motor simbólico
-—que es *«una señal para S5, no un diagnóstico»*— era lo único que quedaba para
-decidir. Remediar una concepción a quien acaba de acertar es el peor resultado
-posible de los que este sistema puede producir.
-
-Dónde está y por qué ahí
----------------------------
-Entre el precómputo (6.5) y el diagnóstico de dos niveles (6.75). Después del
-6.5 porque comparte con él el mismo adaptador simbólico —`ADR-013` §6.1: un
-puerto, dos operaciones— y antes del selector porque su veredicto es una
-entrada de la política.
-
-Cómo saca las dos mitades · `DEC-R2`/paquete G · **por rol, no por posición**
---------------------------------------------------------------------------------
-🔴 **Hasta la revisión R1 esto era posicional**: `expresiones[0]` era la base y
-`expresiones[1]` la propuesta, «porque es el orden en el que se escribe una
-propuesta en español». No siempre lo es, y el propio módulo lo declaraba como
-límite asumido: *«me da `2x` derivando `x^2`»* salía **al revés**, y un
-veredicto invertido tiene la misma pinta que uno bueno.
-
-Ahora los dos roles se **resuelven del texto**, con los marcadores que la frase
-ya trae:
-
-| Marcador delante de la expresión | Rol |
-|---|---|
-| `derivando`, `derivada de`, `derivar`, `deriva`, `derivo`, `d/dx` | **base** |
-| `me da`, `me dio`, `me sale`, `dando`, `es`, `queda`, `resulta`, `obtengo` | **propuesta** |
-
-Gana el marcador **más cercano** a la expresión, y se busca sólo en el tramo de
-texto que va desde la expresión anterior hasta ésta: así una frase larga
-—*«estuve toda la tarde… derivando `cos(x)^3`, me terminó dando `-3*…`»*— no
-confunde marcadores de dos mitades distintas.
-
-Los marcadores se buscan **con frontera de palabra**, y no es un detalle: `es`
-y `da` son marcadores legítimos y están dentro de «esto», «expresiones»,
-«cada» y «duda». Como subcadena, casi cualquier prosa anunciaba un rol.
-
-Cuando una sola de las dos queda marcada y hay **exactamente** otra expresión,
-la otra toma el rol libre: si el estudiante dijo cuál deriva, la que queda es
-lo que propuso. Con más de dos, con ninguna marcada, o con **dos marcadas del
-mismo rol** —«esto **es** `cos(x)^3` y me **da** `3*cos(x)^2`»—, no hay certeza
-y el veredicto es `no_verificable`. Ese último caso importa más de lo que
-parece: rellenar el rol que faltaba con la expresión sobrante las habría puesto
-al revés, y el veredicto habría acusado a quien acertó.
-
-🐛 **`R2-A`, revisión R2 · el rol libre se resuelve por posición, no por
-valor.** Hasta la R1 «la que queda» se buscaba por su texto —«la expresión que
-no sea ni la base ni la propuesta»—, y con las dos mitades escritas **igual**
-—«derivando `x^2` y luego `x^2`», «derivando `cos(x)^3` y `cos(x)^3`»— no hay
-ninguna que no lo sea: la búsqueda se agotaba y lanzaba `StopIteration`. La
-excepción no se quedaba aquí. Subía por la cadena, el orquestador la traducía a
-degradación y el estudiante recibía *«no se pudo generar una respuesta:»* —con
-la causa vacía, porque `StopIteration` no lleva mensaje—: un fallo interno
-disfrazado de fallo del sistema, y **sin veredicto**, que es peor que el
-`no_verificable` que le correspondía. Con dos expresiones sólo hay dos
-posiciones y la libre es «la otra», que no puede faltar.
-
-Y cuando las dos mitades resultan ser la **misma** expresión, el veredicto es
-`no_verificable` **con motivo propio**: los roles sí se resolvieron, lo que no
-hay es algo distinto que comparar. No se verifica `d/dx x^2 = x^2` aunque se
-pudiera: eso emitiría `invalida`, y en este filtro `invalida` es una acusación
-—la del error caro—; que alguien repita una expresión, o que el segmentador lea
-dos veces la misma, explica ese mensaje mejor que atribuirle la afirmación.
-
-**No adivina la base de turnos anteriores.** Podría —`ctx.expresion_previa`
-existe— y no lo hace: la expresión que la sesión recuerda puede ser de otro
-ejercicio, y verificar contra una base equivocada produciría un veredicto con
-la misma pinta que uno bueno. Decirle a alguien que su respuesta correcta está
-mal es el error caro de este filtro, así que sin las dos mitades **en el mismo
-mensaje** el veredicto es `no_verificable` y se dice.
-
-**No corrige.** Emite `valida`, `invalida` o `no_verificable`; qué se hace con
-cada uno lo decide `dominio/pedagogia/politica.py`. Y `no_verificable` nunca
-abre una remediación: es la rama segura, igual que `None` lo es en el arbitraje.
-
-⚠️ Su límite, declarado
---------------------------
-Los marcadores son una lista de formas del español escrito, no un analizador
-sintáctico: es la misma limitación que `R-20` declara para el segmentador. Lo
-que cambia respecto de la versión posicional es **hacia dónde falla**: antes
-una redacción no prevista producía un veredicto invertido —una acusación—, y
-ahora produce `no_verificable`, que no afirma nada. Ésa es la propiedad que
-importa, porque el error caro de este filtro es decirle a alguien que su
-respuesta correcta está mal.
-
-
-"""
-
 from __future__ import annotations
 
 import re
@@ -125,9 +24,7 @@ from dominio.modelo.turno import ContextoTurno
 from dominio.pedagogia.intenciones import INTENTO_RESOLUCION, PETICION_SOLUCION
 from dominio.pedagogia.politica import INVALIDA, NO_VERIFICABLE, VALIDA
 
-#: Lo que, delante de una expresión, dice que esa expresión es **lo que se
-#: deriva**. Ordenados de más largo a más corto: se busca el más cercano, y
-#: entre dos que empiecen en el mismo sitio gana el más específico.
+
 _MARCAN_BASE = (
     "derivada final de",
     "derivada de",
@@ -138,9 +35,7 @@ _MARCAN_BASE = (
     "d/dx",
 )
 
-#: Lo que dice que la expresión es **lo que el estudiante propone**. `es` y
-#: `da` van al final por cortos: cualquier marcador más largo que empiece
-#: después gana por cercanía, y éstos sólo deciden cuando no hay otro.
+
 _MARCAN_PROPUESTA = (
     "me termino dando",
     "me esta dando",
@@ -193,12 +88,6 @@ _CANTIDAD_CON_DUDA = re.compile(
 
 
 def anuncia_resultado(texto: str) -> bool:
-    """Hay una respuesta propia explícita, incluso si la intención general es ambigua.
-
-    El tutor puede comprobar «queda -1» sin exigir «el resultado final es».
-    Una fórmula dentro de una petición de gráfica o una negación («no me da»)
-    no se convierte en un acierto del estudiante.
-    """
     from dominio.modelo.respuesta_en_contexto import consulta_sin_entrega
 
     if consulta_sin_entrega(texto):
@@ -225,9 +114,7 @@ def anuncia_resultado(texto: str) -> bool:
         )
     return bool(_RESPUESTA_SOLA.fullmatch(normalizado) or _CANTIDAD_CON_DUDA.fullmatch(normalizado))
 
-
 def niega_resultado(texto: str) -> bool:
-    """«No me da −1» comunica duda, no propone −1 como respuesta."""
     normalizado = normalizar_escritura_matematica(texto)
     marcas = list(_RESULTADO_ANUNCIADO.finditer(normalizado))
     return bool(marcas and re.search(r"\bno\s*$", normalizado[:marcas[-1].start()], re.I))
@@ -241,7 +128,6 @@ def _cantidad_anunciada(tramo: str) -> str:
     numero = re.match(r"[-+]?(?:\d+(?:[.,]\d+)?|∞|oo)(?=$|[\s,.;!?])", tramo)
     return numero.group().replace(",", ".") if numero else ""
 
-
 def _expresion_anunciada(tramo: str, tiene_marca: bool) -> str:
     expresion_completa = re.split(
         r"\s+(?:porque|por\s+qu[eé]|pq|expl[ií]came|ya\s+que|pues|cuando|pero|ser[ií]a|al\s+simplificar)\b",
@@ -249,7 +135,7 @@ def _expresion_anunciada(tramo: str, tiene_marca: bool) -> str:
     )[0].rstrip("?,;.! ")
     expresion_completa = re.split(r"[?!¿¡]|\.(?!\d)", expresion_completa, maxsplit=1)[0].strip()
     if re.fullmatch(r"[-+]?\d+(?:[.,]\d+)?,?", expresion_completa):
-        return ""  # Un número con coma final es puntuación, no «-1.» algebraico.
+        return ""
     expresion_normalizada = normalizar_frase_matematica(expresion_completa)
     if re.fullmatch(r"[+-]?[xyzt]", expresion_normalizada):
         return expresion_normalizada
@@ -261,12 +147,9 @@ def _expresion_anunciada(tramo: str, tiene_marca: bool) -> str:
     ):
         return expresion_normalizada.replace(",", ".")
     if tiene_marca and re.search(r"\b(?:seno|coseno|tangente|raíz|equis)\b", expresion_normalizada, re.I):
-        # Si queda vocabulario sin traducir, la frase es ambigua. Pasarla
-        # completa al CAS fuerza NO_VERIFICABLE en lugar de verificar un
-        # fragmento aislado, como x^2 dentro de «seno de x^2».
+
         return expresion_normalizada
     return ""
-
 
 def _resultado_de_derivada_explicita(normalizado: str) -> str | None:
     s = quitar_delimitadores_matematicos(normalizado)
@@ -279,20 +162,12 @@ def _resultado_de_derivada_explicita(normalizado: str) -> str | None:
     igualdad = re.search(patron, s)
     return _expresion_anunciada(igualdad.group(1), True) if igualdad else None
 
-
 def _propuesta_con_notacion_explicita(normalizado: str) -> str | None:
     if completas := _roles_de_expresiones_completas(normalizado):
         return completas.propuesta
     return _resultado_de_derivada_explicita(normalizado)
 
-
 def propuesta_en_el_turno(texto: str) -> str:
-    """Extrae una propuesta explícita; no usa la última fórmula por defecto.
-
-    Se prefieren las expresiones tras «me da»/«resultado es». Un número dicho
-    con palabras se admite cuando es inequívoco. El motor simbólico seguirá
-    siendo quien compruebe el valor, nunca este extractor.
-    """
     normalizado = normalizar_escritura_matematica(texto)
     derivada_explicita = _propuesta_con_notacion_explicita(normalizado)
     if derivada_explicita is not None:
@@ -301,7 +176,7 @@ def propuesta_en_el_turno(texto: str) -> str:
         return "no existe"
     marcas = list(_RESULTADO_ANUNCIADO.finditer(normalizado))
     if not marcas and re.search(r"\b[a-zA-Z]\s*\(\s*x\s*\)\s*=", normalizado):
-        # La función del ejercicio no es una respuesta del estudiante.
+
         return ""
     tramo = normalizado[marcas[-1].end():] if marcas else normalizado
     tramo = tramo.lstrip(" :={").strip()
@@ -325,7 +200,6 @@ def propuesta_en_el_turno(texto: str) -> str:
         return expresiones[0]
     return _propuesta_segmentada(normalizado, marcas)
 
-
 def _propuesta_segmentada(normalizado, marcas):
     if marcas:
         previas, _ = segmentar(normalizado[:marcas[-1].start()])
@@ -337,16 +211,8 @@ def _propuesta_segmentada(normalizado, marcas):
             return expresiones[-1]
     return ""
 
-
 @dataclass(frozen=True)
 class RolesDelIntento:
-    """Qué se deriva y qué se propone, **dicho**, no supuesto por posición.
-
-    `motivo` va siempre, también cuando no se resolvieron: sin él no se puede
-    distinguir «el mensaje no traía dos expresiones» de «traía dos y ninguna
-    dijo cuál era cuál», y las dos se atienden igual pero se leen distinto en
-    una traza.
-    """
 
     base: str = ""
     propuesta: str = ""
@@ -356,30 +222,16 @@ class RolesDelIntento:
     def resueltos(self) -> bool:
         return bool(self.base) and bool(self.propuesta) and self.base != self.propuesta
 
-
 def _plano(texto: str) -> str:
-    """Minúsculas y sin tildes: «me terminó dando» y «me termino dando» son lo
-    mismo, y un estudiante escribe sin tildes la mitad de las veces."""
     descompuesto = unicodedata.normalize("NFD", texto.lower())
     return "".join(c for c in descompuesto if unicodedata.category(c) != "Mn")
 
-
 def _rol_del_tramo(tramo: str) -> str:
-    """El rol que anuncia el texto que precede a una expresión, o `""`.
-
-    Gana el marcador que **acaba más cerca** de la expresión. Si dos acaban en
-    el mismo sitio —`derivada de` contiene `deriva`— gana el más largo, que es
-    el más específico.
-    """
     plano = _plano(tramo)
     mejor_fin, mejor_largo, mejor_rol = -1, 0, ""
     for marcadores, rol in ((_MARCAN_BASE, _BASE), (_MARCAN_PROPUESTA, _PROPUESTA)):
         for marcador in marcadores:
-            # ⚠️ **Con frontera de palabra, y no es un detalle.** `es` y `da`
-            # son marcadores legítimos y están dentro de «esto», «expresiones»,
-            # «cada» y «duda». Buscándolos como subcadena, casi cualquier
-            # tramo de prosa anunciaba un rol, y un rol inventado es peor que
-            # ninguno: lleva a un veredicto, y un veredicto es una acusación.
+
             hallado = None
             for coincidencia in re.finditer(
                 rf"(?<![a-z0-9]){re.escape(marcador)}(?![a-z0-9])", plano
@@ -392,9 +244,7 @@ def _rol_del_tramo(tramo: str) -> str:
                 mejor_fin, mejor_largo, mejor_rol = fin, len(marcador), rol
     return mejor_rol
 
-
 def _roles_de_expresiones_completas(texto: str) -> RolesDelIntento | None:
-    """Con dos marcas inequívocas, conserva los paréntesis y productos enteros."""
     marcas_base = '|'.join(re.escape(m) for m in sorted(_MARCAN_BASE, key=len, reverse=True))
     marcas_propuesta = '|'.join(re.escape(m) for m in sorted(_MARCAN_PROPUESTA, key=len, reverse=True))
     patron = rf"(?<![a-z0-9])(?:(?P<base>{marcas_base})|(?P<propuesta>{marcas_propuesta}))(?![a-z0-9])"
@@ -406,15 +256,13 @@ def _roles_de_expresiones_completas(texto: str) -> RolesDelIntento | None:
         fin = marcas[i+1].start() if i+1 < len(marcas) else len(texto)
         tramo = texto[marca.end():fin]
         if i + 1 < len(marcas):
-            # «Derivo sen(x^2) y me da ...»: la conjunción separa los roles;
-            # una segunda fórmula dentro de la base sigue siendo ambigua.
+
             tramo = re.sub(r"\s+y\s*$", "", tramo, flags=re.I)
         if marca.lastgroup == 'propuesta':
             tramo = re.split(r",?\s*¿(?=[a-záéíóúñ])|(?:,\s*|\s+)(?:pero|porque|ya\s+que|pues)\b", tramo, maxsplit=1, flags=re.I)[0]
         tramo = quitar_delimitadores_matematicos(tramo.strip(' :;,?.!'))
         if marca.lastgroup == 'base':
-            # La declaración nombra la función; no forma parte del operando.
-            # Sólo se retira una declaración inicial, nunca una igualdad interna.
+
             tramo = re.sub(r'^\s*[a-zA-Z]\s*\(\s*x\s*\)\s*=\s*', '', tramo)
         tramo = normalizar_frase_matematica(normalizar_escritura_matematica(tramo))
         if not tramo or re.search(r"\by\b", tramo) or not re.fullmatch(r"[0-9a-zA-Z_+\-*/^().,{}\[\]\\|\s]+", tramo):
@@ -424,14 +272,7 @@ def _roles_de_expresiones_completas(texto: str) -> RolesDelIntento | None:
         return None
     return RolesDelIntento(**expresiones, motivo="la base y la propuesta están marcadas explícitamente; se conservan completas")
 
-
 def roles_de(texto: str) -> RolesDelIntento:
-    """Los dos roles del intento, resueltos del texto. Ver la cabecera.
-
-    Se llama a `segmentar()` —el mismo segmentador del filtro 1— para tener a
-    la vez la forma canónica y **dónde estaba** cada expresión: el rol se lee
-    del tramo de prosa que la precede, y sin desplazamientos no hay tramo.
-    """
     if completas := _roles_de_expresiones_completas(texto):
         return completas
     expresiones, segmentos = segmentar(texto)
@@ -449,16 +290,9 @@ def roles_de(texto: str) -> RolesDelIntento:
         asignados.append(_rol_del_tramo(texto[anterior : segmento["inicio"]]))
         anterior = segmento["fin"]
 
-    # 🔴 **Se trabaja con POSICIONES y no con los textos.** Ver `R2-A` abajo:
-    # dos expresiones pueden ser la misma cadena, y entonces identificarlas por
-    # su valor no distingue una de otra.
     marcadas_base = [i for i, rol in enumerate(asignados) if rol == _BASE]
     marcadas_propuesta = [i for i, rol in enumerate(asignados) if rol == _PROPUESTA]
 
-    # 🔴 **Dos del mismo rol es una contradicción, no una pista.** «esto es
-    # cos(x)^3 y me da 3*cos(x)^2» marca las dos como propuesta; rellenar la
-    # que falta con la sobrante las habría puesto **al revés** y el veredicto
-    # habría acusado a quien acertó. Sin certeza, `no_verificable`.
     if len(marcadas_base) > 1 or len(marcadas_propuesta) > 1:
         return RolesDelIntento(
             motivo=(
@@ -467,17 +301,6 @@ def roles_de(texto: str) -> RolesDelIntento:
             )
         )
 
-    # Una sola marcada y exactamente otra expresión: la que queda toma el rol
-    # libre. Con tres o más no se completa — no hay forma de saber cuál de las
-    # otras es, y elegir sería volver a adivinar por posición.
-    #
-    # 🐛 **`R2-A`, revisión R2 · aquí se lanzaba `StopIteration`.** La expresión
-    # libre se buscaba por valor —«la que no sea ni la base ni la propuesta»—, y
-    # con las dos mitades escritas igual —«derivando `x^2` y luego `x^2`»— no
-    # existe ninguna que no lo sea: el generador se agotaba, la excepción subía
-    # por la cadena y el turno salía como degradación genérica, sin causa. Con
-    # dos expresiones sólo hay dos posiciones, así que la libre es «la otra»
-    # —`1 - marcada`— y eso no puede fallar ni depende de lo que digan.
     if len(marcadas_base) + len(marcadas_propuesta) == 1 and len(expresiones) == 2:
         (marcada,) = marcadas_base or marcadas_propuesta
         libre = 1 - marcada
@@ -497,13 +320,6 @@ def roles_de(texto: str) -> RolesDelIntento:
     base = expresiones[marcadas_base[0]]
     propuesta = expresiones[marcadas_propuesta[0]]
 
-    # 🔴 **Las dos mitades son la misma expresión.** No es lo mismo que no
-    # saber cuál es cuál —los roles sí se resolvieron— y por eso lleva motivo
-    # propio: lo que falta es algo que comparar. «Derivando `x^2` y luego
-    # `x^2`» se explica mejor porque el estudiante repitió, o porque el
-    # segmentador leyó dos veces la misma, que porque afirme que la derivada de
-    # `x^2` es `x^2`; y verificarlo igualmente emitiría `invalida`, que en este
-    # filtro es una acusación. La rama segura es la de siempre.
     if base == propuesta:
         return RolesDelIntento(
             motivo=(
@@ -518,26 +334,16 @@ def roles_de(texto: str) -> RolesDelIntento:
         motivo=f"«{base}» es lo que se deriva y «{propuesta}» lo que propone",
     )
 
-
 def ejercicio_de_intento_explicito(texto: str) -> dict[str, str] | None:
-    """Recuerda la base dicha junto a una propuesta, sin usar una respuesta sola."""
     completas = _roles_de_expresiones_completas(normalizar_escritura_matematica(texto))
     if completas is None or not completas.resueltos:
         return None
     return {'tipo': 'derivada', 'expresion': completas.base, 'variable': 'x', 'destino': ''}
 
-
 @runtime_checkable
 class _PuertoDeCorreccion(Protocol):
-    """Lo único de `PuertoSimbolico` que este filtro necesita.
-
-    Declarado aparte —igual que hacen el 6.5 y el 6.75— porque este filtro no
-    precomputa nada: darle el puerto entero le daría una capacidad que no le
-    toca ejercer.
-    """
 
     def verificar(self, bloques: Sequence[BloqueVerificable]) -> InformeVerificacion: ...
-
 
 def _consulta_sin_propuesta(ctx, respuesta_explicita):
     detalle = ctx.intencion_detalle
@@ -553,14 +359,7 @@ def _consulta_sin_propuesta(ctx, respuesta_explicita):
         r"(?:el\s+)?l[ií]mite\b|no\s+existe\b|falta\b|infinito\b)", texto, re.I,
     ))
 
-
 class FiltroIntento(Filtro):
-    """Filtro 6.6 · comprueba la propuesta del estudiante contra el motor.
-
-    `simbolico` es opcional y por inyección, igual que los puertos de los
-    filtros vecinos: sin él no hay veredicto y el turno sigue exactamente como
-    iba, con la incertidumbre declarada en la traza.
-    """
 
     nombre = "verificación del intento del estudiante"
     ruta = "caliente"
@@ -681,7 +480,7 @@ class FiltroIntento(Filtro):
                 "motivo": "la propuesta no coincide con el resultado simbólico" if veredicto == INVALIDA
                 else "el CAS no pudo comprobar la propuesta",
             }
-        except Exception:  # noqa: BLE001 — una comprobación fallida nunca acusa
+        except Exception:
             return replace(ctx, veredicto_del_intento=NO_VERIFICABLE), {
                 **meta, "veredicto": NO_VERIFICABLE, "motivo": "falló la comprobación simbólica",
             }
@@ -691,9 +490,7 @@ class FiltroIntento(Filtro):
             parcial = self._verificar_paso(ctx, propuesta, False, meta)
             if parcial[0].paso_verificado:
                 return parcial
-        # El acierto verificable abre la explicación del ejercicio que
-        # el propio estudiante acaba de resolver, sin tres preguntas
-        # adicionales. La traza deja esta excepción explícita.
+
         return replace(
             ctx, veredicto_del_intento=VALIDA,
             resultado_verificado=propuesta, nivel_divulgacion=3,
@@ -808,7 +605,6 @@ class FiltroIntento(Filtro):
         }
 
     def _verificar(self, ctx: ContextoTurno) -> tuple[str, str, str, str]:
-        """`(veredicto, motivo, base, propuesta)`. Veredicto vacío = no se intentó."""
         if ctx.intencion != INTENTO_RESOLUCION:
             return "", "el turno no propone ninguna solución que comprobar", "", ""
         if self._simbolico is None:
@@ -818,8 +614,7 @@ class FiltroIntento(Filtro):
                 "",
                 "",
             )
-        # Paquete G · los roles se leen del texto, no de la posición. Ver la
-        # cabecera: sin certeza sobre cuál se deriva, `no_verificable`.
+
         roles = roles_de(ctx.texto_estudiante)
         if not roles.resueltos:
             return NO_VERIFICABLE, roles.motivo, "", ""
@@ -836,7 +631,7 @@ class FiltroIntento(Filtro):
                     )
                 ]
             )
-        except Exception:  # noqa: BLE001 — comprobar no puede tumbar el turno
+        except Exception:
             return NO_VERIFICABLE, "el motor simbólico no pudo evaluarlo", base, propuesta
 
         if not informe.verificaciones:

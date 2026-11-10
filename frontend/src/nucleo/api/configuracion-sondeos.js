@@ -1,4 +1,3 @@
-/** Gobierno curricular: la autoridad del estado es el servidor. */
 import { pedir, RUTAS } from './cliente.js';
 
 export function consultar() {

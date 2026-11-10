@@ -1,22 +1,8 @@
-<!--
-  Barra de desplazamiento personalizada estilo Apple para didaxia.pro · Superficie pública.
 
-  Sustituye la barra de scroll nativa del navegador por un componente flotante,
-  elegante y altamente interactivo. Ofrece:
-    - Deslizador tipo píldora con altura proporcional al contenido visible.
-    - Soporte para arrastre táctil y de ratón (PointerEvents).
-    - Salto suave al hacer clic en cualquier sección de la pista.
-    - Ocultamiento inteligente tras inactividad y realce visual en hover.
-
-
-  Lenguaje declarado en OE3-Implementacion/13-Lenguaje-de-Diseno.md
-
--->
 <script>
   import { onDestroy } from 'svelte';
 
   let {
-    /** Elemento DOM contenedor que produce el scroll (ej: .desplazable) */
     contenedor = null
   } = $props();
 
@@ -143,7 +129,7 @@
   });
 </script>
 
-<!-- Barra flotante personalizada de desplazamiento -->
+
 {#if alturaThumb > 0}
   <button
     type="button"
@@ -232,7 +218,6 @@
     box-shadow: var(--shadow-float);
   }
 
-  /* En móviles y pantallas táctiles estrechas no se renderiza: el scroll es táctil nativo */
   @media (max-width: 48rem) {
     .pista-scroll {
       display: none !important;

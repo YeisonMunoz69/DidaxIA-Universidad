@@ -1,18 +1,7 @@
-/**
- * Proyección de los bloques de un turno a párrafos visibles.
- *
- * Conserva en un módulo puro las reglas de agrupación y de consistencia. La
- * vista decide cómo pintar cada grupo, pero no vuelve a interpretar el orden o
- * los sellos de los bloques.
- */
 
 const TIPOS_EN_FRASE = new Set(['prosa', 'expresion-citada']);
 const SOLO_SIGNOS = /^[\s\p{P}\p{S}]+$/u;
 
-/**
- * @param {{tipo?: string, contenido?: string, sello?: string}[]} lista
- * @returns {{enFrase: boolean, sello?: string, bloques: object[], cierre: string}[]}
- */
 export function agruparBloquesDelTurno(lista = []) {
   const grupos = [];
   for (const bloque of lista) {
@@ -33,28 +22,15 @@ export function agruparBloquesDelTurno(lista = []) {
   return grupos;
 }
 
-/** @param {{tipo?: string}[]} bloques @param {number} indice */
 export function esPrimeraCitaDeLaFrase(bloques, indice) {
   return bloques.findIndex((bloque) => bloque?.tipo === 'expresion-citada') === indice;
 }
 
-/**
- * Un sondeo no puede llevar un bloque verificado: es la condición C4 de
- * ADR-014, expresada sin depender del componente que la presenta.
- * @param {{nivel?: string, bloques?: {sello?: string}[]} | null | undefined} turno
- */
 export function esTurnoMalformado(turno) {
   return turno?.nivel === 'sondeo'
     && (turno?.bloques ?? []).some((bloque) => bloque?.sello === 'verificado');
 }
 
-/**
- * Texto portable de una respuesta para el botón «Copiar».
- *
- * La gráfica no se serializa como su JSON interno: se copia su descripción
- * editorial. Las expresiones se conservan entre delimitadores `$` para que
- * puedan pegarse en otro editor matemático sin perder su intención.
- */
 export function textoCopiableDelTurno(turno) {
   const convertir = (bloque) => {
       if (bloque?.tipo === 'grafica') return bloque.alternativo ?? '';

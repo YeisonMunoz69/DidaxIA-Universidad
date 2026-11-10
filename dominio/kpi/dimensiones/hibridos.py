@@ -1,5 +1,3 @@
-"""Tres observables híbridos; códigos distintos de los instrumentos originales."""
-
 from dominio.kpi.contratos import DefinicionKPI, Dimension, Instrumento, MadurezMetodologica, Unidad
 from dominio.modelo.factores_conductuales import NOMBRES, VERSION
 
@@ -55,6 +53,5 @@ def _definir(factor):
             minimo_de_observaciones=5,
         ),
     )
-
 
 CATALOGO = tuple(_definir(f) for f in NOMBRES)

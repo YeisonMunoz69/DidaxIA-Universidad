@@ -1,4 +1,3 @@
-/** Borradores editables. No afirman intervenciones, diagnósticos ni eventos automáticos. */
 export const PLANTILLAS_COMUNICACION = [
   { id: 'libre', categoria: 'Institucional', nombre: 'Mensaje institucional', asunto: '', mensaje: '' },
   { id: 'sesion', categoria: 'Investigación pedagógica', nombre: 'Convocatoria a sesión experimental',

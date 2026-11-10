@@ -1,4 +1,3 @@
-/** Cuenta también las imágenes repetidas: cada aparición viaja en el JSON. */
 export const MAX_BYTES_IMAGENES_ENCUESTA = 8_000_000;
 
 export function resumenImagenesEncuesta(contenido) {

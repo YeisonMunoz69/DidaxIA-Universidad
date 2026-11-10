@@ -1,11 +1,3 @@
-/**
- * Subconjunto de Markdown usado por los documentos de consentimiento.
- *
- * Devuelve datos, nunca HTML. Así el texto publicado conserva títulos, listas,
- * tablas y énfasis sin entregar contenido del servidor a `{@html}`. Los nodos
- * los crea Svelte y cualquier etiqueta escrita dentro del documento queda como
- * texto, no como código ejecutable.
- */
 
 export function fragmentosMarkdown(texto = '') {
   const fuente = String(texto);
@@ -82,9 +74,6 @@ export function bloquesMarkdown(texto = '') {
         if (!item || /^\d/.test(item[1]) !== ordenada) break;
         const contenido = [item[2].trim()];
         i += 1;
-        // Los documentos se ajustan a 80 columnas. Markdown permite que un
-        // ítem continúe en las líneas indentadas siguientes; analizarlas por
-        // separado dejaba `**` visibles cuando una negrita cruzaba el salto.
         while (i < lineas.length && /^\s{2,}\S/.test(lineas[i])) {
           contenido.push(lineas[i].trim());
           i += 1;

@@ -1,4 +1,3 @@
-/** Incidencias privadas del usuario y bandeja del investigador. */
 import { pedir, pedirArchivo } from './cliente.js';
 
 export function crear(cuerpo, { señal } = {}) {

@@ -1,10 +1,3 @@
-"""Figuras vectoriales, descriptivas y deterministas para informes impresos.
-
-El estilo científico se adapta al motor ReportLab que ya genera los PDF:
-etiquetas negras, escala visible, paleta accesible y valores anotados. No se
-infieren tendencias, distribuciones ni relaciones que el corte no contiene.
-"""
-
 from __future__ import annotations
 
 from math import isfinite
@@ -19,13 +12,10 @@ PALETA = tuple(colors.HexColor(c) for c in ("#2563EB", "#0D9488", "#9333EA", "#D
 
 
 def es_resultado_publicable(item: dict) -> bool:
-    """Misma regla de publicación del tablero: valor finito y estado disponible."""
     valor = item.get("valor")
     return item.get("estado") == "disponible" and type(valor) in (int, float) and isfinite(valor)
 
-
 def es_indicador_visible(item: dict) -> bool:
-    """Incluye cobertura de los tres fenómenos sin fabricar una cifra publicable."""
     return es_resultado_publicable(item) or (
         (item.get("codigo") in {"conductual.ansiedad_matematica",
                               "aprendizaje.concepciones_dos_niveles",
@@ -36,9 +26,7 @@ def es_indicador_visible(item: dict) -> bool:
         and item.get("estado") in {"sin_datos", "muestra_insuficiente", "datos_incompletos"}
     )
 
-
 def barras_horizontales(titulo: str, pares: list[tuple[str, object]], *, ancho: int = 470) -> Drawing:
-    """Una escala común por figura; no compara unidades distintas."""
     valores = []
     for etiqueta, crudo in pares[:10]:
         try:
@@ -76,9 +64,7 @@ def barras_horizontales(titulo: str, pares: list[tuple[str, object]], *, ancho: 
                           fontName="Helvetica", fontSize=6.8, fillColor=TINTA))
     return dibujo
 
-
 def mosaico_proporcion(parte: float, total: float, *, ancho: int = 460) -> Drawing:
-    """Mosaico de 100 celdas, aproximación visual etiquetada; cifra exacta al lado."""
     if not all(isfinite(v) for v in (parte, total)) or not 0 <= parte <= total or total <= 0:
         raise ValueError("proporción inválida")
     dibujo = Drawing(ancho, 158)
@@ -94,9 +80,7 @@ def mosaico_proporcion(parte: float, total: float, *, ancho: int = 460) -> Drawi
     dibujo.add(String(150, 22, "No representa una meta ni un nivel de logro.", fontName="Helvetica", fontSize=8))
     return dibujo
 
-
 def anillo_proporcion(parte: float, total: float, *, ancho: int = 460) -> Drawing:
-    """Anillo descriptivo: sector observado y resto de un denominador real."""
     if not all(isfinite(v) for v in (parte, total)) or not 0 <= parte <= total or total <= 0:
         raise ValueError("proporción inválida")
     dibujo = Drawing(ancho, 145)
@@ -116,9 +100,7 @@ def anillo_proporcion(parte: float, total: float, *, ancho: int = 460) -> Drawin
     dibujo.add(String(142, 24, "La fracción depende de la definición del KPI.", fontName="Helvetica", fontSize=8, fillColor=TINTA))
     return dibujo
 
-
 def intervalo_cuartiles(detalle: dict, mediana: float, unidad: str, *, ancho: int = 460) -> Drawing | None:
-    """P25–P75 reales y mediana; no fabrica bigotes ni intervalos de confianza."""
     valores = [detalle.get("minimo"), detalle.get("p25"), mediana, detalle.get("p75"), detalle.get("maximo")]
     if any(type(v) not in (int, float) or not isfinite(v) for v in valores):
         return None
@@ -138,9 +120,7 @@ def intervalo_cuartiles(detalle: dict, mediana: float, unidad: str, *, ancho: in
     dibujo.add(String(0, 10, f"P25={p25:g}  |  Mediana={centro:g}  |  P75={p75:g}  · No es un intervalo de confianza", fontSize=8))
     return dibujo
 
-
 def mapa_disponibilidad(indicadores: list[dict], *, ancho: int = 460) -> Drawing:
-    """Recuento por dimensión y estado: no mezcla magnitudes de los KPI."""
     estados = [("disponible", "Disponible", PALETA[1]), ("no_instrumentado", "Sin fuente", PALETA[3]),
                ("sin_datos", "Sin datos", GRIS), ("otros", "Otros estados", PALETA[2])]
     dimensiones = sorted({item["dimension"] for item in indicadores})
@@ -161,9 +141,7 @@ def mapa_disponibilidad(indicadores: list[dict], *, ancho: int = 460) -> Drawing
                               fillColor=colors.white if n and estado != "sin_datos" else TINTA))
     return dibujo
 
-
 def lollipop_horizontal(titulo: str, pares: list[tuple[str, object]], *, ancho: int = 470) -> Drawing:
-    """Ranking de frecuencias con escala cero y marcas de valor directas."""
     validos = []
     for etiqueta, crudo in pares[:10]:
         try:
@@ -198,9 +176,7 @@ def lollipop_horizontal(titulo: str, pares: list[tuple[str, object]], *, ancho: 
                           fontName="Helvetica", fontSize=6.8, fillColor=TINTA))
     return dibujo
 
-
 def proporcion_observada(titulo: str, parte: float, total: float, *, ancho: int = 470) -> Drawing:
-    """Barra apilada 100 % para una fracción genuina, sin meta inventada."""
     if not all(isfinite(numero) for numero in (parte, total)) or not 0 <= parte <= total or total <= 0:
         raise ValueError("la proporción necesita 0 <= parte <= total y total positivo")
     dibujo = Drawing(ancho, 91)
@@ -216,9 +192,7 @@ def proporcion_observada(titulo: str, parte: float, total: float, *, ancho: int 
                       fontName="Helvetica", fontSize=7.5, fillColor=TINTA))
     return dibujo
 
-
 def serie_temporal(titulo: str, puntos: list[tuple[str, object]], *, ancho: int = 470) -> Drawing:
-    """Serie con huecos explícitos: un dato suprimido jamás se interpola."""
     visibles = []
     for indice, (etiqueta, crudo) in enumerate(puntos):
         try:
@@ -260,13 +234,7 @@ def serie_temporal(titulo: str, puntos: list[tuple[str, object]], *, ancho: int 
                               textAnchor="middle", fillColor=TINTA))
     return dibujo
 
-
 def perfil_proporciones(titulo: str, indicadores: list[dict], *, ancho: int = 470) -> Drawing | None:
-    """Escala común 0–100 % con el valor y n de cada KPI realmente publicado.
-
-    La posición facilita leer cada fracción, no establece un orden de calidad
-    entre constructos distintos. Las ausencias no se convierten en barras cero.
-    """
     filas = [
         item for item in indicadores
         if item.get("estado") == "disponible"

@@ -1,38 +1,8 @@
-<!--
-La puerta. Sin sesión no se entra al tutor · `EQ-020`.
 
-⚠️ ESTA PANTALLA NO EXISTÍA, Y SU AUSENCIA ERA EL SUPUESTO RETIRADO
---------------------------------------------------------------------
-Hasta el hito B1, `GET /api/sesion` abría una sesión anónima al consultarla:
-quien llegaba entraba, y entrar con Google era «una vía más». Por eso no hacía
-falta una entrada. Hoy esa ruta responde **401** y `POST /api/sesion` también:
-sólo se entra con cuenta institucional, y quien no la tenga no puede usar el
-tutor. Decirlo aquí, antes de que lo intente, es la diferencia entre una
-decisión explicada y una puerta que no se abre.
-
-EL 401 NO SE PINTA COMO AVERÍA
--------------------------------
-`degradacion.js` lo clasifica como `sin-sesion` justamente para esto. Quien
-abre la aplicación por primera vez recibe un 401 —es el estado normal— y lo que
-tiene que ver es esta pantalla, no «el sistema no responde» ni «tu sesión
-caducó».
-
-El botón real de Google lo pinta `comun/sesion/EntrarConGoogle.svelte`, que ya
-resuelve guion, tema, ancho y el fallo de carga. Aquí se le da el marco y el
-texto de por qué hace falta.
-
-
-
--->
 <script>
   import Icono from '../../../comun/base/Icono.svelte';
   import EntrarConGoogle from '../../../comun/sesion/EntrarConGoogle.svelte';
 
-  /*
-   * El `<h1>` y la insignia los pone `Consentimiento.svelte`, no esta pieza.
-   * `T-09`–`T-11`: una vista, un `<h1>`. Con uno por paso, el paso de carga se
-   * quedaba sin ninguno y la composición podía llegar a tener dos.
-   */
 </script>
 
 <div class="entrada">

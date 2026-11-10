@@ -1,5 +1,3 @@
-"""Preferencias propias de correo para docentes e investigadores."""
-
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -17,10 +15,9 @@ from dominio.puertos.almacen import (
 from dominio.puertos.gobierno import SupresionEnCurso
 from dominio.puertos.preferencias_notificacion import CATEGORIAS
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from adaptadores.entrantes.http.rutas.puerta_de_supresion import PuertaDeSupresion
     from dominio.puertos.preferencias_notificacion import PuertoPreferenciasDeNotificacion
-
 
 def _representar(preferencias: dict[str, bool]) -> dict:
     return {
@@ -32,7 +29,6 @@ def _representar(preferencias: dict[str, bool]) -> dict:
             "gobierno de datos no se desactivan desde este panel."
         ),
     }
-
 
 def crear_router(
     sesiones: Sesiones,

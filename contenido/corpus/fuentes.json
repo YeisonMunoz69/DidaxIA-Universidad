@@ -1,0 +1,52 @@
+{
+  "LOP": {
+    "titulo": "López Erazo, Tulio Emiro. *Ejercicios y problemas de Cálculo I y Cálculo II*",
+    "autoria": "López Erazo",
+    "paginas_del_archivo": 571,
+    "permisos": {
+      "fragmento": "permitido",
+      "markdown_continuo": "permitido",
+      "pdf_completo": "permitido"
+    }
+  },
+  "PUR": {
+    "titulo": "Purcell, Edwin J.; Varberg, Dale; Rigdon, Steven E. *Cálculo diferencial e integral*",
+    "autoria": "Purcell, Varberg y Rigdon",
+    "paginas_del_archivo": 519,
+    "permisos": {
+      "fragmento": "permitido",
+      "markdown_continuo": "permitido",
+      "pdf_completo": "permitido"
+    }
+  },
+  "LEI": {
+    "titulo": "Leithold, Louis. *El Cálculo*",
+    "autoria": "Leithold",
+    "paginas_del_archivo": 1380,
+    "permisos": {
+      "fragmento": "permitido",
+      "markdown_continuo": "permitido",
+      "pdf_completo": "permitido"
+    }
+  },
+  "SPI": {
+    "titulo": "Spivak, Michael. *Calculus · Cálculo Infinitesimal*",
+    "autoria": "Spivak",
+    "paginas_del_archivo": 920,
+    "permisos": {
+      "fragmento": "permitido",
+      "markdown_continuo": "permitido",
+      "pdf_completo": "permitido"
+    }
+  },
+  "PIS": {
+    "titulo": "Piskunov, N. *Cálculo Diferencial e Integral, Tomo I*",
+    "autoria": "Piskunov",
+    "paginas_del_archivo": 530,
+    "permisos": {
+      "fragmento": "permitido",
+      "markdown_continuo": "permitido",
+      "pdf_completo": "permitido"
+    }
+  }
+}

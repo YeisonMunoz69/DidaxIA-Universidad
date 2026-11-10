@@ -1,4 +1,3 @@
-/** Preferencia visual de tema compartida por las dos superficies. */
 export const CLAVE_TEMA = 'agente-calculo.tema';
 export const TEMAS = ['sistema', 'claro', 'oscuro'];
 
@@ -13,6 +12,6 @@ export function leerTema() {
 
 export function guardarTema(valor) {
   if (!TEMAS.includes(valor)) return false;
-  try { globalThis.localStorage?.setItem(CLAVE_TEMA, valor); } catch { /* sólo visual */ }
+  try { globalThis.localStorage?.setItem(CLAVE_TEMA, valor); } catch {  }
   return true;
 }

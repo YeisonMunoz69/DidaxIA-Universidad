@@ -1,62 +1,3 @@
-"""
-roles_db.py — `PuertoAsignacionDeRoles` sobre `rol_asignacion` (migración 11)
-==============================================================================
-
-⚠️ **Relación con el rol docente, primero.** Este adaptador no lee ni escribe
-`solicitud_docente` ni `DOCENTES_AUTORIZADOS`: ambos sostienen las cuentas
-heredadas. La migración 22 amplía esta autoridad persistente para que las altas
-nuevas de `docente`, igual que las de investigación, sean reversibles y
-auditadas. `estudiante` no se almacena: es la experiencia base.
-
-El permiso `investigador_administrador` sigue siendo el único que autoriza la
-revisión de evidencia; tener `docente` nunca concede esa capacidad.
-
-Revocar no borra
-------------------------
-`revocar()` pone `revocado_en`. La fila se conserva porque una aprobación de hace
-un mes tiene que seguir explicándose: si la asignación desapareciera, esa
-aprobación quedaría hecha por alguien que —según la base— nunca pudo hacerla.
-
-⚠️ Cada cambio de permisos se audita, y en la misma transacción · hito R5
----------------------------------------------------------------------------
-`EQ-023`: *«Cada consulta de una conversación y cada cambio de permisos quedan
-registrados.»* La constancia la escribe `anotar()` con el mismo cursor, así que
-un fallo de auditoría deja el rol **como estaba**. No hay una asignación
-silenciosa: o consta quién la hizo, o no ocurrió.
-
-⚠️ Y cada cambio de permisos se AUTORIZA en esa misma transacción · hito R7-B
-------------------------------------------------------------------------------
-Faltaba la otra mitad, y la revisión la demostró: `asignar()` y `revocar()` no
-volvían a mirar el rol del actor: se fiaban de la comprobación que hacía la ruta
-antes de abrir la transacción. Un sujeto registrado **con el conjunto de roles
-vacío** llamó a `asignar()` directamente y el tercero terminó con
-`investigador_administrador`.
-
-Ahora la autorización la exige `autorizacion_sql.py` con el mismo cursor, y
-además **retiene** la asignación del actor mientras dura la operación, de modo
-que una revocación concurrente no pueda confirmarse entre la comprobación y el
-efecto. Los tres consumidores de esa regla —este módulo, `gobierno_db.py` y
-`menores_db.py`— comparten una sola redacción; antes había tres.
-
-**El bootstrap es la única excepción, y se ve.** `otorgado_por = None` no audita
-ni exige autorización porque no hay actor que registrar ni a quién exigirle nada:
-la primera asignación del sistema no la puede otorgar un investigador —no existe
-todavía— y por eso **ninguna ruta la ofrece**. `POST /api/gobierno/roles` pasa
-siempre el actor de la sesión, así que ningún camino HTTP alcanza esta rama: es
-una operación deliberada del equipo contra la base. Inventar un actor para poder
-auditarla sería fabricar una autoría, que es peor que declarar el hueco.
-
-⚠️ **Nadie se otorga ni se retira el rol a sí mismo**, y la regla vive también
-aquí y no sólo en la ruta (`exigir_actor_distinto()`), por el mismo motivo que la
-anterior: lo que sólo comprueba el borde se salta llamando al repositorio.
-
-El índice único parcial `rol_asignacion_vigente` es quien impide dos asignaciones
-vigentes del mismo rol para la misma persona; `asignar()` lo comprueba además
-antes de escribir para poder dar un motivo en vez de un choque de clave.
-
-
-"""
-
 from __future__ import annotations
 
 from adaptadores.salientes.registro.auditoria_sql import anotar
@@ -69,17 +10,11 @@ from dominio.modelo.oferta_academica import FACULTADES
 from dominio.modelo.roles import AsignacionDeRol, Rol
 from dominio.puertos.almacen import EscrituraRechazada
 
-#: Con qué nombre quedan los dos cambios de permisos en `auditoria_operacion`.
-#: Constantes y no cadenas sueltas: es lo que busca una consulta de auditoría, y
-#: dos redacciones del mismo hecho dejarían la mitad sin aparecer.
+
 OPERACION_ASIGNAR = "rol.asignado"
 OPERACION_REVOCAR = "rol.revocado"
 
-#: Proyección única de identidad y funciones vigentes para lecturas
-#: institucionales. Vive junto a la autoridad de roles para que ningún otro
-#: adaptador vuelva a redactar por su cuenta cómo se interpreta
-#: ``rol_asignacion``; los consumidores la insertan como CTE dentro de su misma
-#: consulta y conservan así un solo corte transaccional, sin N+1.
+
 PRESENTACION_PERSONAS_SQL = """
 presentacion AS MATERIALIZED (
     SELECT p.sujeto_google, p.nombre, p.correo, p.facultad, p.programa, p.semestre,
@@ -104,11 +39,7 @@ presentacion AS MATERIALIZED (
 )
 """
 
-#: Sujetos con una función profesional vigente que no deben aparecer como
-#: estudiantes en analíticas de actividad. La lectura de ``rol_asignacion``
-#: vive junto a la autoridad de roles, igual que ``PRESENTACION_PERSONAS_SQL``;
-#: los consumidores insertan este subquery constante en su propia consulta y
-#: evitan tanto N+1 como una segunda definición de qué rol está vigente.
+
 SUJETOS_PROFESIONALES_VIGENTES_SQL = """
 SELECT sujeto_google
   FROM rol_asignacion
@@ -118,38 +49,11 @@ SELECT sujeto_google
 
 
 class AdaptadorRolesPostgres(RepositorioPostgres):
-    """Las cuatro operaciones del puerto, contra `rol_asignacion`."""
 
     def asignar(
         self, sujeto_google: str, rol: Rol, otorgado_por: str | None = None
     ) -> AsignacionDeRol:
-        """Otorga el rol. Repetirlo estando vigente es un rechazo, no un `UPDATE`.
 
-        Con `otorgado_por` queda auditado en la misma transacción (`EQ-023`); sin
-        él es el bootstrap del equipo — ver la cabecera del módulo.
-
-        ⚠️ **Con actor, el actor se autoriza aquí dentro** (hito R7-B). Hasta esta
-        corrección este método se fiaba de que la ruta hubiera mirado el rol, y la
-        revisión lo aprovechó: un sujeto registrado con el conjunto de roles vacío
-        llamó al adaptador directamente y el tercero terminó con el rol. Ahora la
-        autorización, el efecto y la auditoría comparten cursor y transacción, y
-        la asignación del actor queda **retenida** mientras dura la operación —el
-        porqué del nivel de lock está en `autorizacion_sql.py`—.
-
-        El orden es el contrato:
-
-        1. **el actor no es el sujeto** — barato y no toca la base;
-        2. **el sujeto existe** — `exigir_persona()`, que además serializa por
-           titular. Va antes que la autorización para conservar el contrato del
-           puerto: un sujeto desconocido levanta `ReferenciaDesconocida`, y ese
-           desenlace es el que la ruta traduce a 404;
-        3. **el actor tiene el rol, y se le retiene** hasta el commit;
-        4. **no hay ya una asignación vigente**;
-        5. **el efecto**;
-        6. **la auditoría**, con el mismo cursor.
-
-        Cualquiera que falle deshace las anteriores.
-        """
         rol = Rol(rol)
         with self._escritura() as cnx, cnx.cursor() as cur:
             if otorgado_por is not None:
@@ -181,8 +85,7 @@ class AdaptadorRolesPostgres(RepositorioPostgres):
                     OPERACION_ASIGNAR,
                     actor=otorgado_por,
                     sujeto_afectado=sujeto_google,
-                    # El rol, nada más. Ni correo ni nombre: la auditoría vive
-                    # más que lo que audita.
+
                     detalle={"rol": rol.value},
                 )
         return AsignacionDeRol(
@@ -194,27 +97,9 @@ class AdaptadorRolesPostgres(RepositorioPostgres):
         )
 
     def revocar(self, sujeto_google: str, rol: Rol, revocado_por: str) -> bool:
-        """Cierra la asignación vigente, con autor. `False` si no había ninguna.
-
-        `revocado_por` tiene que ser una persona registrada —`exigir_persona()` lo
-        comprueba antes de escribir— porque `EQ-023` audita cada cambio de
-        permisos: una revocación anónima deja sin explicar por qué alguien pudo
-        aprobar una autorización el mes pasado y hoy no. La base exige la pareja
-        con `rol_asignacion_revocacion_auditada`.
-
-        ⚠️ **Y tiene que ser un investigador administrador vigente** (hito R7-B).
-        Estar registrado como persona no es un permiso: hasta esta corrección
-        bastaba con existir para poder retirarle el rol a cualquiera. No hay aquí
-        una excepción de bootstrap como en `asignar()`, y no la puede haber:
-        revocar presupone que alguien ya tenía el rol, así que siempre hay a quién
-        exigírselo.
-        """
         with self._escritura() as cnx, cnx.cursor() as cur:
             exigir_actor_distinto(revocado_por, sujeto_google)
-            # `exigir_persona()` antes que la autorización, igual que en
-            # `asignar()`: quien no existe sigue levantando `ReferenciaDesconocida`
-            # y la ruta lo sigue traduciendo a 404. Quien existe pero no tiene el
-            # rol cae en la línea siguiente.
+
             exigir_persona(cur, revocado_por)
             exigir_investigador_administrador(cur, revocado_por)
             cur.execute(
@@ -237,7 +122,6 @@ class AdaptadorRolesPostgres(RepositorioPostgres):
             return True
 
     def roles_de(self, sujeto_google: str) -> frozenset[Rol]:
-        """Los vigentes. Conjunto vacío para quien no tiene ninguno."""
         with self._conexion() as cnx, cnx.cursor() as cur:
             cur.execute(
                 """
@@ -249,8 +133,6 @@ class AdaptadorRolesPostgres(RepositorioPostgres):
             return frozenset(Rol(fila[0]) for fila in cur.fetchall())
 
     def asignaciones(self, sujeto_google: str) -> tuple[AsignacionDeRol, ...]:
-        """El historial completo, vigentes y revocadas, de la más antigua a la
-        más reciente."""
         with self._conexion() as cnx, cnx.cursor() as cur:
             cur.execute(
                 """
@@ -279,12 +161,7 @@ class AdaptadorRolesPostgres(RepositorioPostgres):
         self, investigador: str, filtro: str = "", pertenencia: str = "todas",
         clase: str = "",
     ) -> list[dict]:
-        """Cuentas registradas y funciones vigentes, leídas por su autoridad.
 
-        Esta consulta vive aquí —y no en analítica— porque este adaptador es la
-        única autoridad que conoce ``rol_asignacion``. La autorización y la
-        auditoría se resuelven con el mismo cursor que produce el directorio.
-        """
         filtro = str(filtro or "").strip().lower()
         if pertenencia not in {"todas", "con_clase", "sin_clase", "solicitud_pendiente"}:
             raise ValueError("filtro de pertenencia no admitido")
@@ -366,7 +243,7 @@ class AdaptadorRolesPostgres(RepositorioPostgres):
     def asignar_facultad_profesional(
         self, investigador: str, sujeto: str, facultad: str
     ) -> dict | None:
-        """Asigna una facultad a una cuenta docente, con auditoría atómica."""
+
         facultad = str(facultad or "").strip()
         if facultad not in FACULTADES:
             raise ValueError("facultad no admitida")

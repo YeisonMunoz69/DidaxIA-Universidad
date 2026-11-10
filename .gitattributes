@@ -1,6 +1,5 @@
 * text=auto eol=lf
 
-# El manifiesto usa las huellas de los archivos originales.
 contenido/** -text
 *.pdf binary
 *.woff binary

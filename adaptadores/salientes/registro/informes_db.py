@@ -1,5 +1,3 @@
-"""Auditoría transaccional de generación y descarga de informes KPI."""
-
 from __future__ import annotations
 
 import hashlib
@@ -11,7 +9,6 @@ from adaptadores.salientes.registro.base_postgres import RepositorioPostgres
 
 class AuditorDeInformesPostgres(RepositorioPostgres):
     def registrar(self, datos: dict, documento: bytes) -> None:
-        """Confirma la constancia antes de que el borde entregue un solo byte."""
         with self._conexion() as cnx, cnx.cursor() as cur:
             exigir_investigador_administrador(cur, datos["actor"])
             anotar(

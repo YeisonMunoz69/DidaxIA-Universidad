@@ -1,4 +1,3 @@
-/** Evaluación finita del servidor que conserva las restricciones originales. */
 export function compilarCurva(curva) {
   if (!curva?.funcion_js) return null;
   try {

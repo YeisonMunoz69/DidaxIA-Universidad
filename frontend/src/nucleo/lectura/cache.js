@@ -1,4 +1,3 @@
-/** RAM de la sesión. Peticiones compartidas, fallos recuperables, sin disco. */
 const almacenes = new Map();
 const limpiezas = new Set();
 export function registrarLimpiezaDeLectura(limpiar) { limpiezas.add(limpiar); }

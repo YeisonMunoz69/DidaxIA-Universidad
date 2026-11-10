@@ -1,19 +1,20 @@
-"""Descubrimiento inmutable de los SQL numerados que forman la línea base."""
-
 from __future__ import annotations
 
 import hashlib
+import json
 import re
 from dataclasses import dataclass
 from pathlib import Path
 
 PATRON_NOMBRE = re.compile(r"^(?P<version>\d{2})-(?P<nombre>[a-z0-9-]+)\.sql$")
 CONTROL_TRANSACCION = {"BEGIN;", "COMMIT;"}
+HUELLAS_HISTORICAS = json.loads(
+    Path(__file__).with_name("huellas-historicas.json").read_text(encoding="utf-8")
+)
 
 
 class CatalogoInvalido(RuntimeError):
-    """Los archivos no forman una secuencia segura y determinista."""
-
+    pass
 
 @dataclass(frozen=True, slots=True)
 class Migracion:
@@ -23,10 +24,8 @@ class Migracion:
     checksum: str
     sql: str
 
-
 def directorio_predeterminado() -> Path:
     return Path(__file__).resolve().parents[1] / "esquema"
-
 
 def _sql_ejecutable(contenido: str, archivo: str) -> str:
     lineas = contenido.splitlines()
@@ -41,14 +40,11 @@ def _sql_ejecutable(contenido: str, archivo: str) -> str:
             )
         lineas = lineas[1:]
 
-    # El ejecutor gobierna una única transacción para SQL + ledger. Los BEGIN
-    # y COMMIT históricos, aislados en su propia línea, no pueden cerrarla antes.
     lineas = [linea for linea in lineas if linea.strip().upper() not in CONTROL_TRANSACCION]
     sql = "\n".join(lineas).strip()
     if not sql:
         raise CatalogoInvalido(f"{archivo}: la migración quedó vacía")
     return sql
-
 
 def descubrir(directorio: Path | None = None) -> tuple[Migracion, ...]:
     raiz = directorio_predeterminado() if directorio is None else Path(directorio)
@@ -71,12 +67,13 @@ def descubrir(directorio: Path | None = None) -> tuple[Migracion, ...]:
             contenido = bruto.decode("utf-8")
         except UnicodeDecodeError as exc:
             raise CatalogoInvalido(f"{ruta.name}: no está codificado en UTF-8") from exc
+        huella = hashlib.sha256(bruto).hexdigest()
         migraciones.append(
             Migracion(
                 version=version,
                 nombre=coincidencia.group("nombre"),
                 ruta=ruta,
-                checksum=hashlib.sha256(bruto).hexdigest(),
+                checksum=HUELLAS_HISTORICAS.get(huella, huella),
                 sql=_sql_ejecutable(contenido, ruta.name),
             )
         )

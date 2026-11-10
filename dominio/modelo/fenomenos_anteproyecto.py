@@ -1,9 +1,3 @@
-"""Tres indicadores observables del anteproyecto, derivados de trazas reales.
-
-Las trazas son evidencia de decisiones del tutor, no un diagnóstico de la
-persona. Las oportunidades sin seguimiento no se convierten en fracasos.
-"""
-
 from __future__ import annotations
 
 from collections import Counter
@@ -29,7 +23,6 @@ def _metadatos(trazas: object, filtro: str) -> dict:
             return datos if isinstance(datos, dict) else {}
     return {}
 
-
 def _intento_verificable(trazas: list) -> tuple[str, str, str] | None:
     intento = _metadatos(trazas, "verificación del intento del estudiante")
     base, propuesta = intento.get("base"), intento.get("propuesta")
@@ -41,13 +34,7 @@ def _intento_verificable(trazas: list) -> tuple[str, str, str] | None:
         return base, propuesta, veredicto
     return None
 
-
 def _base_historica(activo: object) -> str:
-    """El productor anterior a Semana 4 guardaba el problema como objeto.
-
-    Sólo usa el ejercicio documentado en ESTE turno, no otro mensaje ni una
-    inferencia del texto. No rellena el punto de un límite que no lo tenga.
-    """
     if not isinstance(activo, dict) or activo.get("tipo") not in ("limite", "derivada"):
         return ""
     if not isinstance(activo.get("expresion"), str) or not activo["expresion"].strip():
@@ -56,14 +43,7 @@ def _base_historica(activo: object) -> str:
         return ""
     return base_de_ejercicio(activo)
 
-
 def resumir_trazas(registros: list[dict]) -> dict:
-    """Cuenta diagnósticos y pares corrección→nuevo intento verificable.
-
-    Cada registro representa un turno educativo completo, en orden temporal.
-    Una propuesta repetida se compara sólo dentro del mismo hilo y la misma
-    base matemática; esto es más estrecho que «problemas análogos».
-    """
     ofrecidos = clasificados = intentos_verificables = correcciones = 0
     concepciones = Counter()
     oportunidades = reincidencias = 0
@@ -117,14 +97,9 @@ def resumir_trazas(registros: list[dict]) -> dict:
         "patron_reiterado": reincidencias >= 2,
     }
 
-
 def indicadores_individuales(indicios: dict, resumen: dict, periodo: dict,
                              clase: str, faltantes_traza: int = 0) -> list[dict]:
-    """Calcula las mismas definiciones oficiales para una sola persona.
 
-    La muestra mínima individual es una oportunidad verificable. El catálogo
-    de cohorte conserva su mínimo propio para no publicar proporciones frágiles.
-    """
     tension = next((c for c in indicios.get("componentes", [])
                     if c.get("clave_origen") == "PS-Anx"), {})
     especificaciones = (
@@ -161,10 +136,9 @@ def indicadores_individuales(indicios: dict, resumen: dict, periodo: dict,
         salida.append(resultado)
     return salida
 
-
 def detalle_cobertura(codigo: str, resumen: dict, partes: tuple,
                      faltantes: int = 0) -> dict:
-    """Explica la oportunidad real; muchos turnos no equivalen a diagnósticos."""
+
     x, n = partes
     if codigo == "conductual.ansiedad_matematica":
         motivo = (f"Se analizaron {n} mensajes elegibles; {x} contienen lenguaje reconocido. "

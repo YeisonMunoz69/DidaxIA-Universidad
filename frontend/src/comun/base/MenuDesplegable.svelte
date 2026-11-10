@@ -34,7 +34,6 @@
     if (control.disabled) return;
     sincronizar(); buscar = ''; indice = Math.max(0, control.selectedIndex); ubicar(); abierto = true;
     await tick();
-    // Sólo enfoca búsqueda con teclado/ratón; abrir en móvil no invoca su teclado.
     if (globalThis.matchMedia?.('(pointer: fine)')?.matches) buscador?.focus();
   }
   function cerrar(foco = false) { abierto = false; if (foco && !tactil) control.focus(); }
@@ -72,7 +71,6 @@
     control.addEventListener('pointerdown', pointer); control.addEventListener('click', clic); control.addEventListener('keydown', teclado);
     control.addEventListener('change', cambio);
     document.addEventListener('pointerdown', fuera); window.addEventListener('resize', ubicar); document.addEventListener('scroll', ubicar, true);
-    // La capa de selección se aloja en el mismo diálogo, si lo hay, para preservar su foco y top layer.
     const destino = control.closest('dialog') || document.body;
     destino.appendChild(panel);
     return () => {

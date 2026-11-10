@@ -1,4 +1,3 @@
-/** Descarga un PDF temporal sin conservar bytes ni object URLs en el navegador. */
 
 import { descargarBlob } from './archivo.js';
 

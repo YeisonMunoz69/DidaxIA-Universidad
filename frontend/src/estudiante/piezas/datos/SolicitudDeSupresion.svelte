@@ -1,40 +1,4 @@
-<!--
-El trámite de supresión, reversible · `EQ-022`.
 
-⚠️ ESTO NO BORRA NADA, Y LA PANTALLA NO PUEDE DECIR QUE SÍ
-------------------------------------------------------------
-Lo que había antes en «Mis datos» era un botón «Borrar todos mis datos» que
-llamaba a `DELETE /api/datos-personales`, un diálogo que decía «se borrará toda
-la información y no se puede deshacer» y un recibo que decía «se borró todo lo
-registrado». Las tres afirmaciones eran falsas bajo `EQ-022` y la ruta responde
-410 desde el hito R2: era la vía por la que el trámite entero se saltaba.
-
-Aquí se **abre una solicitud**. Nunca se presenta como «cuenta eliminada»: se
-dice qué se pidió, hasta cuándo se puede cancelar y en qué plazo se resuelve,
-con las fechas que manda el servidor.
-
-LAS TRES CONDICIONES, EN ESTE ORDEN
--------------------------------------
-1. **reautenticación reciente**, acreditada por el servidor con un `id_token`
-   que Google acaba de firmar. El cliente no manda ninguna fecha;
-2. **frase de confirmación**, que valida el **backend**;
-3. **diálogo** con la consecuencia explícita.
-
-⚠️ LA FRASE SE MUESTRA, PERO NO SE VALIDA AQUÍ
-------------------------------------------------
-`frase_correcta()` vive en `dominio/modelo/supresion.py` y ninguna ruta la
-publica, así que el texto de abajo es una **copia para poder enseñarlo**, no una
-comprobación. El botón no se bloquea comparándola: se manda lo que la persona
-escribió y decide el servidor. Si algún día las dos discreparan, el rechazo
-vendría del backend con su motivo —que es lo correcto— en vez de que el
-navegador impidiera un trámite que el servidor sí habría aceptado.
-
-Queda anotado como acoplamiento conocido: lo limpio sería que el backend
-publicara la frase junto al resto del trámite.
-
-
-
--->
 <script>
   import CargadorCubo from '../../../comun/base/CargadorCubo.svelte';
   import Boton from '../../../comun/base/Boton.svelte';
@@ -46,29 +10,21 @@ publicara la frase junto al resto del trámite.
   import { describir, clasificar } from '../../../nucleo/errores/degradacion.js';
 
   let {
-    /** Se llama cuando el trámite cambió, para que la pantalla recargue todo. */
     alCambiar
   } = $props();
 
-  /**
-   * La frase que hay que escribir, **para mostrarla**. Ver la cabecera.
-   * El backend es quien la comprueba; aquí no se usa como condición.
-   */
   const FRASE_VISIBLE = 'ELIMINAR MIS DATOS';
 
-  /** El trámite abierto y el historial, tal como los devolvió el servidor. */
   let tramite = $state(null);
   let cargando = $state(true);
   let fallo = $state('');
 
-  /** Si el servidor ya acreditó una reautenticación reciente en esta sesión. */
   let reautenticada = $state(false);
   let frase = $state('');
   let enviando = $state(false);
   let confirmandoSolicitud = $state(false);
   let confirmandoCancelacion = $state(false);
   let motivoDelServidor = $state('');
-  /** El aviso por correo salió, o no. Se representa; no se finge. */
   let avisoEnviado = $state(null);
 
   const abierta = $derived(tramite?.abierta ?? null);
@@ -83,7 +39,6 @@ publicara la frase junto al resto del trámite.
   function motivoDe(error) {
     const clase = clasificar(error);
     if (clase === 'sin-sesion' && error?.estadoDelServidor === 'reautenticacion_requerida') {
-      // La prueba caducó entre que se acreditó y que se pulsó el botón.
       reautenticada = false;
       return 'Tu comprobación con Google caducó. Vuelve a hacerla y repite la solicitud.';
     }
@@ -104,8 +59,6 @@ publicara la frase junto al resto del trámite.
   }
 
   async function solicitar() {
-    // Dos pulsaciones seguidas serían dos trámites; el segundo recibiría un 409
-    // del servidor, pero el botón no debe permitir llegar ahí.
     if (enviando) return;
     enviando = true;
     motivoDelServidor = '';
@@ -158,7 +111,7 @@ publicara la frase junto al resto del trámite.
     <Boton variante="secundario" onclick={cargar}>Volver a intentarlo</Boton>
 
   {:else if abierta}
-    <!-- Trámite en curso. NUNCA «cuenta eliminada». -->
+
     <div class="en-curso" role="status">
       <p class="en-curso-titulo">
         Tienes una solicitud de eliminación <strong>en curso</strong>.
@@ -291,16 +244,7 @@ publicara la frase junto al resto del trámite.
     <strong>Tus datos no se eliminan ahora.</strong> Tendrás 24 horas para
     cancelarla desde esta misma pantalla.
   </p>
-  <!--
-    ⚠️ AQUÍ SE PROMETÍA EL AVISO POR CORREO COMO UN HECHO, ANTES DE INTENTARLO.
 
-    El envío no está conectado —Resend es una integración pendiente— y el propio
-    backend representa el resultado en `aviso_enviado`, que puede volver `false`
-    sin que el trámite deje de ser válido: `EQ-024` dice que el canal informa y
-    no decide. Prometer el correo antes de saber si salió dejaba a alguien
-    esperando un aviso que quizá nunca llega, y peor, dudando de si su solicitud
-    se registró.
-  -->
   <p>
     El sistema intentará enviarte un aviso a tu correo institucional. Si el
     envío falla, la solicitud sigue siendo válida y esta pantalla te mostrará su
@@ -469,8 +413,6 @@ publicara la frase junto al resto del trámite.
 
   .historial ul { margin: 6px 0 0; padding-inline-start: 1.2em; }
 
-  /* La solicitud conserva sus tres confirmaciones; el peligro se reconoce
-     también antes de habilitarla, sin destellos ni movimiento del texto. */
   .accion-supresion { position: relative; align-self: flex-start; max-inline-size: 100%; isolation: isolate; }
   .accion-supresion :global(button) { position: relative; z-index: 1; min-block-size: 44px; background: var(--cuenta-peligro-solido); color: var(--cuenta-peligro-tinta); border-color: transparent; }
   .accion-supresion :global(button:hover:not(:disabled)) { background: var(--cuenta-peligro-solido); }

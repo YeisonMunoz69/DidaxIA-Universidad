@@ -1,4 +1,3 @@
-/** Oferta académica institucional usada por el alta y la corrección profesional. */
 export const OFERTA_ACADEMICA = Object.freeze({
   'Facultad de Ingeniería': Object.freeze([
     'Tecnología en Desarrollo de Software',

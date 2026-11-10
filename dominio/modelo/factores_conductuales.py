@@ -1,5 +1,3 @@
-"""Rúbrica experimental del anteproyecto, no escala ni diagnóstico personal."""
-
 from dataclasses import asdict, dataclass
 
 VERSION = "anteproyecto.hibrido.experimental.v4"
@@ -59,16 +57,13 @@ class ObservacionConductual:
     def como_dict(self):
         return asdict(self)
 
-
 def validar_factores(datos, mensaje):
-    """Una decisión por factor, anclada al turno; sin etiquetas o confianza libres."""
     if not isinstance(datos, list) or len(datos) != len(NOMBRES):
         raise ValueError("se requieren los tres factores del anteproyecto")
     observaciones = tuple(_validar_uno(d, mensaje) for d in datos)
     if {d.factor for d in observaciones} != set(NOMBRES):
         raise ValueError("factores repetidos o ausentes")
     return observaciones
-
 
 def _validar_uno(dato, mensaje):
     if not isinstance(dato, dict) or not isinstance(dato.get("factor"), str) or dato["factor"] not in NOMBRES:

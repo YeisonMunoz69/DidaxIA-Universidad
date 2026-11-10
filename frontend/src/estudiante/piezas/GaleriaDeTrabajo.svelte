@@ -1,34 +1,4 @@
-<!--
-La galería de trabajo · gráficas y fórmulas de TODA la conversación.
 
-Del mockup —`.tool-section`/`.graph-wrapper`/`.legend`—, con una diferencia
-que el propio mockup no tenía que resolver: ahí solo existía LA gráfica del
-turno actual, una sola tarjeta fija en el panel. Aquí una conversación puede
-traer varias —el pedido fue verlas todas según van apareciendo, no solo la
-última—, así que esto es una lista que crece con el hilo.
-
-SE DERIVA DE LO QUE YA SE ESTÁ MOSTRANDO, NO SE ACUMULA APARTE
-------------------------------------------------------------------
-Quien monta esta pieza pasa el hilo que Conversacion.svelte ya calculó
-—`hiloAMostrar`: en vivo o una conversación pasada, según el carril—, y
-aquí solo se recorre con `$derived`. Ese hilo ya trae todos los bloques de
-todos los turnos, así que no hace falta un segundo `$state` que acumule por
-su cuenta y se pueda desincronizar. Es distinto de `conceptos`, en
-`Conversacion.svelte`: ese SÍ es un acumulador propio, porque `conceptos`
-es un campo de nivel de turno que no vive dentro de `bloques`.
-
-CRONOLÓGICA, EN EL ORDEN DEL HILO. No es «lo último arriba»: es un
-recorrido de la conversación, y el orden en que las cosas se dijeron es
-parte de lo que se está consultando.
-
-CADA GRÁFICA SE REMONTA CON SU PROPIO TABLERO. `Grafica.svelte` ya lo
-soporta —cada instancia inicializa y libera su propio tablero JSXGraph al
-montarse y desmontarse—, así que una lista de varias no es distinta de
-pintar una sola vez por vez: es la misma pieza, repetida.
-
-
-
--->
 <script>
   import { tick } from 'svelte';
   import Grafica from '../../comun/turno/Grafica.svelte';
@@ -46,8 +16,6 @@ pintar una sola vez por vez: es la misma pieza, repetida.
   } from '../../nucleo/presentacion/materialDelHilo.js';
 
   let {
-    /** El hilo que se está mostrando —en vivo o una conversación pasada—,
-        con la forma `{ autor, turno }` del contrato §4.2. */
     hilo = [],
     solicitudGrafica = null,
     alCerrarDesdeChat = null,
@@ -56,24 +24,8 @@ pintar una sola vez por vez: es la misma pieza, repetida.
 
   const items = $derived(itemsDeGaleria(hilo));
 
-  /**
-   * `items`, agrupado por turno.
-   *
-   * No hay todavía un identificador de ejercicio en el contrato —un mismo
-   * problema puede seguir en el turno siguiente y esto no lo sabría—, así
-   * que el turno es la aproximación disponible hoy: lo que se dijo en el
-   * mismo intercambio suele ser del mismo paso. `Map` conserva el orden de
-   * inserción, que ya es cronológico porque `items` lo es.
-   */
   const grupos = $derived(agruparItemsDeGaleria(items));
 
-  /**
-   * Con una sola gráfica, la tarjeta completa —tablero a 135px y leyenda—
-   * es del tamaño que le corresponde a lo único que hay que mostrar. Con
-   * varias, esa misma tarjeta repetida es una lista larga de desplazar
-   * para ver una fila de curvas; a partir de la segunda, cada una se
-   * reduce a una miniatura del tamaño de un botón con su título al lado.
-   */
   const graficas = $derived(items.filter((item) => item.tipo === 'grafica'));
   const hayVariasGraficas = $derived(graficas.length > 1);
   let seleccionada = $state(null);
@@ -100,9 +52,6 @@ pintar una sola vez por vez: es la misma pieza, repetida.
 
   function descripcionVisibleDeGrafica(alternativo) {
     const texto = alternativo || 'Gráfica matemática';
-    // El texto alternativo completo sigue disponible para lectores de pantalla.
-    // En la tarjeta la fórmula ya se pinta con Notacion; repetir la versión
-    // ASCII del servidor produce una segunda expresión sin formato.
     if (texto.includes('$') || !/\b[fg]\([a-zA-Z]\)\s*=/.test(texto)) return texto;
     const cerca = texto.match(/\bcerca de\s+[^.]+/i)?.[0];
     if (cerca) return `Gráfica de la función ${cerca}`;
@@ -143,12 +92,8 @@ pintar una sola vez por vez: es la misma pieza, repetida.
 
   function manejarTeclado(evento) {
     if (!seleccionada) return;
-    // Marca el evento antes de que otros contenedores del shell lo reciban.
-    // El DOM del diálogo puede desaparecer durante el mismo despacho.
     evento.didaxiaDialogo = true;
     if (evento.key === 'Escape') {
-      // La gráfica tiene su propia vista de pantalla completa. El primer
-      // Escape sale de ella; un segundo Escape cierra esta selección.
       if (dialogo?.querySelector('.pantalla-completa')) return;
       evento.preventDefault();
       evento.stopImmediatePropagation();
@@ -227,9 +172,7 @@ pintar una sola vez por vez: es la misma pieza, repetida.
                   <Grafica definicion={item.contenido} alternativo={item.alternativo} {soloLectura}
                            clase={item.clase} conversacion={sesion.conversacion}
                            turno={item.turno} concepto={item.concepto} compacto />
-                  <!-- Mismos dos colores que ya traza `Grafica.svelte` por dentro
-                       —`--color-violet-light`/`--color-amber-chart`—: la leyenda
-                       solo los nombra, no elige ninguno nuevo. -->
+
                   <div class="leyenda">
                     <span class="leyenda-item">
                       <span class="linea funcion" aria-hidden="true"></span> f(x)
@@ -302,10 +245,6 @@ pintar una sola vez por vez: es la misma pieza, repetida.
 {/if}
 
 <style>
-  /* Mismo lenguaje de rótulo que ya usa `PanelDeConceptos`, la otra sección
-     de este panel: mayúsculas pequeñas, terciario, tracking suelto. No se
-     comparte la regla —Svelte no tiene mixins entre componentes—, se repite
-     a propósito para que las dos secciones lean como parte del mismo panel. */
   h2 {
     margin: 0 0 0.4rem;
     font-size: var(--texto-xs);
@@ -327,9 +266,6 @@ pintar una sola vez por vez: es la misma pieza, repetida.
     gap: 10px;
   }
 
-  /* Un turno puede traer varias tarjetas —gráfica y su fórmula, por
-     ejemplo—; ESAS van juntas y sin línea entre ellas. La línea marca el
-     salto a otro intercambio, no cada tarjeta. */
   .grupo-turno {
     margin: 0;
     padding: 0;
@@ -439,20 +375,6 @@ pintar una sola vez por vez: es la misma pieza, repetida.
     gap: 0.35rem;
   }
 
-  /*
-    `background`, Y NO `border`, ES LO QUE HACE ESTO SEGURO DE MEDIR.
-
-    `--color-violet-light`/`--color-amber-chart` están anotados en
-    `tokens.css` como «solo gráfico» — pensados para el trazo de una curva
-    en el tablero, no para el cromado de la interfaz, y por eso
-    `contraste.prueba.js` los mide contra las tres superficies en cuanto
-    aparecen como color de PRIMER PLANO (`border`, `color`, `outline`…) sin
-    fondo propio en la misma regla. `--color-amber-chart` da 1.85 contra
-    `--surface-canvas` — bien para una curva sobre el papel del tablero, mal
-    para lo que ese comprobador exige a un borde. Como `background` cuenta
-    como FONDO y no como primer plano, esta pastilla no entra en esa
-    medición: es tinta plana, no un borde que delimite nada.
-  */
   .linea {
     inline-size: 0.9rem;
     block-size: 0.35rem;

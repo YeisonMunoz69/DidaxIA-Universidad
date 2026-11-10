@@ -1,25 +1,4 @@
-<!--
-El panel de contexto de la conversación · «Conceptos y Recursos».
 
-Lo que el turno nombró, al lado y no debajo. Galería de gráficas/fórmulas
-citadas, conceptos pedagógicos citados, y la ficha de un concepto al
-pulsarlo — las tres cosas van juntas porque las tres dependen del mismo
-hilo y comparten la misma acción de abrir un concepto.
-
-Sacado de `Conversacion.svelte` el 2026-08-22, junto con el resto del
-armazón (`comun/armazon/`, la misma sesión): esa ruta mezclaba el envío del
-turno —lo más crítico del sistema— con toda esta presentación. Aquí solo
-entra el hilo; `enviar()` y el manejo de scroll se quedaron donde estaban,
-porque partirlos habría fragmentado la lógica más importante para separar
-algo que en realidad no la necesita.
-
-`preferencias.panelVisible` decide si esto ocupa una columna en escritorio.
-En teléfono no cabe una tercera columna: un control propio abre el mismo
-contenido como hoja de pantalla completa, sin duplicar la galería ni el banco.
-
-
-
--->
 <script>
   import Icono from '../../comun/base/Icono.svelte';
   import Dialogo from '../../comun/base/Dialogo.svelte';
@@ -33,9 +12,6 @@ contenido como hoja de pantalla completa, sin duplicar la galería ni el banco.
   import { conceptosDelHilo } from '../../nucleo/presentacion/materialDelHilo.js';
 
   let {
-    /** El hilo que se está mostrando —en vivo o una sesión pasada, ver
-        `Conversacion.svelte::hiloAMostrar`—. De aquí salen la galería y
-        los conceptos citados. */
     hilo,
     solicitudGrafica = null,
     alCerrarGraficaDelChat = null,
@@ -73,8 +49,6 @@ contenido como hoja de pantalla completa, sin duplicar la galería ni el banco.
   $effect(() => {
     if (!abiertoMovil || !esMovil) return;
     const alTeclear = (evento) => {
-      // Una capa modal hija consume primero su propio Escape. Cerrar también
-      // el panel dejaría sin destino el retorno de foco de esa capa.
       if (evento.key === 'Escape'
         && !evento.defaultPrevented
         && !evento.didaxiaDialogo
@@ -96,27 +70,10 @@ contenido como hoja de pantalla completa, sin duplicar la galería ni el banco.
     globalThis.requestAnimationFrame?.(() => activador?.focus());
   }
 
-  /** La ficha del concepto que se está leyendo, si hay alguna. */
   let ficha = $state(null);
   let fichaAbierta = $state(false);
   let falloDeFicha = $state(null);
 
-  /*
-    ABRE LA FICHA AQUÍ MISMO Y NO EN OTRA PANTALLA.
-
-    `PanelDeConceptos` existe porque las docentes pidieron «que la regla
-    mencionada sea reconocible SIN SALIR DEL HILO». Mandar a `/conceptos` al
-    pulsar cumpliría la letra y rompería eso: el estudiante pierde el turno que
-    estaba leyendo, que es justo lo que motivó la pieza.
-
-    Hasta el 2026-08-16 no pasaba ninguna de las dos cosas: esta ruta montaba
-    `PanelDeConceptos` **sin `alAbrir`**, y `EnlaceAConcepto` solo se convierte
-    en botón cuando esa función existe. Los conceptos se pintaban y no se podían
-    pulsar.
-
-    Un concepto que el banco no tiene NO se silencia: `describir()` lo cuenta.
-    Que el banco vaya por detrás del generador es información útil.
-  */
   async function abrirConcepto(id) {
     falloDeFicha = null;
     try {
@@ -202,15 +159,8 @@ contenido como hoja de pantalla completa, sin duplicar la galería ni el banco.
   </div>
 </aside>
 
-<!--
-  LA FICHA, ENCIMA DE LA CONVERSACIÓN Y NO EN SU LUGAR.
 
-  `showModal()` de `Dialogo` atrapa el foco y cierra con Esc, así que al cerrar
-  el estudiante vuelve exactamente al turno que estaba leyendo.
--->
-<!-- El título va genérico y no con el nombre del concepto: `FichaDeConcepto`
-     ya lo pinta en su propio encabezado, y repetirlo dejaba el mismo texto dos
-     veces seguidas, una vez para cada lector. -->
+
 <Dialogo bind:abierto={fichaAbierta} titulo="Concepto" class="dialogo-concepto">
   {#if falloDeFicha}
     <Degradacion respuesta={falloDeFicha} alReintentar={null} />
@@ -256,15 +206,12 @@ contenido como hoja de pantalla completa, sin duplicar la galería ni el banco.
     display: none;
   }
 
-  /* El menú principal tiene su propio acceso a Conceptos y a la gráfica.
-     Al abrirlo, el acceso flotante no debe quedar a la vista ni recibir toques. */
   :global(.trabajo:has(.cabecera .mas[open])) .abrir-panel-movil,
   :global(.trabajo:has(.cabecera .menu-profesional)) .abrir-panel-movil {
     visibility: hidden;
     pointer-events: none;
   }
 
-  /* La tercera columna del marco: panel de herramientas */
   .panel {
     inline-size: 20rem;
     min-inline-size: 18rem;
@@ -322,13 +269,6 @@ contenido como hoja de pantalla completa, sin duplicar la galería ni el banco.
   }
 
   .tarjeta-vacia-panel {
-    /* `min-block-size: 0` aquí forzaba a esta tarjeta a encogerse por
-       debajo de lo que su propio contenido —título, párrafo— necesita
-       para no recortarse, y con varias gráficas ya llenando
-       `GaleriaDeTrabajo` encima, se encogía hasta desbordar su propio
-       borde. Sin ese `0`, el flex por defecto (`min-block-size: auto`)
-       respeta el contenido; quien tiene que crecer es `.cuerpo-panel-der`
-       de abajo, que ya se desplaza. */
     flex: 1;
     display: flex;
     flex-direction: column;

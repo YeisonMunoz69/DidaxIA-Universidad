@@ -1,12 +1,3 @@
-/**
- * Construye la evidencia numérica necesaria para una recta tangente.
- *
- * Una pendiente provista por el servidor se contrasta con las dos pendientes
- * laterales. El respaldo numérico sólo se acepta si converge al reducir el paso
- * y, en un punto interior, las pendientes laterales son compatibles. De este
- * modo una cúspide o una derivada infinita no se convierten por accidente en
- * una recta horizontal.
- */
 
 const TOLERANCIA_RELATIVA = 2e-3;
 const TOLERANCIA_ABSOLUTA = 2e-4;

@@ -1,11 +1,4 @@
-<!--
-EQ-033 · Bandeja compartida de solicitudes de matrícula.
 
-El servidor decide qué filas puede ver la sesión: el docente recibe sólo las
-dirigidas a sus clases y el investigador las institucionales. Este componente
-puede acotar una clase para integrarse en `MisClases` sin volver a autorizar en
-el navegador. Aprobar o rechazar siempre vuelve al servidor.
--->
 <script>
   import { onMount } from 'svelte';
   import CargadorCubo from '../base/CargadorCubo.svelte';

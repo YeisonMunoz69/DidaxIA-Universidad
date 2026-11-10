@@ -1,100 +1,4 @@
-<!--
-El área de composición. `PM-F2x` fase 6-c: las fórmulas se editan ya
-renderizadas, con islas de MathLive incrustadas en el texto.
 
-Mezcla texto y fórmulas en un mismo mensaje. Envía lo que el estudiante
-escribió, SIN REESCRIBIRLO.
-
-«SIN REESCRIBIRLO» ES LITERAL, Y ES LO ÚNICO QUE HAY QUE VIGILAR AQUÍ
----------------------------------------------------------------------
-Este componente no recorta espacios, no cambia comillas, no arregla paréntesis
-y no convierte `x2` en `x^2`. `RP-01` obliga a normalizar a forma canónica
-única ANTES de procesar y esa normalización es del servidor: cualquier arreglo
-«inofensivo» de aquí crearía un segundo normalizador, y la garantía de forma
-única dejaría de serlo el día que los dos discrepen.
-
-Lo único que se comprueba antes de enviar es que haya ALGO escrito, y eso no es
-normalizar: es no mandar un turno vacío.
-
-EL CAMPO ES UNA LISTA DE SEGMENTOS, NO UN `<textarea>`
---------------------------------------------------------
-Cada segmento es texto plano (un `<span contenteditable>`) o una fórmula (una
-`<IslaDeFormula>`, ver `nucleo/formato/segmentos.js`). Los dos tipos nunca
-quedan adyacentes del mismo tipo —lo garantiza `aSegmentos()`, la misma
-función que ya usaba el resaltado de esta pantalla—, así que el modelo
-siempre alterna, o es un único tramo de texto.
-
-LO QUE SE ENVÍA SE LEE DEL DOM EN EL INSTANTE DE ENVIAR, NO DEL ESTADO
---------------------------------------------------------------------------
-`segmentos` (el `$state`) gobierna la ESTRUCTURA —cuántos tramos hay, en qué
-orden— para que Svelte sepa qué montar. La cadena que de verdad viaja a
-`alEnviar()` se arma recorriendo `campoMixto.children` en ese instante: cada
-tramo de texto aporta su `textContent`, cada isla aporta `$` + su
-`math-field.value` + `$`. Es la misma garantía que ya tenía un único
-`<textarea>` con `bind:value` —una lectura directa de lo que el navegador
-tiene ahora, nunca una copia que pudo desincronizarse un evento atrás—,
-generalizada de «el `.value` de un control» a «el recorrido de los hijos de
-un contenedor».
-
-LOS TRAMOS DE TEXTO NO SE REESCRIBEN EN CADA TECLA
-------------------------------------------------------
-Si la plantilla interpolara `{s.valor}` dentro del `<span>`, cada pulsación
-dispararía: el navegador ya insertó el carácter → Svelte vuelve a poner ese
-mismo contenido → **el cursor salta al principio**, porque Svelte no sabe
-dónde estaba el caret al reescribir el `textContent`. La acción
-`contenidoInicial` escribe el contenido UNA VEZ, al montar el nodo —cuando
-nace un tramo nuevo: al partir uno en el `$` que cierra una fórmula, al
-insertar un símbolo, al fusionar dos tramos tras borrar la isla entre
-ellos—, y de ahí en adelante el navegador es su dueño. Un tramo que solo
-gana caracteres (tecleo normal, sin cerrar ninguna fórmula) NUNCA cambia de
-identidad —mismo `id`, mismo nodo— y por eso nunca se vuelve a escribir.
-
-UNA ISLA NO NACE VACÍA
---------------------------
-`redactor.prueba.js`/`segmentos-de-redactor.prueba.js` protegen
-`'me costó $50 y no me sale'`: un `$` suelto es un dólar, no el principio de
-una fórmula. Por eso ninguna isla se crea al teclear el primer `$` — nace ya
-con contenido, cuando el segundo `$` cierra el par, o cuando una tecla de
-`TecladoDeNotacion` inserta un fragmento ya completo.
-
-INTRO HACE PÁRRAFO EN TELÉFONO; EN PC ENVÍA, SALVO MAYÚS+INTRO
----------------------------------------------------------------------
-Un `<span contenteditable>` no tiene la garantía de un `<textarea>` sobre lo
-que hace Intro por dentro —insertar un `<div>`, un `<br>`, según el
-navegador—, y un `<br>` no aparece en `textContent`: si el navegador lo
-metiera solo, el salto de línea desaparecería de lo que se envía sin que
-nada lo avisara. Por eso Mayús+Intro inserta un nodo de texto `'\n'` a mano
-—`insertarSaltoDeLinea()`— en vez de confiar en el navegador.
-
-EL BOTÓN NO DESAPARECE MIENTRAS SE ESPERA: se deshabilita. Un control que se
-quita del árbol mueve el foco a donde el navegador decida, y quien navega con
-teclado pierde el sitio en cada turno.
-
-`VistaPreviaDeFormula` YA NO VIVE AQUÍ, Y ES A PROPÓSITO
-------------------------------------------------------------
-Existía para ver que `x^2+1` se dibujaba como se esperaba ANTES de enviar —
-la razón dejó de aplicar el día que las fórmulas empezaron a editarse ya
-renderizadas, en su propia isla, en el mismo sitio donde se escriben. Y
-tenía un costo que no se veía hasta comparar los dos: `VistaPreviaDeFormula`
-llama a `renderizar()` de `notacion.js`, un KaTeX aparte del que ya vive
-dentro de cada `<math-field>` — dos motores pintando la misma fórmula por
-caminos distintos es exactamente la clase de duplicación que este árbol
-evita en todos los demás sitios («dos definiciones de qué es notación
-acaban discrepando», `notacion.js`). Se retiró en vez de mantenerse como
-adorno.
-
-RIESGO QUE ESTE ARCHIVO NO RESUELVE, Y SE DICE
---------------------------------------------------
-Cada tramo de texto es su PROPIO `contenteditable`, no una única región
-compartida —así el mapeo «qué segmento se está editando» es directo, por
-`data-segmento-id`, y no exige leer la selección para adivinarlo—. Falta
-verificar con un lector de pantalla real si el conjunto se anuncia con
-sentido: es la tanda 6-f del plan, no una promesa ya cumplida aquí.
-
-
-Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
-
--->
 <script>
   import { onMount, tick } from 'svelte';
   import Icono from '../../comun/base/Icono.svelte';
@@ -119,41 +23,24 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
   import { serializarDesdeDOM } from './redactor/serializacionDelRedactor.js';
 
   let {
-    /** true mientras hay un turno en vuelo. */
     ocupado = false,
-    /** Se invoca con el texto TAL CUAL. */
     alEnviar,
-    /** ¿Están desplegadas las teclas? Recogidas al empezar: ver `.acciones`. */
     tecladoAbierto = $bindable(false),
-    /** Oculta el acceso flotante al panel mientras se compone el mensaje. */
     editando = $bindable(false)
   } = $props();
 
-  // Un id hoisted y no `segmentos[0].id`: leer el propio `$state` para
-  // fijar el valor inicial de otro solo captura ese primer valor y Svelte
-  // lo avisa (`state_referenced_locally`) porque casi siempre es un
-  // descuido — aquí no lo es, pero se evita la señal de alarma en vez de
-  // acallarla.
   const idInicial = nuevoIdDeSegmento();
 
-  /** @type {import('../../nucleo/formato/segmentos.js').Segmento[]} */
   let segmentos = $state([{ id: idInicial, tipo: 'texto', valor: '' }]);
-  /** El id del último segmento que tuvo el foco — sigue sirviendo de
-      destino para `insertar()` aunque el foco ya se haya ido al botón
-      «Símbolos», que es justo lo que pasa al pulsar una tecla del cajón. */
   let ultimoSegmentoId = $state(idInicial);
-  /** @type {HTMLDivElement | undefined} */
   let campoMixto;
-  /** @type {HTMLFormElement | undefined} */
   let formulario;
-  /** La selección del texto puede perderse al tocar una pestaña del panel. */
   const posicionesDeTexto = new Map();
 
   function pantallaTactil() {
     return typeof window !== 'undefined' && window.matchMedia?.('(pointer: coarse)').matches;
   }
 
-  /** @param {HTMLElement} span */
   function recordarPosicionDeTexto(span) {
     const id = Number(span.dataset.segmentoId);
     const ancla = window.getSelection()?.anchorNode;
@@ -183,28 +70,22 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
     segmentos.some((s) => s.tipo === 'formula' || s.valor.trim().length > 0)
   );
 
-  // ── Foco y caret ──────────────────────────────────────────────────────
 
-  /** @param {FocusEvent} evento */
   function alEnfocarSegmento(evento) {
     editando = true;
-    const objetivo = /** @type {HTMLElement | null} */ (evento.target);
-    const span = /** @type {HTMLElement | null} */ (objetivo?.closest?.('[data-segmento-id]'));
+    const objetivo =  (evento.target);
+    const span =  (objetivo?.closest?.('[data-segmento-id]'));
     if (!span) return;
-    // MathLive no siempre recoge su teclado al salir de la isla. Sobre un
-    // teléfono taparía el editor de texto y competiría con el teclado nativo.
     if (span.classList.contains('segmento-texto')) {
       window.mathVirtualKeyboard?.hide?.();
       if (pantallaTactil()) tecladoAbierto = false;
     } else if (pantallaTactil()) {
-      // MathLive edita la isla; el panel único del redactor aporta las teclas.
       window.mathVirtualKeyboard?.hide?.();
       tecladoAbierto = true;
     }
     ultimoSegmentoId = Number(span.dataset.segmentoId);
   }
 
-  /** @param {number} id */
   function alTocarFormula(id) {
     ultimoSegmentoId = id;
     editando = true;
@@ -214,12 +95,9 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
     }
   }
 
-  /** @param {FocusEvent} evento */
   function alSalirDelRedactor(evento) {
-    const span = /** @type {HTMLElement | null} */ (evento.target)?.closest?.('.segmento-texto');
+    const span =  (evento.target)?.closest?.('.segmento-texto');
     if (span) recordarPosicionDeTexto(span);
-    // El foco puede pasar del math-field (shadow DOM) al texto en el mismo
-    // gesto. Esperar un cuadro evita parpadear el control flotante entre ambos.
     requestAnimationFrame(() => {
       if (!campoMixto?.contains(document.activeElement) && !tecladoAbierto) editando = false;
     });
@@ -228,16 +106,13 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
   function alternarTeclado() {
     window.mathVirtualKeyboard?.hide?.();
     if (tecladoAbierto) {
-      // En navegadores táctiles, pulsar un botón no siempre desenfoca
-      // <math-field>. Sin blur, el siguiente toque no emite focusin y el
-      // teclado no volvería a abrirse.
       if (pantallaTactil()) {
         campoMixto?.querySelector(`[data-segmento-id="${ultimoSegmentoId}"] math-field`)?.blur?.();
       }
       tecladoAbierto = false;
       return;
     }
-    const activo = /** @type {HTMLElement | null} */ (document.activeElement);
+    const activo =  (document.activeElement);
     if (activo?.classList.contains('segmento-texto')) recordarPosicionDeTexto(activo);
     if (pantallaTactil()) activo?.blur?.();
     tecladoAbierto = true;
@@ -245,7 +120,7 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
   }
 
   function cerrarTeclados() {
-    const activo = /** @type {HTMLElement | null} */ (document.activeElement);
+    const activo =  (document.activeElement);
     if (activo?.classList.contains('segmento-texto')) recordarPosicionDeTexto(activo);
     window.mathVirtualKeyboard?.hide?.();
     campoMixto?.querySelectorAll('math-field').forEach((campo) => campo.blur());
@@ -255,30 +130,26 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
   }
 
   onMount(() => {
-    /** @param {PointerEvent} evento */
     const alTocarFuera = (evento) => {
-      if (formulario?.contains(/** @type {Node} */ (evento.target))) return;
-      // Leer, seleccionar o desplazar el hilo no abandona el borrador.
+      if (formulario?.contains( (evento.target))) return;
       if (evento.target instanceof Element && evento.target.closest('.hilo')) return;
       if (!tecladoAbierto && !editando) return;
       tecladoAbierto = false;
       editando = false;
       window.mathVirtualKeyboard?.hide?.();
       if (campoMixto?.contains(document.activeElement)) {
-        /** @type {HTMLElement} */ (document.activeElement)?.blur?.();
+         (document.activeElement)?.blur?.();
       }
     };
     document.addEventListener('pointerdown', alTocarFuera);
     return () => document.removeEventListener('pointerdown', alTocarFuera);
   });
 
-  /** @param {number} indice @param {'inicio'|'final'} extremo */
   function enfocarSegmento(indice, extremo) {
     if (!campoMixto) return;
     enfocarSegmentoEnDOM(campoMixto, segmentos, indice, extremo);
   }
 
-  /** @param {number} indice @param {'forward'|'backward'} direccion */
   function moverFocoHacia(indice, direccion) {
     const vecino = direccion === 'forward' ? indice + 1 : indice - 1;
     if (vecino >= 0 && vecino < segmentos.length) {
@@ -292,14 +163,10 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
     });
   }
 
-  // ── El tramo de texto: escribir, partir, pegar, saltar el borde ────────
 
-  /** @param {number} id @param {HTMLElement} span */
   function actualizarValorDelSegmento(id, span) {
     const contenido = span.textContent ?? '';
     const resultado = actualizarTexto(segmentos, id, contenido);
-    // Una fórmula final necesita un destino de texto real para continuar con
-    // el teclado del teléfono. No se añade nada al mensaje: el tramo va vacío.
     segmentos = resultado.segmentos.at(-1)?.tipo === 'formula'
       ? [...resultado.segmentos, segmentoDeTexto('')]
       : resultado.segmentos;
@@ -308,21 +175,19 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
     }
   }
 
-  /** @param {number} id @param {Event} evento */
   function alEscribirEnTexto(id, evento) {
-    const span = /** @type {HTMLElement} */ (evento.currentTarget);
+    const span =  (evento.currentTarget);
     const contenido = span.textContent ?? '';
     span.dataset.vacio = contenido.length === 0 ? 'true' : 'false';
     recordarPosicionDeTexto(span);
     actualizarValorDelSegmento(id, span);
   }
 
-  /** @param {number} id @param {KeyboardEvent} evento */
   function alTeclearEnTexto(id, evento) {
     if (evento.isComposing || evento.keyCode === 229) return;
     const indice = segmentos.findIndex((s) => s.id === id);
     if (indice === -1) return;
-    const span = /** @type {HTMLElement} */ (evento.currentTarget);
+    const span =  (evento.currentTarget);
 
     if (evento.key === 'Enter') {
       evento.preventDefault();
@@ -347,7 +212,7 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
           tick().then(() => {
             if (!campoMixto) return;
             const nodoAnt = campoMixto.querySelector(`[data-segmento-id="${anterior.id}"]`);
-            if (nodoAnt) colocarCaret(/** @type {HTMLElement} */ (nodoAnt), 'final');
+            if (nodoAnt) colocarCaret( (nodoAnt), 'final');
           });
         }
         return;
@@ -371,7 +236,6 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
     }
   }
 
-  /** Algunos teclados móviles insertan un párrafo sin emitir keydown. */
   function antesDeEscribir(id, evento) {
     if (evento.isComposing || !['insertParagraph', 'insertLineBreak'].includes(evento.inputType)) return;
     evento.preventDefault();
@@ -380,25 +244,21 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
     actualizarValorDelSegmento(id, span);
   }
 
-  /** @param {number} id @param {ClipboardEvent} evento */
   function alPegar(id, evento) {
     evento.preventDefault();
     const texto = evento.clipboardData?.getData('text/plain') ?? '';
     if (!insertarTextoEnSeleccion(texto)) return;
-    const span = /** @type {HTMLElement} */ (evento.currentTarget);
+    const span =  (evento.currentTarget);
     actualizarValorDelSegmento(id, span);
   }
 
-  // ── La isla: salir por el borde, borrarla entera ────────────────────────
 
-  /** @param {number} id @param {'forward'|'backward'} direccion */
   function alSalirDeIsla(id, direccion) {
     const indice = segmentos.findIndex((s) => s.id === id);
     if (indice === -1) return;
     moverFocoHacia(indice, direccion);
   }
 
-  /** @param {number} id */
   function eliminarIsla(id) {
     const resultado = eliminarFormula(segmentos, id);
     segmentos = resultado.segmentos;
@@ -406,21 +266,19 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
       if (!campoMixto || !resultado.foco) return;
       const nodo = campoMixto.querySelector(`[data-segmento-id="${resultado.foco.id}"]`);
       if (nodo) {
-        colocarCaretEnPosicion(/** @type {HTMLElement} */ (nodo), resultado.foco.posicion);
+        colocarCaretEnPosicion( (nodo), resultado.foco.posicion);
       }
     });
   }
 
-  // ── El teclado de símbolos: inserta en el tramo activo ────────────────
 
-  /** @param {string} fragmentoConDelimitadores p.ej. `'$\\frac{a}{b}$'` */
   function insertar(fragmentoConDelimitadores) {
     const latex = fragmentoConDelimitadores.slice(1, -1);
     const indice = segmentos.findIndex((s) => s.id === ultimoSegmentoId);
     const segmento = indice === -1 ? null : segmentos[indice];
 
     if (segmento?.tipo === 'formula') {
-      const nodo = /** @type {any} */ (
+      const nodo =  (
         campoMixto?.querySelector(`[data-segmento-id="${segmento.id}"] math-field`)
       );
       nodo?.focus?.();
@@ -430,7 +288,7 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
 
     const indiceTexto = indice === -1 || segmento?.tipo !== 'texto' ? segmentos.length - 1 : indice;
     const sTexto = segmentos[indiceTexto];
-    const span = /** @type {HTMLElement|null} */ (
+    const span =  (
       campoMixto?.querySelector(`[data-segmento-id="${sTexto?.id}"]`)
     );
 
@@ -446,11 +304,10 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
     });
   }
 
-  /** @param {string | [string, string]} comando */
   function ejecutarComandoDeTeclado(comando) {
     const segmento = segmentos.find((s) => s.id === ultimoSegmentoId);
     if (segmento?.tipo === 'texto') {
-      const span = /** @type {HTMLElement|null} */ (
+      const span =  (
         campoMixto?.querySelector(`[data-segmento-id="${segmento.id}"]`)
       );
       if (!span) return;
@@ -513,7 +370,7 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
       return;
     }
     if (segmento?.tipo !== 'formula') return;
-    const nodo = /** @type {any} */ (
+    const nodo =  (
       campoMixto?.querySelector(`[data-segmento-id="${segmento.id}"] math-field`)
     );
     if (!nodo) return;
@@ -525,7 +382,6 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
     nodo.executeCommand?.(comando);
   }
 
-  /** Somete el turno: texto con `$…$` de vuelta. `RP-01`. */
   function enviar() {
     if (ocupado) return;
     const desdeDOM = serializarDesdeDOM(campoMixto);
@@ -538,11 +394,10 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
     tick().then(() => enfocarSegmento(0, 'inicio'));
   }
 
-  /** @param {HTMLElement} nodo */
   function escucharClicEnCaja(nodo) {
     const alInteractuar = (evento) => {
       if (evento.defaultPrevented || evento.button !== 0) return;
-      const objetivo = /** @type {HTMLElement} */ (evento.target);
+      const objetivo =  (evento.target);
       if (
         objetivo.closest('button') ||
         objetivo.closest('math-field') ||
@@ -554,9 +409,6 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
       const ultimo = segmentos.length - 1;
       enfocarSegmento(ultimo >= 0 ? ultimo : 0, 'final');
     };
-    // Tras completar el gesto: en pointerdown el foco nativo del fondo lo
-    // quitaba de nuevo. click mantiene el foco dentro del gesto del usuario
-    // para el teclado táctil y no se dispara al desplazar la caja.
     nodo.addEventListener('click', alInteractuar);
     return {
       destroy() {
@@ -607,7 +459,7 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
             <span class="segmento segmento-formula" data-segmento-id={s.id}>
               <IslaDeFormula bind:valor={s.valor}
                              alInteractuar={() => alTocarFormula(s.id)}
-                             alSalir={(/** @type {'forward'|'backward'} */ direccion) =>
+                             alSalir={(direccion) =>
                                alSalirDeIsla(s.id, direccion)}
                              alEliminar={() => eliminarIsla(s.id)}
                              alEnviar={enviar} />
@@ -660,16 +512,7 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
     </div>
   </div>
 
-  <!--
-    EL CAJÓN SE QUEDA MONTADO, Y ES `inert` QUIEN LO CIERRA.
 
-    `grid-template-rows: 0fr → 1fr` anima hasta el alto de contenido —
-    `height: 0 → auto` no se anima en CSS estándar—, y por eso el cajón se
-    queda siempre en el árbol, colapsado por CSS y no por montaje. Lo cierra
-    `inert`, el mismo mecanismo que ya usa el carril/panel del armazón para
-    su propio cajón: sin él, doce botones quedarían alcanzables por teclado
-    aunque no se vean.
-  -->
   <div class="cajon-teclado" id="teclado-de-notacion"
        class:abierto={tecladoAbierto} inert={!tecladoAbierto}>
     <div class="cajon-interior">
@@ -686,7 +529,6 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
 
 <style>
   .cerrar-teclados { display: none; }
-  /* --corte-escritorio de tokens.css; CSS no admite var() en esta consulta. */
   @media (max-width: 75rem), (pointer: coarse) {
     .cerrar-teclados { position: absolute; inset-block-start: 2px; inset-inline-end: 2px;
       z-index: 4; display: grid; place-items: center; inline-size: 44px; block-size: 44px;
@@ -699,30 +541,10 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-    /* NO `max-inline-size: var(--ancho-lectura)`: ese tope es para prosa
-       —párrafos, burbujas de `Turno.svelte`— y aquí encogía el redactor
-       muy por debajo de lo que ya deja libre `.pie` en
-       `Conversacion.svelte`, angostando de paso el teclado de notación
-       que vive dentro. El ancho lo pone quien nos envuelve. */
     inline-size: 100%;
     transition: var(--transition);
   }
 
-  /*
-    LA CAJA FLOTANTE, DEL MOCKUP —`.input-box`—.
-
-    Agrupa el campo y la fila de acciones en un solo panel con su propio
-    fondo, y se resalta entera al enfocar cualquier tramo de dentro
-    (`:focus-within`). El borde de VERDAD —el que `WCAG 2.2 · 1.4.11` exige
-    medido— sigue siendo el de `.campo-mixto`, más abajo, sin tocar: este
-    panel es un marco alrededor, no un sustituto.
-
-    Sin gradiente y sin sombra fuerte, que es la misma regla que ya declara
-    `Boton.svelte` para los botones: el lenguaje de este proyecto los
-    prohíbe los dos, y el mockup los usa en su versión de esta caja. Un
-    fondo plano y un resalte de foco bastan para el mismo efecto de "panel
-    que responde".
-  */
   .caja-de-entrada {
     position: relative;
     display: flex;
@@ -760,17 +582,6 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
 
   .etiqueta { font-size: var(--texto-sm); font-weight: 500; }
 
-  /*
-    EL CAMPO MIXTO: TEXTO Y FÓRMULAS EN EL MISMO FLUJO.
-
-    Los tramos permanecen inline para que una fórmula intercalada no convierta
-    la prosa larga en columnas flexibles con espacio muerto a la derecha. Cada tramo de texto es su
-    propio `contenteditable`; cada isla, un componente aparte. El navegador
-    reparte el cursor y el foco entre ellos con el mismo mecanismo que entre
-    cualquier par de elementos enfocables — lo que SÍ hace falta a mano es
-    saltar el borde cuando el vecino es una isla, y eso lo hacen los
-    manejadores de teclado del guion, no esta hoja de estilos.
-  */
   .campo-mixto {
     position: relative;
     display: block;
@@ -865,9 +676,6 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
     }
   }
 
-  /* Oculto hasta que se necesita —al pasar el ratón o al enfocar algo
-     dentro de la isla—, y NO con `display`/`visibility`: sigue alcanzable
-     por teclado y por lector de pantalla aunque no se vea todavía. */
   .eliminar-formula {
     display: inline-flex;
     align-items: center;
@@ -901,9 +709,6 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
 
   .ayuda code { font-family: var(--fuente-mono); }
 
-  /* Los símbolos a la izquierda y el envío a la derecha: la acción que cierra
-     el turno queda donde el pulgar la busca, y la que solo ayuda a escribir no
-     compite con ella. */
   .acciones {
     display: flex;
     align-items: center;
@@ -1034,17 +839,6 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
     }
   }
 
-  /*
-    EL CAJÓN SE COLAPSA CON `grid-template-rows`, NO CON `height`.
-
-    `height: 0 → auto` —lo que hace el mockup— no se anima en CSS estándar:
-    el navegador salta a `auto`, no interpola hacia él. `grid-template-rows`
-    con unidades `fr` sí admite transición, y es la técnica real para
-    animar algo hasta su alto de contenido. `overflow: hidden` en
-    `.cajon-interior` es quien de verdad recorta mientras la fila mide
-    `0fr` — sin él el contenido se saldría por fuera del recorte de la
-    rejilla.
-  */
   .cajon-teclado {
     display: grid;
     grid-template-rows: 0fr;
@@ -1066,14 +860,6 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
 
   .cabecera-teclado-movil { display: none; }
 
-  /* ── Móvil y tableta ──────────────────────────────────────────────────
-     `05` §10: aquí el teclado de notación es la vía principal de escribir
-     matemática, así que lo que se recorta es el área de prosa —de tres
-     renglones a dos— y no él. Mismo corte que `TecladoDeNotacion.svelte`
-     a propósito: el teclado sigue en rejilla plana en las dos bandas
-     estrechas —`D-31`—, y este redactor va con él. `75rem` ==
-     `--corte-escritorio`; `@media` no admite `var()`, el literal se
-     repite a propósito. */
 
   @media (max-width: 75rem) {
     .redactor { gap: 0.45rem; }

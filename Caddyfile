@@ -1,76 +1,15 @@
-# Caddyfile — Borde HTTP de producción · `PM-B23` · dos superficies desde `D1A`
-# =============================================================================
-#
-# Caddy y no nginx+certbot: es la misma cobertura —TLS automático, proxy
-# inverso, estáticos— con una pieza menos que renovar a mano. `RD-20` pide
-# TLS y esto lo cumple sin script de cron.
-#
-# DOS SUPERFICIES Y UN ALIAS CANÓNICO · `D0` §10.1
-# ------------------------------------------------------------------
-#   · `{$DOMINIO}`         la APLICACIÓN — en producción `app.didaxia.pro`
-#   · `{$DOMINIO_PUBLICO}` la PRESENCIA PÚBLICA — en producción `didaxia.pro`
-#   · `www.didaxia.pro`   sólo redirige hacia la presencia pública canónica
-#
-# `DOMINIO` conserva su nombre y su significado: era la dirección del tutor
-# antes de `D1A` y lo sigue siendo. Renombrarla habría dejado un despliegue
-# existente sirviendo en el puerto por defecto sin que nadie lo notara.
-#
-# ⚠️ **SÓLO EL SITIO DE LA APLICACIÓN PROXIFICA `/api/*`.** En el dominio
-# público esa misma petición se responde con un 404 dentro de Caddy: no llega
-# al backend y **no devuelve `indice.html`**, que es el fallo silencioso que
-# tendría un sitio sin ese bloque —`try_files` cubriría el hueco y el navegador
-# recibiría HTML donde espera JSON—. Es exactamente el defecto que
-# `vite.config.js::entradaEnEspanol()` documenta para el servidor de
-# desarrollo, con la diferencia de que aquí además sería una puerta al backend
-# desde un origen que no debe tenerla.
-#
-# Los dos sitios comparten el MISMO directorio estático porque las dos
-# superficies salen del mismo paquete y la elige el nombre de servidor con el
-# que se abrió (`src/nucleo/configuracion/superficie.js`). Compartirlo no es
-# ambiguo: cada bloque declara su `root` explícitamente, y ninguno hereda nada
-# del otro.
-#
-# EL MODO LOCAL SIGUE SIENDO LA APLICACIÓN EN `:80`
-# ----------------------------------------------------
-# `compose.produccion.yaml` da a `DOMINIO` el valor por defecto `:80` y a
-# `DOMINIO_PUBLICO` el valor `:8081`, que **no se publica en el host**: probar
-# el compose de producción en un equipo sin dominio levanta el tutor en el
-# puerto 80, igual que antes de `D1A`. Para ver la portada en local está
-# `npm run dev-publico` (`http://localhost:5174`), que es lo que documenta
-# `package.json`.
-#
-# ⚠️ La sintaxis del valor por defecto es `{$VARIABLE:respaldo}`. Hasta `D1A`
-# aquí decía `{$DOMINIO:-:80}` —con el guion de la sustitución del shell, que
-# Caddy no interpreta—, así que el respaldo real era la cadena `-:80` y no
-# `:80`. No se notaba porque `compose.produccion.yaml` siempre define la
-# variable; se corrige para que el archivo haga lo que su propio comentario
-# decía.
-
-# ── La aplicación del tutor · `app.didaxia.pro` ─────────────────────────────
 {$DOMINIO::80} {
-	# El frontend construye `indice.html`, no `index.html` — mismo motivo
-	# que en `vite.config.js`: `07-Estructura-del-Frontend.md` §2 pone el
-	# proyecto en español y el nombre por defecto de la herramienta no manda.
 	root * /srv/frontend
 	encode gzip
 
-	# `/api` a secas y `/api/*`. Los dos, porque el matcher `/api/*` NO
-	# cubre `/api` sin barra y ésa acabaría cayendo en `try_files` y
-	# devolviendo el documento HTML. `vite.config.js` ya excluye los dos en
-	# desarrollo, por lo mismo.
 	@api path /api /api/*
 
-	# Las fases NDJSON se entregan en cuanto llegan, durante el trabajo de DD-11.
 	handle @api {
 		reverse_proxy backend:8000 {
 			flush_interval -1
 		}
 	}
 
-	# Todo lo demás es del árbol que enruta con la historia del navegador
-	# (`PM-F05`): una ruta como `/supervision` no es un archivo y tiene que
-	# devolver `indice.html` para que Svelte la resuelva del lado del
-	# cliente — la misma regla que `entradaEnEspanol()` aplica en Vite.
 	handle {
 		try_files {path} /indice.html
 		file_server {
@@ -79,48 +18,28 @@
 	}
 }
 
-# ── Alias público · certificado TLS propio y redirección canónica ──────────
-# Declarar el nombre aquí permite a Caddy obtener el certificado de www.
-# El destino conserva ruta y parámetros: Search Console puede seguir
-# /robots.txt sin encontrar una página HTML ni un fallo de TLS.
 {$DIDAXIA_ALIAS_CADDY:www.didaxia.pro} {
 	redir {$ORIGEN_PUBLICO:https://didaxia.pro}{uri} permanent
 }
 
-# ── La presencia pública · `didaxia.pro` ────────────────────────────────────
 {$DOMINIO_PUBLICO::8081} {
 	root * /srv/frontend
 	encode gzip
 
 	@api path /api /api/*
 
-	# FALLO CERRADO. Ni proxy al backend, ni `try_files`, ni `indice.html`:
-	# en este dominio el API no existe y se dice con un 404 dentro de Caddy.
-	#
-	# Va como bloque propio y no como una omisión porque **omitirlo no
-	# cerraría nada**: sin él, `handle` de abajo respondería `indice.html`
-	# con estado 200 a cualquier `/api/...`, y un cliente mal configurado
-	# apuntando a este dominio recibiría HTML creyendo que habla con el
-	# tutor. Un 404 explícito es la diferencia entre «aquí no hay API» y
-	# «aquí el API contesta cosas raras».
 	handle @api {
 		respond "El API del tutor no se sirve en este dominio." 404 {
 			close
 		}
 	}
 
-	# Los archivos de descubrimiento se sirven como texto o fallan con 404.
-	# Nunca deben caer al fallback de la SPA, que respondería indice.html.
 	@textoPublico path /robots.txt /llms.txt /llm.txt
 	handle @textoPublico {
 		header Content-Type "text/plain; charset=utf-8"
 		file_server
 	}
 
-	# Las rutas públicas —`/`, `/privacidad`, `/condiciones`,
-	# `/investigacion`— tampoco son archivos: mismo `try_files` que arriba,
-	# sobre el mismo paquete. Qué superficie se monta lo decide el navegador
-	# con el nombre de servidor, no este bloque.
 	handle {
 		try_files {path} /indice.html
 		file_server {

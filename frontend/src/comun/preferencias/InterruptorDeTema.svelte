@@ -1,4 +1,4 @@
-<!-- Interruptor común de tema, inspirado en cielo diurno/nocturno. -->
+
 <script>
   import { ayudaContextual } from '../base/ayudaContextual.js';
   let { oscuro = false, alCambiar = () => {} } = $props();

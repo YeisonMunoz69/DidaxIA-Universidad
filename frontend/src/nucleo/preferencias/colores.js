@@ -1,4 +1,3 @@
-/** Catálogo visual autorizado por el equipo. Los colores semánticos no se editan. */
 export const PALETAS = [
   ['ambar','Ámbar y cielo','#A84D08','#FBBF24','#147AB6','#38BDF8'],
   ['zafiro','Zafiro real','#1E4F85','#9CC8F6','#C68A3B','#F5CC91'],
@@ -55,8 +54,6 @@ function familiaCercana(hex,campo) {
 }
 export function normalizarColores(datos) {
   const base = configuracionDe(datos?.paleta);
-  // Compatibilidad de lectura: antiguos hexadecimales se aproximan al catálogo.
-  // No vuelven a ser valores libres ni se envían como CSS personalizado.
   for (const modo of ['Claro','Oscuro']) {
     if (HEX.test(datos?.['acento'+modo] ?? '')) {
       const fuente=familiaCercana(datos['acento'+modo],'acento'+modo);
@@ -126,7 +123,6 @@ export function tokensDeColor(datos,oscuro) {
   const c=normalizarColores(datos), modo=oscuro ? 'Oscuro' : 'Claro';
   const tokens={...tokensDePaleta(c.paleta,oscuro)};
   for (const parte of PARTES_COLOR) tokens[parte.token]=tokensDePaleta(c[parte.id+modo],oscuro)[parte.token];
-  // Mezclar familias sigue conservando lectura sobre las superficies elegidas.
   const fondos=['--surface-paper','--surface-panel','--surface-canvas','--accent-surface','--accent-surface-hover'].map(k=>tokens[k]);
   for (const clave of ['--accent-main','--accent-hover','--accent-light']) tokens[clave]=calibrar(tokens[clave],fondos,oscuro);
   tokens['--decorative-contrast-glow']=`rgba(${rgb(tokens['--decorative-contrast']).join(',')},0.1)`;
@@ -136,7 +132,6 @@ export function aplicarColores(datos,oscuro,nodo=globalThis.document?.body) {
   if (!nodo) return;
   const c=normalizarColores(datos);
   const tokens=tokensDeColor(c,oscuro);
-  // Sin elecciones, la identidad y los dos halos actuales permanecen exactos.
   const original=JSON.stringify(c)===JSON.stringify(COLOR_INICIAL);
   for (const [clave,valor] of Object.entries(tokens)) {
     if (original && clave!=='--decorative-contrast') nodo.style.removeProperty(clave);
@@ -145,7 +140,6 @@ export function aplicarColores(datos,oscuro,nodo=globalThis.document?.body) {
   nodo.dataset.paleta=c.paleta;
   if (nodo === globalThis.document?.body) {
     const documento=nodo.ownerDocument;
-    // Lee el fondo efectivo: la identidad inicial conserva los tokens del CSS.
     const papel=documento.defaultView.getComputedStyle(nodo).getPropertyValue('--surface-paper').trim()
       || tokens['--surface-paper'];
     documento.documentElement.style.backgroundColor=papel;
@@ -157,7 +151,6 @@ export function aplicarColores(datos,oscuro,nodo=globalThis.document?.body) {
       documento.head.append(etiqueta);
       etiquetas=[etiqueta];
     }
-    // Ambas alternativas siguen el tema de la aplicación, incluso si difiere del sistema.
     for (const etiqueta of etiquetas) etiqueta.content=papel;
   }
 }
@@ -168,5 +161,5 @@ export function leerColoresPublicos() {
 }
 export function guardarColoresPublicos(colores) {
   try { globalThis.localStorage?.setItem(CLAVE_COLOR_PUBLICO,JSON.stringify(normalizarColores(colores))); }
-  catch { /* la vista sigue funcionando cuando el almacenamiento está bloqueado */ }
+  catch {  }
 }

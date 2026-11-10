@@ -1,7 +1,3 @@
-// Confirmación única para acciones explícitas. El componente raíz resuelve la
-// promesa; cancelar, Esc y cerrar son equivalentes y no ejecutan la acción.
-// Con alternativa optativa, la tercera decisión resuelve 'alternativa'; las
-// dos decisiones habituales conservan su contrato booleano.
 let solicitud = $state(null);
 let resolverActual = null;
 

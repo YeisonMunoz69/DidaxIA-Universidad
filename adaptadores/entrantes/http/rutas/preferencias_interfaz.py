@@ -1,4 +1,3 @@
-"""Consulta y cambios de apariencia exclusivamente para el titular de la sesión."""
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
 

@@ -1,21 +1,3 @@
-/**
- * Qué se investiga con DidaxIa, y qué se hará con lo que se observe.
- *
- * ⚠️ **NO PROMETE PUBLICAR NINGÚN PDF.** `ESTADO-ACTUAL.md` §10.7 es
- * explícito: que una obra sea descargable no demuestra autorización para
- * redistribuirla, y cada una necesita evidencia individual de licencia. Aquí
- * se describe el aporte de digitalización sin comprometer una biblioteca
- * pública que hoy no se puede sostener.
- *
- * ⚠️ **LA PARTICIPACIÓN ES VOLUNTARIA Y SE DICE DOS VECES**: al describir el
- * piloto y al describir los datos. Un texto de investigación que sólo lo
- * menciona en una nota final está escrito para el expediente, no para quien
- * decide.
- *
- * Mismo formato que `privacidad.js` y `condiciones.js`; lo pinta
- * `piezas/DocumentoPublico.svelte`.
- *
- */
 import { AUTORES, INSTITUCION, MARCA, MATERIALES_ESTUDIO } from './proyecto.js';
 
 export const INVESTIGACION = Object.freeze({

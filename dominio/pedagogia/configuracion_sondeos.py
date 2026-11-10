@@ -1,5 +1,3 @@
-"""Estado curricular compartido entre el panel investigador y la oferta digital."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -37,7 +35,6 @@ class ConfiguracionSondeos:
             "umbral_intentos": self.umbral_intentos,
             "actualizado_en": self.actualizado_en,
         }
-
 
 class PuertoConfiguracionSondeos(Protocol):
     def consultar(self) -> ConfiguracionSondeos: ...

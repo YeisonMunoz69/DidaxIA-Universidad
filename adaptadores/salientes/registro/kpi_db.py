@@ -1,46 +1,3 @@
-"""
-kpi_db.py — El cálculo del catálogo KPI v1.1, autorizado y auditado
-=====================================================================
-
-Orquesta las nueve lecturas de `kpi_consultas.py`, las pasa por
-`kpi_armado.py` y devuelve resultados del catálogo. Lo que decide **aquí** y no
-en la ruta son las dos cosas que no se pueden delegar al borde.
-
-La autorización vive dentro de la transacción
---------------------------------------------------------
-Para el docente, la propiedad de la clase se comprueba y retiene con `FOR
-SHARE`; una clase ajena se rechaza. Además, cada lectura conserva la condición
-`c.creador = %s` de `alcance_sql()`: el chequeo explícito da una negativa clara
-y la consulta acotada mantiene la defensa en profundidad dentro de la misma
-transacción.
-
-Para el investigador, `exigir_investigador_administrador()` lee y **retiene** su
-asignación con `FOR SHARE` hasta el commit. Una revocación concurrente no puede
-confirmarse mientras la lectura ocurre.
-
-La auditoría se escribe ANTES de leer
-------------------------------------------------
-`auditoria_sql.py` lo explica: para una lectura hay que anotar antes del
-`SELECT`, de modo que un fallo de auditoría impida devolver lo leído. Al revés,
-los agregados ya habrían salido y el registro faltaría. Las dos van en la misma
-transacción, así que o quedan las dos o no queda ninguna (`EQ-023`).
-
-⚠️ **Sólo se audita la lectura institucional.** Un docente consultando su propia
-clase hace su trabajo ordinario, y anotar cada carga del panel llenaría
-`auditoria_operacion` —la tabla que más sobrevive— con el uso normal del
-producto. Lo que `EQ-023` manda auditar es el acceso institucional a datos de
-personas que no son las suyas, y eso es exactamente lo que se anota.
-
-Qué NO hace este adaptador
------------------------------------
-No construye rankings. No hay ningún `ORDER BY` sobre docentes ni ninguna
-consulta que los ordene por cifra: el encargo lo prohíbe y la ausencia es la
-forma de cumplirlo. `institucion.estudiantes_activos_por_clase` publica una
-distribución justamente para no publicar un orden.
-
-
-"""
-
 from __future__ import annotations
 
 from datetime import UTC, datetime
@@ -67,24 +24,15 @@ from dominio.modelo.observables_dialogo import resumir_observables
 from dominio.modelo.telemetria import TipoDeEvento
 from dominio.puertos.almacen import EscrituraRechazada
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from dominio.kpi.consulta import ConsultaKPI
 
-#: Con qué nombre queda registrada una lectura institucional de indicadores.
-#: Constante por el mismo motivo que en `inventario_db.py` y `historial.py`: una
-#: consulta de auditoría que buscara otra redacción no encontraría nada.
 OPERACION_KPI = "consultar_kpi_institucional"
 
 
 class AdaptadorKPIPostgres(RepositorioPostgres):
-    """`PuertoCalculoKPI` sobre PostgreSQL."""
 
     def calcular(self, consulta: ConsultaKPI) -> dict:
-        """Los indicadores del alcance, con su periodo, filtros y metodología.
-
-        Devuelve un diccionario ya serializable: la ruta no vuelve a recorrer
-        los resultados, de modo que no pueda añadir ni quitar campos al pasar.
-        """
         institucional = consulta.alcance is Alcance.INSTITUCIONAL
         condicion, parametros = alcance_sql(
             consulta.clase,
@@ -98,7 +46,7 @@ class AdaptadorKPIPostgres(RepositorioPostgres):
         with self._conexion() as cnx, cnx.cursor() as cur:
             if institucional:
                 exigir_investigador_administrador(cur, consulta.actor)
-                # ⚠️ Antes de leer. Ver la cabecera.
+
                 corte_secuencia, corte_instante = anotar(
                     cur,
                     OPERACION_KPI,
@@ -113,9 +61,7 @@ class AdaptadorKPIPostgres(RepositorioPostgres):
                     },
                 )
             else:
-                # Una clase ajena se niega de forma explícita. Mantener además
-                # ``c.creador = actor`` dentro de cada lectura conserva la
-                # defensa en profundidad si este chequeo cambia algún día.
+
                 cur.execute(
                     "SELECT 1 FROM clase WHERE id = %s AND creador = %s "
                     "AND archivada_en IS NULL FOR SHARE",
@@ -170,14 +116,7 @@ class AdaptadorKPIPostgres(RepositorioPostgres):
     def _materia_prima(
         cur: Any, condicion: str, parametros: list, periodo: tuple, filtros: dict
     ) -> dict:
-        """Las nueve lecturas, en una sola transacción.
 
-        `clases` se resuelve primero porque tres de las demás —cola, versiones y
-        cobertura por corpus— se acotan por clase y no por estudiante: un
-        elemento de la cola anterior a la migración 19 no tiene estudiante
-        atribuido pero sí clase, y buscarlo por estudiante lo dejaría fuera sin
-        que nadie lo notara.
-        """
         consultas = ConsultasKPI(cur, condicion, parametros, periodo, filtros)
         clases = consultas.clases()
         identificadores = [c["clase"] for c in clases]
@@ -245,9 +184,7 @@ class AdaptadorKPIPostgres(RepositorioPostgres):
             ),
         }
 
-
 def _resumir_calidad(crudo: dict, resultados: list) -> dict:
-    """La superficie de calidad, derivada de la misma lectura de los KPI."""
     estudiantes = crudo["estudiantes"]
     faltantes = {
         "edad": sum(1 for fila in estudiantes if fila["edad"] is None),

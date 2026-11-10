@@ -1,5 +1,3 @@
-"""Experimento optativo: registra la lectura semántica y conserva el CAS y la política."""
-
 from dataclasses import replace
 
 from dominio.filtros.base import Filtro
@@ -21,7 +19,7 @@ class FiltroInterpretacion(Filtro):
         original = ctx.intencion_detalle or Intencion()
         meta = {"version": "interpretacion.prototipo.v3", "regla": original.como_dict(),
                 "aplicada": False, "intencion_efectiva": original.clase, "cambios": []}
-        # Las preferencias y confirmaciones explícitas tienen una decisión determinista.
+
         conservar_intencion = (original.confirma_ayuda or original.sin_adaptacion
                                or original.reactiva_adaptacion or original.es_cortesia)
         habilitar_factores = (bool(ctx.identificador_sujeto)
@@ -49,7 +47,7 @@ class FiltroInterpretacion(Filtro):
             lectura = self.interprete.interpretar(entrada)
             if lectura.clase not in CATALOGO or not lectura.evidencia or lectura.evidencia not in entrada["mensaje"]:
                 raise ValueError("lectura sin evidencia del turno actual")
-        except Exception as exc:  # noqa: BLE001 — el experimento nunca impide responder por reglas
+        except Exception as exc:
             return ctx, {**meta, "fallback": type(exc).__name__}
         meta["lectura"] = {
             "clase": lectura.clase, "evidencia": lectura.evidencia,
@@ -64,12 +62,11 @@ class FiltroInterpretacion(Filtro):
             return ctx, {**meta, "no_aplicada_por": "preferencia o confirmación explícita"}
         if self.observar or lectura.clase == AMBIGUA:
             return ctx, {**meta, "no_aplicada_por": "solo observación" if self.observar else "lectura ambigua"}
-        # La lectura puede añadir una petición, pero no borrar una propuesta
-        # explícita reconocida: de ella dependen el CAS y los contadores.
+
         from dominio.filtros.intencion import extraer_ejercicio_explicito
         from dominio.filtros.intento import anuncia_resultado
         from dominio.modelo.respuesta_en_contexto import consulta_sin_entrega
-        # x=3 en una pregunta de significado es un dato, no una entrega.
+
         preservar_propuesta = original.propone_solucion and not consulta_sin_entrega(ctx.texto_estudiante)
         clase = INTENTO_RESOLUCION if preservar_propuesta else lectura.clase
         es_enunciado = (extraer_ejercicio_explicito(ctx.texto_estudiante) is not None
@@ -92,20 +89,14 @@ class FiltroInterpretacion(Filtro):
         if necesidad and necesidad != ctx.necesidad_pedagogica:
             cambios.append({"campo": "necesidad_pedagogica", "antes": ctx.necesidad_pedagogica,
                             "despues": necesidad})
-        # Una interpretación nunca aumenta nivel_divulgacion ni confirma una oferta.
+
         return replace(ctx, intencion=nueva.clase, intencion_origen=nueva.origen,
                        intencion_detalle=nueva, necesidad_pedagogica=necesidad), {
             **meta, "aplicada": True, "intencion_efectiva": nueva.clase, "cambios": cambios,
             "propuesta_preservada": original.propone_solucion and not lectura.propone_solucion,
         }
 
-
 def _comprobaciones_anteriores(ctx):
-    """El contexto factual ya seleccionó comprobaciones del mismo ejercicio.
-
-    El historial de voces no acredita entrega. Al retomar una conversación sin
-    trazas recuperables esta lista queda vacía, también en el turno en vivo.
-    """
     contexto = ctx.contexto_conversacional or {}
     base = base_de_ejercicio(ctx.ejercicio_activo) if ctx.ejercicio_activo else ''
     return [dict(turno=t['numero'], intento=dict(
@@ -113,7 +104,6 @@ def _comprobaciones_anteriores(ctx):
         correccion_entregada=t.get('correccion_del_resultado_entregada') is True)
         for t in contexto.get('comprobaciones_anteriores', [])
         if base and t.get('veredicto_del_intento') in ('valida', 'invalida')][-4:]
-
 
 def _anotar_lectura(ctx, lectura, meta, entrada):
     if ctx.continuidad is not None:

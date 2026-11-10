@@ -1,7 +1,4 @@
 \encoding UTF8
--- 15-foto-perfil.sql · referencia opaca a una fotografía privada
--- Los bytes no entran a PostgreSQL ni a la imagen Docker. La referencia nunca
--- es una ruta y su forma cerrada impide convertirla en traversal de archivos.
 
 ALTER TABLE persona
     ADD COLUMN IF NOT EXISTS foto_perfil_referencia text;
@@ -23,6 +20,3 @@ BEGIN
     END IF;
 END
 $bloque$;
-
-COMMENT ON COLUMN persona.foto_perfil_referencia IS
-    'Referencia opaca a un WebP privado. Los bytes viven en la custodia de fotos, nunca en PostgreSQL.';

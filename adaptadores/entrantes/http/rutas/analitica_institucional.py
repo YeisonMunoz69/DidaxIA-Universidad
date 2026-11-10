@@ -1,5 +1,3 @@
-"""Agregados institucionales auditados para el rol investigador."""
-
 from __future__ import annotations
 
 from datetime import UTC, datetime, timedelta
@@ -29,11 +27,10 @@ from dominio.puertos.almacen import (
     ReferenciaDesconocida,
 )
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from adaptadores.entrantes.http.rutas.puerta_de_supresion import PuertaDeSupresion
     from dominio.puertos.analitica_docente import PuertoAnaliticaDocente
     from dominio.puertos.roles import PuertoAsignacionDeRoles
-
 
 def _instante(valor: str | None, predeterminado: datetime) -> datetime | None:
     if not valor:
@@ -44,7 +41,6 @@ def _instante(valor: str | None, predeterminado: datetime) -> datetime | None:
         return None
     return instante if instante.tzinfo else instante.replace(tzinfo=UTC)
 
-
 def _pagina_solicitada(peticion: Request) -> int | None:
     try:
         pagina = int(peticion.query_params.get("pagina") or "1")
@@ -52,8 +48,7 @@ def _pagina_solicitada(peticion: Request) -> int | None:
         return None
     return pagina if 1 <= pagina <= 1_000_000 else None
 
-
-def crear_router(  # noqa: PLR0913 — factoría del borde con dependencias explícitas
+def crear_router(
     sesiones: Sesiones,
     analitica: PuertoAnaliticaDocente,
     puerta: PuertaDeSupresion,
@@ -99,7 +94,6 @@ def crear_router(  # noqa: PLR0913 — factoría del borde con dependencias expl
 
     @router.get("/api/investigacion/estudiantes")
     def directorio_de_estudiantes(peticion: Request) -> Response:
-        """Directorio institucional paginado, autorizado y auditado."""
         datos, _desde, _hasta, error = _autorizar_y_periodo(peticion)
         if error is not None:
             return error
@@ -355,7 +349,6 @@ def crear_router(  # noqa: PLR0913 — factoría del borde con dependencias expl
 
     @router.get("/api/investigacion/equipo/{sujeto}/foto")
     def foto_del_equipo(sujeto: str, peticion: Request) -> Response:
-        """Fotografía privada visible sólo dentro del directorio investigador."""
         _datos, _desde, _hasta, error = _autorizar_y_periodo(peticion)
         if error is not None:
             return error

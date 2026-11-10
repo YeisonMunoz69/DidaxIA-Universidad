@@ -1,32 +1,3 @@
-"""
-aprendizaje.py — Dimensión B del catálogo v1.2: aprendizaje y acompañamiento
-=============================================================================
-
-Seis indicadores, y **dos son calculables hoy**. Esta dimensión es la que
-más honestidad exige del catálogo, porque es la que más se parece a lo que un
-tablero querría enseñar y la que menos evidencia real tiene detrás.
-
-Qué se puede afirmar y qué no
---------------------------------------
-`historial_turno.nivel` guarda el nivel de divulgación que el arbitraje emitió
-—`sondeo`, `regla`, `desarrollo`, según `dominio/arbitraje/divulgacion.py`— y
-eso permite medir **escalamiento de ayuda** sin inventar nada: es un hecho
-persistido de lo que el sistema hizo.
-
-La autocorrección sólo se publica como una medida experimental de eventos
-explícitos de interfaz: candidato detectado y confirmación del estudiante. No
-demuestra por sí sola corrección matemática ni aprendizaje.
-
-Lo demás no. `perfil_conceptual` existe desde la migración 02 y **no tiene
-productor**; `cola_revision.concepcion_candidata` admite NULL y hoy nadie la
-llena. El encargo lo dice sin rodeos para dos de ellos: *«Resolución y
-transferencia necesitan rúbricas o ítems de comprobación. No deduzcas
-aprendizaje únicamente del texto libre»*. Se aplica el mismo criterio a los
-otros indicadores sin fuente verificable.
-
-
-"""
-
 from __future__ import annotations
 
 from dominio.kpi.contratos import (

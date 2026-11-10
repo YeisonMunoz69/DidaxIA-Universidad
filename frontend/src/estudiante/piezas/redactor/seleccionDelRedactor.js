@@ -1,12 +1,4 @@
-/**
- * Operaciones DOM de selección y caret del redactor mixto.
- *
- * Este módulo no conoce el estado de Svelte ni decide cómo cambia la lista de
- * segmentos. Su única autoridad es traducir entre una posición visible del
- * navegador y un segmento ya existente.
- */
 
-/** @param {HTMLElement} span */
 function seleccionDentroDe(span) {
   const seleccion = window.getSelection();
   if (!seleccion || seleccion.rangeCount === 0) return null;
@@ -14,7 +6,6 @@ function seleccionDentroDe(span) {
   return span.contains(rango.startContainer) ? { seleccion, rango } : null;
 }
 
-/** @param {HTMLElement} span */
 export function posicionDelCaret(span) {
   const actual = seleccionDentroDe(span);
   if (!actual) return 0;
@@ -24,7 +15,6 @@ export function posicionDelCaret(span) {
   return previo.toString().length;
 }
 
-/** @param {HTMLElement} span @param {number} posicion */
 export function colocarCaretEnPosicion(span, posicion) {
   span.focus();
   const seleccion = window.getSelection();
@@ -51,23 +41,15 @@ export function colocarCaretEnPosicion(span, posicion) {
       seleccion.removeAllRanges();
       seleccion.addRange(rango);
     } catch {
-      // Un DOM transitorio no debe impedir que el control recupere el foco.
     }
   }
 }
 
-/** @param {HTMLElement} span @param {'inicio'|'final'} extremo */
 export function colocarCaret(span, extremo) {
   const posicion = extremo === 'inicio' ? 0 : (span.textContent?.length ?? 0);
   colocarCaretEnPosicion(span, posicion);
 }
 
-/**
- * @param {HTMLElement} campoMixto
- * @param {import('../../../nucleo/formato/segmentos.js').Segmento[]} segmentos
- * @param {number} indice
- * @param {'inicio'|'final'} extremo
- */
 export function enfocarSegmentoEnDOM(campoMixto, segmentos, indice, extremo) {
   const segmento = segmentos[indice];
   if (!segmento) return;
@@ -75,18 +57,17 @@ export function enfocarSegmentoEnDOM(campoMixto, segmentos, indice, extremo) {
   if (!nodo) return;
 
   if (segmento.tipo === 'texto') {
-    colocarCaret(/** @type {HTMLElement} */ (nodo), extremo);
+    colocarCaret( (nodo), extremo);
     return;
   }
 
-  const campoMatematico = /** @type {any} */ (nodo.querySelector('math-field'));
+  const campoMatematico =  (nodo.querySelector('math-field'));
   campoMatematico?.focus?.();
   campoMatematico?.executeCommand?.([
     extremo === 'inicio' ? 'moveToMathfieldStart' : 'moveToMathfieldEnd'
   ]);
 }
 
-/** Inserta texto plano exactamente donde está la selección actual. */
 export function insertarTextoEnSeleccion(texto) {
   const seleccion = window.getSelection();
   if (!seleccion || seleccion.rangeCount === 0) return false;
@@ -94,8 +75,6 @@ export function insertarTextoEnSeleccion(texto) {
   rango.deleteContents();
   const nodo = document.createTextNode(texto);
   rango.insertNode(nodo);
-  // El salto final necesita una línea visible donde colocar el caret.
-  // Un br auxiliar no altera textContent ni la serialización del mensaje.
   if (texto.endsWith('\n') && !nodo.nextSibling?.textContent) {
     nodo.parentNode?.insertBefore(document.createElement('br'), nodo.nextSibling);
   }
@@ -106,7 +85,6 @@ export function insertarTextoEnSeleccion(texto) {
   return true;
 }
 
-/** Acción Svelte: el navegador recibe el contenido sólo cuando nace el nodo. */
 export function contenidoInicial(nodo, valor) {
   nodo.textContent = valor;
 }

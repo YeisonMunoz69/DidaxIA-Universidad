@@ -1,4 +1,4 @@
-<!-- Campo controlado para filtrar el banco de conceptos. -->
+
 <script>
   import Icono from '../../comun/base/Icono.svelte';
 

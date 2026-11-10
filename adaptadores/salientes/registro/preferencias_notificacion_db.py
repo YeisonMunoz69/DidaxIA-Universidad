@@ -1,5 +1,3 @@
-"""Preferencias de avisos opcionales persistidas en PostgreSQL."""
-
 from __future__ import annotations
 
 from adaptadores.salientes.registro.auditoria_sql import anotar

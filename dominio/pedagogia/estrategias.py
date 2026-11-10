@@ -1,54 +1,6 @@
-"""
-estrategias.py — El vocabulario de estrategias e intervenciones (`EQ-011`)
-=============================================================================
-
-`EQ-011` enumera candidatas —*«explicación teórica directa, respuesta factual
-breve, diálogo socrático, APOS, preguntas clave, ejemplo trabajado, andamiaje
-desvanecido, conflicto conceptual, cambio de representación, diagnóstico de dos
-niveles, primer paso ante bloqueo, metacognición y apoyo afectivo»*— **en una
-sola lista**. La fase 4 la parte en dos, y la partición es la decisión que hace
-que el selector se pueda probar:
-
-- **Estrategia principal.** Qué clase de respuesta es. Se elige **una**.
-- **Modificador.** Cómo se dice. Se pueden aplicar **varios**, y ninguno puede
-  sustituir a la principal.
-
-Por qué esa frontera y no otra
----------------------------------
-Porque «cambio de representación» y «apoyo afectivo» no son alternativas a
-«ejemplo trabajado»: acompañan a la que sea. Tratarlos como estrategias los
-pone a competir por el mismo turno, y entonces un estudiante que expresa
-frustración recibe **apoyo afectivo en lugar de** la explicación que pidió. Es
-el mismo error de forma que `D-20` resolvió entre andamiaje y corrección.
-
-La consecuencia práctica es la política F de la fase: una señal conductual
-puede cambiar el tono, bajar la densidad de preguntas o mover la estrategia de
-socrática a explicación directa, **pero nunca decide sola cuánta matemática se
-revela**. Como los modificadores viven aparte de la escala de divulgación
-(`dominio/arbitraje/divulgacion.py`), esa separación es estructural y no un
-cuidado que haya que recordar.
-
-`aclaracion_breve`, la undécima
-----------------------------------
-La política B autoriza diez estrategias principales; la política C exige además
-que la ruta `ambigua` haga *«una aclaración breve y neutral»*. Una aclaración no
-es ninguna de las diez —no es una respuesta factual, que sería contestar algo
-que no se preguntó—, así que se declara como estrategia propia y se anota aquí
-la diferencia entre lo que las dos políticas dicen. **Es la única añadida**, y
-no se usa en ningún otro sitio que la ruta ambigua.
-
-Lo que este módulo NO decide
--------------------------------
-**Cuál toca.** Eso es `dominio/pedagogia/politica.py`, que se lee como tabla.
-Aquí sólo están los nombres, con qué significa cada uno y qué frase visible le
-corresponde.
-
-
-"""
-
 from __future__ import annotations
 
-# ── Estrategias principales · se elige UNA ──────────────────────────────────
+
 RESPUESTA_FACTUAL_BREVE = "respuesta_factual_breve"
 EXPLICACION_TEORICA_DIRECTA = "explicacion_teorica_directa"
 EJEMPLO_TRABAJADO = "ejemplo_trabajado"
@@ -59,7 +11,7 @@ CONFLICTO_CONCEPTUAL = "conflicto_conceptual"
 DIAGNOSTICO_TWO_TIER = "diagnostico_two_tier"
 PRIMER_PASO_ANTE_BLOQUEO = "primer_paso_ante_bloqueo"
 DESARROLLO_GUIADO = "desarrollo_guiado"
-#: La undécima · ver la cabecera sobre por qué existe y de dónde sale.
+
 ACLARACION_BREVE = "aclaracion_breve"
 
 ESTRATEGIAS: tuple[str, ...] = (
@@ -76,9 +28,7 @@ ESTRATEGIAS: tuple[str, ...] = (
     ACLARACION_BREVE,
 )
 
-#: Qué es cada una, en una frase. No es decoración: el prompt la usa para decir
-#: al generador qué clase de respuesta se le pide, y quien revise la traza lee
-#: esto en vez de deducirlo del nombre.
+
 QUE_HACE = {
     RESPUESTA_FACTUAL_BREVE: (
         "responde el hecho concreto que preguntó, en una o dos frases, sin abrir "
@@ -125,20 +75,15 @@ QUE_HACE = {
     ),
 }
 
-#: Las estrategias que **hacen el trabajo por el estudiante** o revelan el
-#: desarrollo. Sólo la escala de divulgación puede habilitarlas, nunca una
-#: señal conductual — política F.3 de la fase.
+
 ESTRATEGIAS_QUE_REVELAN: frozenset[str] = frozenset({DESARROLLO_GUIADO})
 
-#: Las estrategias que preguntan en vez de explicar. La política C prohíbe
-#: llegar a ellas «por defecto»: hacen falta una intención o un diagnóstico que
-#: las pidan.
+
 ESTRATEGIAS_SOCRATICAS: frozenset[str] = frozenset(
     {DIALOGO_SOCRATICO_APOS, SCAFFOLDING_KQ, CONFLICTO_CONCEPTUAL}
 )
 
 
-# ── Modificadores · pueden aplicarse VARIOS, y ninguno sustituye ────────────
 TONO_NO_EVALUATIVO = "tono_no_evaluativo"
 APOYO_AFECTIVO_NEUTRAL = "apoyo_afectivo_neutral"
 AUTORREGULACION = "autorregulacion"
@@ -155,8 +100,7 @@ MODIFICADORES: tuple[str, ...] = (
     MENOS_PREGUNTAS,
 )
 
-#: Qué le pide cada modificador al generador. Otra vez: no es decoración, es lo
-#: que se inyecta en el prompt.
+
 COMO_SE_DICE = {
     TONO_NO_EVALUATIVO: (
         "Habla del error como de un paso del trabajo, no como de un fallo suyo. "
@@ -188,18 +132,6 @@ COMO_SE_DICE = {
 }
 
 
-# ── La frase visible · política G ──────────────────────────────────────────
-#
-# ⚠️ Lo que el estudiante puede ver es **qué va a hacer el tutor**, nunca por
-# qué. `RP-20` obliga a comunicar las inferencias como probabilísticas y no
-# diagnósticas, y la política G lo cierra sin margen: nada de «detecté
-# ansiedad», «tienes baja autoeficacia», «estás en un ciclo negativo»,
-# puntuaciones, umbrales, nombres internos de señales ni concepciones como
-# etiqueta personal.
-#
-# Por eso esta tabla mapea **estrategia → frase** y no «señal → frase»: no hay
-# ninguna forma de escribir aquí una frase que revele una señal, porque las
-# señales no son la clave.
 FRASE_DE_CAMBIO = {
     EXPLICACION_TEORICA_DIRECTA: "Voy a explicarlo directamente y luego, si quieres, lo practicamos.",
     RESPUESTA_FACTUAL_BREVE: "Te lo respondo corto y seguimos.",
@@ -216,9 +148,4 @@ FRASE_DE_CAMBIO = {
 
 
 def frase_visible(estrategia: str) -> str:
-    """La frase neutral que puede verse al cambiar de estrategia · política G.
-
-    Cadena vacía cuando la estrategia no lleva anuncio —la aclaración breve **es**
-    la pregunta, y anunciarla sería decir dos veces lo mismo.
-    """
     return FRASE_DE_CAMBIO.get(estrategia, "")

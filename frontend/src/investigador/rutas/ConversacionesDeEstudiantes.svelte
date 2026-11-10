@@ -1,6 +1,5 @@
 <script module>
   import { registrarLimpiezaDeLectura } from '../../nucleo/lectura/cache.js';
-  // Sólo criterios de consulta en RAM para volver de una fuente; nunca mensajes ni almacenamiento del navegador.
   let vistaAnterior = null;
   registrarLimpiezaDeLectura(() => { vistaAnterior = null; });
 </script>
@@ -31,7 +30,6 @@
   let graficaSolicitada = $state(null);
   let selectorAbierto = $state(false), historialAbierto = $state(false), areaDelHilo = $state(null);
   let controlador, revision = 0;
-  // Las fechas del formulario son días de Colombia; hasta incluye todo ese día.
   function filtros() {
     let fin = '';
     if (hasta) {
@@ -167,7 +165,7 @@
     </aside>
     <div class="espacio-chat">
       {#if preferencias.fondoDuranteConversacion}<div class="ambiente-chat" style={`opacity:${preferencias.intensidadFondoConversacion / 100}`}><FondoInicioMatematico /></div>{/if}
-      <!-- svelte-ignore a11y_no_noninteractive_tabindex (El hilo desplazable debe recibir foco para recorrerlo con teclado.) -->
+
       <div class="hilo superficie-cuaderno" role="region" aria-label="Reconstrucción de conversación" tabindex="0" bind:this={areaDelHilo}>
         <div class="contenido-hilo">
           {#if contingencia}<Degradacion respuesta={contingencia} alReintentar={() => cargar(ultimaConsulta)} amplio />{/if}

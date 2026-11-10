@@ -1,30 +1,3 @@
-"""
-pasos.py — Motor de derivación con pasos pedagógicos y regla etiquetada
-==========================================================================
-
-`ADR-013` §6.3 exige que el precómputo entregue `pasos[]` con `tipo`, `latex`
-y **la regla aplicada** en cada uno — no solo el resultado. Este es el
-«corazón» que `1-Yeison-Prompt-ClaudeCode.md` señala: adaptado de
-`sympy_steps.py` (484 líneas de origen), partido en dos para que ningún
-archivo pase de 400 líneas — la tabla de funciones trascendentes vive en
-`tabla_trigonometrica.py`.
-
-Cómo deriva
------------
-Recorre el árbol de `sympy.Derivative` pendientes, aplica **una regla por
-iteración** —la que `_regla_del_nodo` reconoce— y sustituye el nodo por su
-derivada, dejando un paso con la regla que acaba de aplicar. Cuando ya no
-queda ningún `Derivative` sin resolver, simplifica y cierra con el resultado.
-
-Qué cambia frente al origen
-----------------------------
-Nombres en español (`MotorDePasos`, no `SymPyStepEngine`) para seguir la
-convención del resto de `adaptadores/salientes/simbolico/`. El resto del
-comportamiento —qué regla se reconoce primero, cómo se arma el LaTeX de cada
-notación— se conserva: es la parte medida en `ADR-013` §5 (14 ms de mediana
-para `sin(x²)` con pasos) y no hay motivo para tocarlo.
-"""
-
 from __future__ import annotations
 
 import sympy as sp
@@ -34,38 +7,14 @@ from sympy.printing.latex import LatexPrinter
 from adaptadores.salientes.simbolico.simplificacion import simplificar
 from adaptadores.salientes.simbolico.tabla_trigonometrica import reglas as tabla_trigonometrica
 
-#: Las notaciones que este motor sabe escribir · `D-21`, `PM-B32`.
-#:
-#: **`leibniz` y `operador` escriben el MISMO paso y distinto resultado**, y no
-#: es un descuido: son dos cosas distintas que Leithold enseña en la misma
-#: frase —*«$\\frac{d}{dx}[f(x)]$ y $D_x[f(x)]$»*—. `\\dfrac{d}{dx}[\\cdot]` es
-#: el **operador**, que se puede aplicar a cualquier subexpresión; `dy/dx` es
-#: **la derivada de `y`**, que solo tiene sentido cuando hay una `y` que
-#: derivar, o sea en la línea del resultado. Por eso el paso intermedio de las
-#: dos es el operador y lo que cambia es cómo se cierra.
-#:
-#: `euler` NO está en el catálogo que `D-21` ratificó y aquí se conserva porque
-#: ya estaba escrito y porque el corpus lo respalda: **194 apariciones en dos de
-#: las cinco obras** —Purcell 125, Leithold 69—, contadas el 2026-08-14. Que
-#: `D-21` no lo nombre es una omisión que conviene revisar, no una exclusión
-#: razonada como la de Newton, que sale **0 veces en las cinco**.
+
 NOTACIONES = ("lagrange", "leibniz", "operador", "euler")
 
-#: Lo que ve quien no elige nada. **Conserva los pasos byte a byte** como los
-#: emitía este motor antes de `PM-B32` —`\dfrac{d}{dx}[·]`— y cambia una sola
-#: línea: la del resultado.
-#:
-#: ⚠️ **Y ese cambio es deliberado, no un efecto secundario.** Hasta hoy el
-#: motor abría en `\dfrac{d}{dx}[·]` y cerraba en `f'(x)`, o sea **un
-#: desarrollo en dos notaciones**. Con una sola en juego eso no se nota; en
-#: cuanto el estudiante elige, es justo la incoherencia que `D-21` viene a
-#: quitar. Elegir `lagrange` como defecto habría cambiado además todos los
-#: pasos, que es más de lo que hace falta.
+
 NOTACION_POR_DEFECTO = "operador"
 
 
 class _ImpresorPorNotacion(LatexPrinter):
-    """LaTeX de `Derivative` en las notaciones de `NOTACIONES`."""
 
     def __init__(self, settings=None, notacion: str = NOTACION_POR_DEFECTO, variable: str = "x"):
         super().__init__(settings or {})
@@ -79,21 +28,13 @@ class _ImpresorPorNotacion(LatexPrinter):
             return r"\left[ " + interior + r" \right]'"
         if self.notacion == "euler":
             return rf"D_{{{v}}}\left[ {interior} \right]"
-        # `leibniz` y `operador` comparten el paso: ver `NOTACIONES`.
-        return rf"\dfrac{{d}}{{d{v}}}\left[ {interior} \right]"
 
+        return rf"\dfrac{{d}}{{d{v}}}\left[ {interior} \right]"
 
 def _tex(expr, notacion: str = NOTACION_POR_DEFECTO, variable: str = "x") -> str:
     return _ImpresorPorNotacion(notacion=notacion, variable=variable).doprint(expr)
 
-
 class MotorDePasos:
-    """Deriva `expr` respecto a `var`, una regla por paso, con LaTeX y nombre.
-
-    Cada paso es un `dict` con `tipo`/`latex`/`regla` — la misma forma que
-    `PasoDerivacion` en `dominio/modelo/matematica.py`, para que el adaptador
-    los envuelva sin traducir.
-    """
 
     def __init__(self, expr: sp.Expr, var: Symbol, notacion: str = NOTACION_POR_DEFECTO):
         self.var = var
@@ -108,16 +49,7 @@ class MotorDePasos:
     def _tex(self, expr) -> str:
         return _tex(expr, self.notacion, self.nombre_var)
 
-    # ── Reconocimiento de la regla ───────────────────────────────────────────
-
     def _regla_del_nodo(self, expr: sp.Expr) -> tuple[sp.Expr, str, str]:
-        """Determina qué regla aplica a `expr` y devuelve
-        `(nodo_derivado, nombre_de_la_regla, latex_de_la_regla)`.
-
-        El nodo devuelto puede contener `Derivative` anidados: cada llamada
-        resuelve **una** regla, no el árbol entero — así cada iteración de
-        `ejecutar()` produce exactamente un paso.
-        """
         x, v = self.var, self.nombre_var
 
         if not expr.has(x):
@@ -131,7 +63,6 @@ class MotorDePasos:
             if resultado is not None:
                 return resultado
 
-        # Nodo sin regla catalogada: SymPy resuelve, y se declara el fallback.
         return (
             sp.diff(expr, x),
             "Derivada directa (SymPy)",
@@ -295,15 +226,7 @@ class MotorDePasos:
             rf"\dfrac{{d}}{{d{v}}}[\log_{{{b_tex}}} u] = \dfrac{{u'}}{{u \cdot \ln {b_tex}}}",
         )
 
-    # ── Bucle principal ───────────────────────────────────────────────────────
-
     def ejecutar(self) -> tuple[sp.Expr, sp.Expr, list[dict]]:
-        """Deriva hasta que no quede ningún `Derivative` sin resolver.
-
-        Devuelve `(bruto, simplificado, pasos)`: la forma antes de
-        simplificar (útil para comparar contra lo que el estudiante escribió)
-        y la forma que se muestra.
-        """
         v = self.nombre_var
         self._paso("inicio", self._tex(self.actual), f"Planteamiento: calcular la derivada respecto a {v}")
 
@@ -336,20 +259,6 @@ class MotorDePasos:
         return bruto, final, self.pasos
 
     def _linea_de_resultado(self, final: sp.Expr) -> str:
-        """Cómo se cierra el desarrollo, en la notación elegida · `PM-B32`.
-
-        Hasta el 2026-08-14 esta línea era **siempre** `f'(x) = …`, incluso
-        cuando los pasos venían en `\\dfrac{d}{dx}[·]`. Es decir: el motor ya
-        aceptaba una notación para los pasos y cerraba en otra. Con una sola
-        notación en juego eso no se nota; en cuanto el estudiante elige, un
-        desarrollo que empieza en Leibniz y termina en Lagrange es exactamente
-        la incoherencia que `D-21` pide quitar.
-
-        `leibniz` cierra en `dy/dx` y no en el operador **porque son cosas
-        distintas** — ver `NOTACIONES`—: aquí sí hay una `y`, que es el
-        resultado, y es el único sitio del desarrollo donde `dy/dx` significa
-        algo.
-        """
         v = self.nombre_var
         cuerpo = sp.latex(final)
         if self.notacion == "leibniz":

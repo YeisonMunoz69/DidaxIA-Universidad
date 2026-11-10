@@ -1,33 +1,4 @@
-<!--
-Un turno completo.
 
-Quién habla, sus bloques en orden y el nivel de ayuda. Recorre la respuesta y
-delega en el componente que sabe pintar cada parte. No decide nada.
-
-EL NIVEL `sondeo` NO LLEVA BLOQUES VERIFICADOS. Es la regla C4 de `ADR-014`: una
-pregunta socrática no contiene nada que verificar. Un turno en `sondeo` con un
-bloque verificado es una respuesta malformada, y se declara en vez de pintarse
-como si fuera normal.
-
-UNA FRASE SE PINTA COMO UNA FRASE, AUNQUE LLEGUE EN TRES BLOQUES
-------------------------------------------------------------------
-`ADR-014` parte la narración en cada expresión que cita, así que
-«Fíjate en sen(x²): es una composición» llega como prosa · expresión · prosa.
-Apilados salían tres renglones con tres sellos idénticos para una sola oración
-—visto en el navegador el 2026-08-11, en cuanto `PM-B25` dejó de imprimir la
-marca cruda—.
-
-⚠️ **`RP-01` no se debilita, y la condición es la que lo garantiza:** solo se
-juntan bloques **que llevan el mismo sello**, y ese sello se pinta una vez para
-la fila. Dos sellos distintos nunca caen en el mismo párrafo, así que sigue sin
-haber ninguna afirmación cuyo estado de verificación quede sin decir. Y la
-notación —que es lo que el motor sí verificó— **nunca se mete en fila**: va en
-su propio bloque, con el suyo.
-
-
-Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
-
--->
 <script>
   import { setContext } from 'svelte';
   import { CONTEXTO_COPIA_FORMULAS } from './copiaDeFormula.js';
@@ -56,21 +27,12 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
   let copiado = $state(false);
 
   let {
-    /** { turno, bloques, nivel, procedencia } — ver contrato §4.2 */
     turno,
-    /** 'estudiante' | 'tutor' */
     autor = 'tutor',
-    /** ({nodo, resultado, razon}) => void — al contestar el ítem de §6.quater */
     alResponderSondeo = null,
-    /** Deshabilita el ítem mientras hay un turno en vuelo. */
     ocupado = false,
-    /** Abre la gráfica citada en el visor de la conversación. */
     alAbrirGrafica = null,
-    /** Fase 5 · a dónde vuelve quien sale a leer una fuente desde este turno.
-        `undefined` deja los enlaces sin retorno, que sigue siendo navegable:
-        la fuente cae entonces al inicio del rol. */
     volverA = undefined,
-    /** Consulta del investigador: no registra acciones como actividad del alumno. */
     soloLectura = false,
     rotuloEstudiante = 'Tú',
     rotuloAsistente = 'Asistente'
@@ -78,18 +40,10 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
 
   const bloques = $derived(turno?.bloques ?? []);
 
-  /**
-   * Junta en un párrafo los bloques consecutivos que son de la misma frase
-   * **y llevan el mismo sello**. Lo demás queda solo en su grupo, como estaba.
-   */
   const parrafos = $derived(agruparBloquesDelTurno(bloques));
 
-  // ADR-014 C4. Se detecta, no se disimula.
   const malformado = $derived(esTurnoMalformado(turno));
 
-  /** Convierte también las referencias de historiales anteriores a Fase 5
-   * en enlaces. La API nueva aporta título y obra; la antigua sólo guardó la
-   * cadena F-*, pero el identificador basta para abrir su ficha vigente. */
   const materialNavegable = $derived.by(() => {
     const material = turno?.procedencia?.material;
     if (Array.isArray(material) && material.length) return material;
@@ -164,11 +118,7 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
   style={`--opacidad-mensaje: ${autor === 'estudiante' ? preferencias.opacidadPregunta : preferencias.opacidadRespuesta}%`}
   use:animarEntradaMensaje
 >
-  <!-- Del mockup: quién habla se dice con palabras y no solo con el lado y
-       el color de la burbuja —el mismo principio que ya aplica
-       `SelloVerificacion`, «un sello que solo cambiara de color no
-       comunicaría nada a quien no percibe ese contraste»—. No lleva
-       `aria-hidden`: hoy nada más en el turno anuncia quién habla. -->
+
   <p class="autor-turno">
     {#if autor !== 'estudiante'}
       <span class="avatar-turno" aria-hidden="true"><Icono nombre="didaxia" medida={15} /></span>
@@ -182,16 +132,10 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
       </p>
     {:else}
       {#each parrafos as grupo, i (i)}
-        <!-- El sello dice si el SISTEMA verificó la afirmación. Lo que escribió
-             el estudiante no es una afirmación del sistema, así que no lleva
-             sello ni se le reclama. Es el único caso, y por eso lo decide aquí
-             quien sabe quién habla y no `Bloque`, que no lo sabe. -->
+
         {#if grupo.enFrase && grupo.bloques.length > 1}
           <p class="frase">
-            <!-- Pegados a propósito, sin salto entre ellos: el espaciado lo trae
-                 el TEXTO —«Fíjate en » lleva su espacio y «: es una» su dos
-                 puntos pegado—. Un salto de línea aquí es un nodo de texto en
-                 blanco, y sale «sen(x^2) : es una». -->
+
             {#each grupo.bloques as bloque, j (j)}<Bloque {bloque} sellado={autor !== 'estudiante'} enLinea rotulado={esPrimeraCitaDeLaFrase(grupo.bloques, j)} {alAbrirGrafica} />{/each}{grupo.cierre}
             {#if autor !== 'estudiante'}
               <SelloVerificacion estado={grupo.sello} />
@@ -203,10 +147,7 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
         {/if}
       {/each}
 
-      <!-- `RC-PED-06` · el ítem va DESPUÉS de la respuesta y dentro del mismo
-           turno: el tutor ya contestó, y esto es una pregunta corta que se
-           puede dejar pasar. Sólo se pinta si alguien sabe qué hacer con la
-           respuesta; en el historial —donde no hay a quién enviarla— no. -->
+
       {#if turno?.sondeo && alResponderSondeo}
         <SondeoDeDosNiveles
           sondeo={turno.sondeo}
@@ -258,26 +199,6 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
 {/if}
 
 <style>
-  /*
-    CADA TURNO ES UNA BURBUJA DE CONVERSACIÓN, DEL MOCKUP —`PM-F2x`, fase 3—.
-
-    Hasta el 2026-08-19 el turno era un papel entero de ancho fijo, apoyado en
-    la cuadrícula del hilo. El mockup lo trata como un mensaje de chat: una
-    columna angosta (72 % del hilo como mucho, y nunca más que
-    `--ancho-lectura`) pegada a un lado según quién habla, con la esquina que
-    mira al borde del hilo recortada —el gesto que en un chat dice «de aquí
-    sale la voz»—.
-
-    Los dos autores se siguen distinguiendo por MATERIAL y no solo por lado,
-    igual que antes: el del tutor es papel blanco apoyado; el del estudiante
-    es una nota adhesiva en el tono del acento, que es lo que el lenguaje
-    reserva para «resaltar información» propia. Eso no cambia con el mockup
-    —`tokens.css` es explícito: el lenguaje de diseño gobierna la FORMA y
-    nunca el COLOR—, así que la burbuja adopta la forma del mockup sobre la
-    misma paleta ya elegida.
-
-    Y quién habla también se DICE, no solo se pinta: `.autor-turno`, arriba.
-  */
   .turno {
     position: relative;
     inline-size: min(100%, 54rem);
@@ -357,10 +278,6 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
   }
 
   .burbuja {
-    /* En escritorio el turno conserva la columna de lectura, pero el papel no
-       se estira hasta llenarla cuando el mensaje es corto. `fit-content`
-       elimina el vacío lateral y `max-inline-size` mantiene la envoltura de
-       textos largos y fórmulas dentro del viewport. */
     inline-size: fit-content;
     max-inline-size: 100%;
     padding: 1rem 1.1rem .65rem;
@@ -374,10 +291,6 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
   }
 
   .tutor .burbuja {
-    /* La respuesta conserva una superficie de lectura amplia. Sólo el mensaje
-       del estudiante usa el ancho ajustado al contenido: en el tutor, este
-       ancho permite que párrafos, fórmulas, gráfica y acciones aprovechen la
-       columna completa en vez de dejar una franja exterior sin usar. */
     inline-size: 100%;
     background: color-mix(in srgb, var(--surface-elevated) var(--opacidad-mensaje), transparent);
     color: var(--ink-primary);
@@ -454,14 +367,7 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
     font-variant-numeric: tabular-nums;
   }
 
-  /* Una frase con su expresión dentro y su sello al final. El sello va con
-     `align-items: baseline` para que no empuje la línea. */
   .frase {
-    /* Esta variante no pasa por el `<p>` de `Prosa.svelte`: reúne texto y
-       expresiones citadas directamente en `Turno`. Por eso también tiene que
-       neutralizar el máximo global de 62ch; de lo contrario la tarjeta y sus
-       acciones ocupan todo el ancho, pero la explicación queda en una columna
-       angosta como si aún fuera el diseño anterior. */
     inline-size: 100%;
     max-inline-size: none;
     margin: 0 0 0.9rem;

@@ -1,25 +1,3 @@
-# Dockerfile.frontend — Construye el estático de codigo/frontend/ · `PM-B23`
-# =============================================================================
-#
-# `frontend/` es de Fabián: `1-Yeison-Prompt-ClaudeCode.md` lo dice sin
-# margen — «NO la modifiques, solo empaquétala desde fuera». Este archivo no
-# abre ni un solo archivo suyo: usa `npm run construir`, el guion que el
-# propio `package.json` ya declara, sin tocar su configuración.
-#
-# No es un servidor. La segunda etapa solo COPIA el resultado — el que sirve
-# los archivos es Caddy, que ya hace falta para el TLS automático y para el
-# proxy hacia `/api/*`. Un segundo servidor de estáticos sería una pieza más
-# que mantener resolviendo un problema que Caddy ya resuelve.
-#
-# `compose.produccion.yaml` usa esta imagen como un contenedor que corre una
-# vez, copia `dist/` a un volumen compartido, y termina — Caddy monta ese
-# volumen de solo lectura. Ver `condition: service_completed_successfully`
-# en ese archivo.
-
-# MathLive 0.110 trae Compute Engine 0.58, cuyo motor declarado exige Node
-# >=21.7.3. Node 20 llegaba a compilar, pero npm advertía que el entorno no era
-# compatible. Node 22 LTS satisface el contrato y evita depender de un éxito
-# accidental del instalador.
 FROM node:22-slim AS build
 
 WORKDIR /app
@@ -29,70 +7,21 @@ RUN npm ci
 
 COPY . .
 
-# `PM-B34` · `GOOGLE_CLIENT_ID` SE HORNEA AL CONSTRUIR, NO AL ARRANCAR
-# ---------------------------------------------------------------------
-# `vite.config.js` lo lee de `process.env` y lo sustituye por un literal
-# dentro del paquete, así que ponerlo en el entorno del contenedor que sirve
-# —o del backend— no sirve de nada: para cuando eso existe, el `.js` ya está
-# escrito. Hasta hoy este archivo no lo recibía, de modo que **producción
-# salía con el acceso "no configurado" aunque el servidor tuviera la variable
-# puesta**, y no se notaba en desarrollo porque ahí Vite la lee del entorno.
-# Lo encontró `PM-F09` y lo dejó anotado sin tocar, que era lo correcto.
-#
-# ⚠️ UN `ARG` QUEDA EN LA IMAGEN, y hay que decirlo: `docker history` lo
-# enseña. Aquí es admisible porque **el identificador de cliente no es un
-# secreto** —identifica a la aplicación ante Google, no la autoriza, y de
-# hecho viaja dentro del `.js` que descarga cualquiera—. El *client secret*
-# sí lo es y **no entra aquí ni hace falta**: este sistema solo comprueba la
-# identidad que Google ya firmó. Ver `Guia-Google-Console.md`.
-#
-# Vacío por defecto, igual que en `compose.produccion.yaml` y por el mismo
-# motivo: sin cliente de Google el sistema funciona entero salvo el rol
-# docente, así que un despliegue sin la variable tiene que salir adelante
-# —diciéndolo en pantalla, que es lo que `EntrarConGoogle.svelte` hace—.
 ARG GOOGLE_CLIENT_ID=""
 ENV GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
 
-# `D1A` · LOS DOS ORÍGENES Y EL CANAL, TAMBIÉN AL CONSTRUIR
-# -----------------------------------------------------------
-# `vite.config.js` los lee de `process.env` y los sustituye por literales
-# dentro del paquete, exactamente igual que `GOOGLE_CLIENT_ID`: puestos en el
-# entorno del contenedor que sirve, llegarían tarde.
-#
-# Los respaldos son los de `D0` §10.1. Ninguno es secreto —son direcciones
-# públicas— y ninguno es una barrera: la separación entre superficies la ejerce
-# `Caddyfile`, con un sitio por dominio y `/api/*` proxificado sólo en el de la
-# aplicación. Estos valores deciden a dónde apunta un `<a href>`.
 ARG ORIGEN_PUBLICO="https://didaxia.pro"
 ENV ORIGEN_PUBLICO=${ORIGEN_PUBLICO}
 
 ARG ORIGEN_APLICACION="https://app.didaxia.pro"
 ENV ORIGEN_APLICACION=${ORIGEN_APLICACION}
 
-# ⚠️ VACÍO A PROPÓSITO. `ESTADO-ACTUAL.md` §10.9 deja pendiente la definición
-# del canal para derechos e incidentes y §10.1 dice que el correo de
-# preparación no se presenta como canal institucional. Sin valor, las páginas
-# públicas escriben que está pendiente de confirmación en vez de ofrecer un
-# `mailto:` vacío o una dirección que nadie aprobó.
-#
-# El nombre es el que el equipo ya documenta —`CORREO_PRIVACIDAD`, en
-# `Guia-Dominios-y-Publicacion.md` y `Guia-Resend.md`— y no uno propio de este
-# carril: dos variables para el mismo buzón acaban puestas a medias.
 ARG CORREO_PRIVACIDAD=""
 ENV CORREO_PRIVACIDAD=${CORREO_PRIVACIDAD}
 
-# Y la caché queda invalidada desde el `ENV` de arriba, que es lo que hace
-# que cambiar la credencial vuelva a construir de verdad en vez de reutilizar
-# un paquete con la anterior dentro.
 RUN npm run construir
-
-# Salida en `dist/indice.html` — no `index.html` — porque `vite.config.js`
-# fija la entrada así. `Caddyfile` lo sabe (`index_names indice.html`).
 
 FROM busybox:stable AS exportador
 COPY --from=build /app/dist /dist
 
-# El volumen de salida se monta en `/salida`; este contenedor termina en
-# cuanto copia, y `restart: "no"` en compose es lo que lo deja terminado en
-# vez de reiniciarlo en bucle.
 CMD ["sh", "-c", "cp -r /dist/. /salida/ && echo 'estatico del frontend copiado'"]

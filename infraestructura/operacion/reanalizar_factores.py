@@ -1,11 +1,3 @@
-"""Relectura acotada y reanudable. Sin --aplicar sólo cuenta pendientes, sin IA.
-
-python -m infraestructura.operacion.reanalizar_factores --actor SUJETO_ADMIN
-    --desde 2026-09-01T00:00:00-05:00 --hasta 2026-10-04T00:00:00-05:00
-    [--clase UUID] [--aplicar --maximo-llamadas 10]
-La conexión y clave se resuelven del entorno; nunca se imprimen.
-"""
-
 import argparse
 import json
 import os
@@ -17,7 +9,7 @@ __all__ = ["ejecutar", "entrada_historica"]
 
 
 def main():
-    p = argparse.ArgumentParser(description=__doc__)
+    p = argparse.ArgumentParser(description="Volver a analizar factores en los turnos registrados.")
     p.add_argument("--actor", required=True)
     p.add_argument("--desde", required=True, type=datetime.fromisoformat)
     p.add_argument("--hasta", required=True, type=datetime.fromisoformat)
@@ -45,9 +37,8 @@ def main():
                 ensure_ascii=False,
             )
         )
-    except Exception as exc:  # noqa: BLE001 — no imprime cadenas de conexión ni contenido
+    except Exception as exc:
         p.exit(1, f"Relectura interrumpida ({type(exc).__name__}); no se imputaron ceros.\n")
-
 
 if __name__ == "__main__":
     main()

@@ -6,7 +6,6 @@ const categorias = [
     ['Álgebra', /algebra|potencia|trigonom|simplific|equivalencia|conjugado|cociente|raiz|misma respuesta|respuestas distintas/],
     ['Funciones', /funcion|composicion|dominio|representacion/]
 ];
-/** El título manda: términos amplios de búsqueda no cambian el tema explícito. */
 export function temaDeConcepto(concepto) {
     for (const texto of [concepto.nombre, (concepto.terminos_busqueda ?? []).join(' ')]) {
         const coincidencia = categorias.find(([, patron]) => patron.test(normalizar(texto)));
@@ -15,7 +14,6 @@ export function temaDeConcepto(concepto) {
     }
     return 'Fundamentos';
 }
-/** Sólo destaca notación que YA figura en el texto docente. */
 export function formulasDelConcepto(secciones) {
     const encontradas = new Set();
     for (const seccion of secciones ?? []) {

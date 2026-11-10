@@ -1,4 +1,3 @@
-/** Informes KPI binarios; los bytes no se guardan en localStorage. */
 import { pedirArchivo } from './cliente.js';
 
 export function vistaPrevia(cuerpo, { señal } = {}) {

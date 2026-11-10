@@ -1,9 +1,4 @@
-<!--
-Las preferencias de pantalla, en un solo sitio.
 
-Tema, escala de texto, animaciones, notación y representaciones gráficas.
-Sigue estrictamente el lenguaje de diseño «tinta y papel» y los tokens de la aplicación.
--->
 <script>
   import { untrack } from 'svelte';
   import Dialogo from '../base/Dialogo.svelte';
@@ -19,24 +14,17 @@ Sigue estrictamente el lenguaje de diseño «tinta y papel» y los tokens de la 
 
   let {
     abierto = $bindable(false),
-    /** `arbolDe(sesion.rol)`. La pestaña «Notación y Gráficas» solo tiene
-        efecto en el árbol de estudiante —notación de las derivadas y
-        gráficas inline son cosas que se ven en `Conversacion.svelte`, que
-        docente/investigador no visita—, así que no se ofrece ahí. Sin
-        esto por defecto sigue mostrándose todo, que es el comportamiento
-        de siempre para quien no pase la prop. */
     arbol = 'estudiante',
     temaOscuro = false
   } = $props();
 
-  let seccion = $state('apariencia'); // 'apariencia' | 'lienzo' | 'matematica'
+  let seccion = $state('apariencia');
   let guardando = $state(false);
   let falloGuardado = $state('');
   let confirmado = false;
   let estabaAbierto = false;
 
 
-  /** Guarda el estado inicial al abrir para poder cancelar */
   let snapshot = $state({
     tema: 'sistema',
     escala: 'normal',
@@ -53,12 +41,6 @@ Sigue estrictamente el lenguaje de diseño «tinta y papel» y los tokens de la 
   $effect(() => {
     if (abierto && !estabaAbierto) {
       estabaAbierto = true; confirmado = false; falloGuardado = '';
-      // `untrack`: sin él, este efecto lee `preferencias.*` y Svelte las
-      // vuelve dependencias suyas, así que CADA cambio mientras el diálogo
-      // sigue abierto —tocar un radio, pulsar Restablecer— volvía a
-      // ejecutarlo y pisaba `snapshot` con el valor que se acababa de
-      // poner. «Cancelar» dejaba de tener a qué volver: siempre coincidía
-      // con lo último tocado.
       untrack(() => {
         snapshot = {
           tema: preferencias.tema,
@@ -96,9 +78,6 @@ Sigue estrictamente el lenguaje de diseño «tinta y papel» y los tokens de la 
 
   function alRestablecer() {
     preferencias.restablecer();
-    // El diálogo sigue abierto a propósito —a diferencia de Guardar—: es
-    // el momento de ver que de verdad volvió a lo predeterminado antes de
-    // decidir si guardarlo o seguir ajustando.
     toast.exito('Ajustes restablecidos. Revisa el resultado antes de guardar.');
   }
 
@@ -130,7 +109,7 @@ Sigue estrictamente el lenguaje de diseño «tinta y papel» y los tokens de la 
 <Dialogo bind:abierto titulo="Ajustes" ancho="44rem" class="dialogo-ajustes" bloqueado={guardando}>
 
 
-  <!-- Pestañas de sección -->
+
   <nav class="pestanas" aria-label="Secciones de ajustes">
     {#each PESTANAS as p (p.id)}
       <button
@@ -169,7 +148,6 @@ Sigue estrictamente el lenguaje de diseño «tinta y papel» y los tokens de la 
 </Dialogo>
 
 <style>
-  /* Pestañas superiores */
   :global(dialog.dialogo-ajustes[open]) {
     display:flex;
     flex-direction:column;

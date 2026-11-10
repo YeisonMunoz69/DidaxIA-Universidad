@@ -11,8 +11,6 @@ export function prepararPresentacionIntegrada(html) {
   }
   const pdf=datos('didaxia-pdf-assets'), base=datos('didaxia-data');
   const nombrePdf=`exportador-pdf-${createHash('sha256').update(pdf.texto).digest('hex').slice(0,16)}.json`;
-  // El contenido real llega por el canal verificado del iframe. La base completa
-  // sigue disponible en editor.html y los HTML descargados siguen autónomos.
   const minima={...base.objeto,slides:[{...base.objeto.slides[0],items:[],note:''}]};
   const sustituir=(patron,objeto)=>{html=html.replace(patron,(_todo,inicio,_datos,fin)=>inicio+JSON.stringify(objeto).replaceAll('<','\\u003c')+fin);};
   sustituir(pdf.patron,{url:`/presentaciones/${nombrePdf}`});

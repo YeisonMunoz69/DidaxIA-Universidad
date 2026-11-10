@@ -1,5 +1,3 @@
-"""Una autorización de desarrollo responde a una oferta del último turno del tutor."""
-
 import re
 
 _OFERTA = re.compile(
@@ -19,7 +17,6 @@ def confirma_oferta(texto: str, historial: tuple[dict, ...]) -> bool:
         return False
     ultimo = str(historial[-1].get("tutor", ""))
     return bool(_OFERTA.search(ultimo))
-
 
 def base_de_ejercicio(activo: dict | None) -> str:
     if not activo or not activo.get("expresion"):

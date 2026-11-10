@@ -1,9 +1,3 @@
-"""Medida experimental de cobertura de evidencia para una ficha individual.
-
-No estima certeza psicológica ni calidad académica. Resume cuánto material
-observable existe para interpretar, con cautela, los indicios de la ficha.
-"""
-
 from __future__ import annotations
 
 from datetime import datetime
@@ -41,7 +35,7 @@ def calcular_cobertura_evidencia(
     ultima_actividad: datetime | None,
     hasta: datetime,
 ) -> dict:
-    """Devuelve un contrato publicable y reproducible, incluso sin muestra."""
+
     observados = {
         "turnos_elegibles": max(0, int(turnos_elegibles)),
         "conversaciones": max(0, int(conversaciones)),

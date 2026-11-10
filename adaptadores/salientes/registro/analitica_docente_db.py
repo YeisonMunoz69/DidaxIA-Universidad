@@ -1,5 +1,3 @@
-"""Lectura PostgreSQL de KPI descriptivos para una clase autorizada."""
-
 from __future__ import annotations
 
 from contextlib import contextmanager
@@ -33,9 +31,8 @@ from dominio.modelo.menores import PLAZO_REPRESENTANTE_DIAS
 from dominio.modelo.observables_dialogo import calcular_observables, resumir_observables
 from dominio.modelo.oferta_academica import exigir_oferta_valida
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from collections.abc import Iterator
-
 
 def _indicadores_anteproyecto(consultas, indicios, clase, inicio, hasta, desde):
     registros, faltantes = leer_trazas(consultas.trazas_anteproyecto())
@@ -50,14 +47,13 @@ def _indicadores_anteproyecto(consultas, indicios, clase, inicio, hasta, desde):
     return [*(r.como_json() for r in calcular_factores(factores, contexto, individual=True)),
             *oficiales, *(r.como_json() for r in calcular_observables(resumen, contexto, individual=True))]
 
-
 class AdaptadorAnaliticaDocentePostgres:
     def __init__(self, cadena_de_conexion: str) -> None:
         self._cadena = cadena_de_conexion
 
     @contextmanager
     def _conexion(self) -> Iterator[Any]:
-        from adaptadores.salientes.conexion import conectar  # noqa: PLC0415
+        from adaptadores.salientes.conexion import conectar
 
         with traducir_fallo(), conectar(self._cadena) as cnx:
             yield cnx
@@ -71,7 +67,7 @@ class AdaptadorAnaliticaDocentePostgres:
         alcance_institucional: bool = False,
         buscar: str = "",
     ) -> dict:
-        """Directorio mínimo para abrir fichas sin enumerar fuera del rol."""
+
         desplazamiento = (pagina - 1) * tamano
         with self._conexion() as cnx, cnx.cursor() as cur:
             if alcance_institucional:
@@ -98,7 +94,7 @@ class AdaptadorAnaliticaDocentePostgres:
                   JOIN clase c ON c.id = m.clase
                   LEFT JOIN persona p ON p.sujeto_google = m.identificador
                   {condicion}
-                """,  # noqa: S608 — sólo concatena una cláusula constante
+                """,
                 parametros_alcance,
             )
             total = int(cur.fetchone()[0])
@@ -118,7 +114,7 @@ class AdaptadorAnaliticaDocentePostgres:
                             'áéíóúüñ', 'aeiouun'
                           ), m.identificador
                  LIMIT %s OFFSET %s
-                """,  # noqa: S608 — sólo concatena una cláusula constante
+                """,
                 (*parametros_alcance, tamano, desplazamiento),
             )
             estudiantes = [
@@ -322,7 +318,7 @@ class AdaptadorAnaliticaDocentePostgres:
                 "atribucion_historica_disponible": False,
                 "confianza_inferencial": None,
             },
-            # Compatibilidad con la primera forma consumida por la vista.
+
             "turnos": turnos,
             "sin_fuente": sin_fuente,
             "degradados": degradados,
@@ -337,12 +333,7 @@ class AdaptadorAnaliticaDocentePostgres:
         hasta: datetime,
         actor_auditoria: str | None = None,
     ) -> dict | None:
-        """Ficha individual descriptiva, autorizada por clase y auditada.
 
-        No devuelve texto de conversaciones. Recalcula indicios observables
-        sobre el periodo y la matrícula; no presenta el último estado afectivo
-        longitudinal como si perteneciera a cualquier ventana seleccionada.
-        """
         with self._conexion() as cnx, cnx.cursor() as cur:
             if actor_auditoria is not None:
                 exigir_investigador_administrador(cur, actor_auditoria)
@@ -466,8 +457,7 @@ class AdaptadorAnaliticaDocentePostgres:
                 consultas, indicios, clase, inicio, hasta, desde,
             ) if permite_indicios else []
             continuacion = consultas.continuacion()
-            # Un filtro anterior a la matrícula es válido pero vacío. La
-            # consulta ya devuelve cero filas; no construir un periodo inverso.
+
             periodo_ficha = Periodo(desde=inicio if inicio < hasta else desde, hasta=hasta)
             contexto_kpi = ContextoDeCalculo(
                 periodo=periodo_ficha, calculado_en=datetime.now(UTC),
@@ -548,10 +538,7 @@ class AdaptadorAnaliticaDocentePostgres:
                         estado, estado_en,
                     ) in cur.fetchall()
                 ]
-            # ``anotar()`` forma parte del mismo resultado observable que la
-            # ficha. Sin este commit la lectura llegaba al navegador, pero el
-            # cierre de la conexión podía descartar silenciosamente la
-            # auditoría, justo lo contrario de una consulta institucional.
+
             cnx.commit()
 
         cobertura_evidencia = calcular_cobertura_evidencia(
@@ -600,8 +587,7 @@ class AdaptadorAnaliticaDocentePostgres:
             resultado["rectificaciones_edad"] = rectificaciones
         return resultado
 
-
-    def actividad_de_clase(  # noqa: C901, PLR0912, PLR0913, PLR0915 — recorrido preexistente; no se modifica en esta entrega.
+    def actividad_de_clase(
         self,
         clase: str,
         actor: str,
@@ -614,7 +600,7 @@ class AdaptadorAnaliticaDocentePostgres:
         limite: int = 200,
         alcance_institucional: bool = False,
     ) -> dict | None:
-        """Actividad comparativa de una clase en una consulta, sin texto libre."""
+
         metricas = {
             "turnos": "turnos_elegibles",
             "conversaciones": "conversaciones",
@@ -694,7 +680,7 @@ class AdaptadorAnaliticaDocentePostgres:
                   FROM miembros m
                   LEFT JOIN validos v ON v.sujeto = m.identificador
                  GROUP BY m.identificador, m.nombre, m.tiene_foto
-                """,  # noqa: S608 — interpola un subquery constante y centralizado
+                """,
                 (clase, desde, hasta, punto_medio, punto_medio),
             )
             filas = cur.fetchall()
@@ -819,12 +805,7 @@ class AdaptadorAnaliticaDocentePostgres:
         *,
         alcance_institucional: bool = False,
     ) -> dict | None:
-        """Corrige datos académicos sin abrir la edad ni la identidad de Google.
 
-        La autorización, la matrícula, el cambio y su auditoría comparten una
-        transacción. Para el docente se exige propiedad de la clase; para el
-        investigador, su asignación administrativa vigente.
-        """
         facultad, programa = exigir_oferta_valida(
             datos_academicos.get("facultad"), datos_academicos.get("programa")
         )
@@ -889,7 +870,7 @@ class AdaptadorAnaliticaDocentePostgres:
     def rectificar_edad(
         self, clase: str, actor: str, estudiante: str, edad_nueva: int, motivo: str
     ) -> dict | None:
-        """Rectifica edad sin reescribir actos previos y deja su máquina histórica."""
+
         exigir_edad_admisible(edad_nueva)
         motivo = str(motivo or "").strip()
         if len(motivo) < 8 or len(motivo) > 500:
@@ -1031,7 +1012,7 @@ class AdaptadorAnaliticaDocentePostgres:
     def detalle_institucional_de_clase(
         self, clase: str, investigador: str, desde: datetime, hasta: datetime
     ) -> dict | None:
-        """Abre una cohorte institucional sin heredar las rutas del docente."""
+
         with self._conexion() as cnx, cnx.cursor() as cur:
             exigir_investigador_administrador(cur, investigador)
             cur.execute("SELECT creador FROM clase WHERE id = %s AND archivada_en IS NULL", (clase,))
@@ -1118,7 +1099,7 @@ class AdaptadorAnaliticaDocentePostgres:
     def resumen_institucional(
         self, investigador: str, desde: datetime, hasta: datetime
     ) -> dict:
-        """Resumen de cursos y uso; autorización y auditoría comparten transacción."""
+
         with self._conexion() as cnx, cnx.cursor() as cur:
             exigir_investigador_administrador(cur, investigador)
             anotar(
@@ -1201,10 +1182,7 @@ class AdaptadorAnaliticaDocentePostgres:
                     activos, turnos, degradados, sin_fuente,
                 ) in cur.fetchall()
             ]
-            # Drill-down institucional: sólo perfiles con facultad y programa
-            # explícitos. Los incompletos siguen visibles en calidad de datos;
-            # asignarlos a una categoría inventada haría que un filtro pareciera
-            # más preciso de lo que los datos sostienen.
+
             cur.execute(
                 """
                 SELECT p.facultad, p.programa, c.creador,
@@ -1243,7 +1221,7 @@ class AdaptadorAnaliticaDocentePostgres:
             cnx.commit()
 
         docentes = len({curso["docente"]["id"] for curso in cursos})
-        # La matrícula única permite sumar sin duplicar estudiantes entre cursos.
+
         estudiantes = sum(curso["estudiantes"] for curso in cursos)
         return {
             "version": "investigacion.v1",
@@ -1266,9 +1244,7 @@ class AdaptadorAnaliticaDocentePostgres:
             },
         }
 
-
 def _armar_jerarquia(filas: list[tuple]) -> dict:
-    """Anida el recorrido autorizado sin ordenar a docentes por desempeño."""
     facultades: dict[str, dict] = {}
     for (
         facultad, programa, docente, nombre_docente, clase, nombre_clase,

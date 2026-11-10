@@ -1,37 +1,4 @@
-<!--
-Una evidencia abierta: metadatos, documento y decisión · C2B.
 
-LA REGLA CENTRAL DE ESTA PANTALLA, ANTES QUE NADA
----------------------------------------------------
-**Aprobar y rechazar están deshabilitados hasta que el PDF se haya recuperado
-correctamente.** No es una cortesía de interfaz: es lo que impide que alguien
-resuelva una autorización que nunca vio.
-
-Y se dice **por qué** están deshabilitados. Un botón gris sin explicación se lee
-como un fallo de la aplicación, y quien lo encuentra recarga, prueba con otro
-navegador y acaba pensando que el sistema está roto — cuando lo que pasa es que
-el documento no se pudo recuperar y eso es exactamente lo que hay que saber.
-
-⚠️ **Esto NO es un comprobante de lectura.** Que los bytes llegaran no demuestra
-que una persona los mirara, y el sistema no finge lo contrario: no se registra
-ningún «leído», no se cronometra nada y no se envía ninguna señal al servidor
-cuando el visor termina de pintar. Lo único que se afirma es lo que se puede
-afirmar — que el documento estaba disponible cuando se tomó la decisión—.
-
-TRES ESTADOS DEL DOCUMENTO, Y NINGUNO SE CONFUNDE
----------------------------------------------------
-· **cargando** — se está pidiendo; no se decide todavía;
-· **disponible** — hay `Blob`; se puede ver y se puede decidir;
-· **no recuperable** — 503, reserva sin confirmar, archivo ausente. Se explica
-  con el motivo que redactó el servidor y **no se habilita nada**.
-
-Una reserva sin confirmar cae en el tercero, y es el caso que la corrección de
-C2A creó a propósito: el backend responde 503 con un motivo de reconciliación en
-vez de servir un documento que todavía no es evidencia.
-
-
-
--->
 <script>
   import CargadorCubo from '../../comun/base/CargadorCubo.svelte';
   import { ayudaContextual } from '../../comun/base/ayudaContextual.js';
@@ -42,24 +9,14 @@ vez de servir un documento que todavía no es evidencia.
   import { fechaLegible } from '../../nucleo/formato/fechas.js';
 
   let {
-    /** El documento de `GET /api/representante/evidencias/{id}`, o `null`. */
     detalle = null,
-    /** El `Blob` del PDF, o `null` si todavía no llegó o no se pudo. */
     documento = null,
-    /** Petición del detalle en vuelo. */
     cargandoDetalle = false,
-    /** Petición del archivo en vuelo. */
     cargandoArchivo = false,
-    /** `describir(error)` del detalle, o `null`. */
     falloDetalle = null,
-    /** `describir(error)` del archivo, o `null`. Distinto del anterior: el
-        detalle puede haber llegado y el archivo no. */
     falloArchivo = null,
-    /** Si hay una decisión en vuelo. Bloquea los dos botones. */
     resolviendo = false,
-    /** El recibo de la última decisión tomada aquí, o `null`. */
     recibo = null,
-    /** Sólo en móvil: vuelve a la lista. `null` en escritorio. */
     alVolver = null,
     alReintentarArchivo,
     alAprobar,
@@ -72,12 +29,10 @@ vez de servir un documento que todavía no es evidencia.
     rechazada: 'Rechazada'
   };
 
-  /** La única condición que abre los botones. Ver la cabecera. */
   const puedeDecidir = $derived(
     Boolean(documento) && !cargandoArchivo && !resolviendo && detalle?.estado === 'pendiente'
   );
 
-  /** Por qué no se puede decidir. Vacío cuando sí se puede. */
   const motivoBloqueo = $derived(
     !detalle
       ? ''
@@ -127,9 +82,7 @@ vez de servir un documento que todavía no es evidencia.
       <div><dt>Recibida</dt><dd>{fechaLegible(detalle.recibido_en)}</dd></div>
       <div><dt>Documento</dt><dd>{detalle.tipo_mime} · {kilobytes} KB</dd></div>
       <div><dt>Versión firmada</dt><dd><code>{detalle.version}</code></dd></div>
-      <!-- El SHA-256 es lo que permite comprobar que el archivo que se está
-           viendo es el que se registró. Se enseña recortado y entero en el
-           `title`: los 64 caracteres completos no caben y nadie los lee. -->
+
       <div>
         <dt>Huella</dt>
         <dd><code use:ayudaContextual title={detalle.sha256}>{String(detalle.sha256).slice(0, 16)}…</code></dd>
@@ -139,9 +92,7 @@ vez de servir un documento que todavía no es evidencia.
       {/if}
     </dl>
 
-    <!-- El motivo histórico de un rechazo · decisión ratificada 5. Sin esto,
-         una decisión de hace dos semanas deja de ser comprensible; el listado
-         no lo trae y esta pantalla es la única que puede enseñarlo. -->
+
     {#if detalle.estado === 'rechazada' && detalle.motivo}
       <div class="motivo-historico">
         <h3>Motivo del rechazo</h3>
@@ -149,7 +100,7 @@ vez de servir un documento que todavía no es evidencia.
       </div>
     {/if}
 
-    <!-- ── el documento ────────────────────────────────────────────────── -->
+
     {#if cargandoArchivo}
       <CargadorCubo mensaje="Recuperando el documento…" pantallaCompleta />
     {:else if falloArchivo}
@@ -160,7 +111,7 @@ vez de servir un documento que todavía no es evidencia.
       <VisorDePdf {documento} evidencia={detalle.evidencia} />
     {/if}
 
-    <!-- ── el recibo de lo que se acaba de decidir ─────────────────────── -->
+
     {#if recibo}
       <div class="recibo" role="status">
         <Icono nombre="check" medida={15} />
@@ -171,12 +122,11 @@ vez de servir un documento que todavía no es evidencia.
       </div>
     {/if}
 
-    <!-- ── la decisión ─────────────────────────────────────────────────── -->
+
     {#if detalle.estado === 'pendiente'}
       <div class="decision">
         {#if motivoBloqueo}
-          <!-- Se explica SIEMPRE que los botones estén cerrados. Un botón gris
-               sin motivo se lee como una aplicación rota. -->
+
           <p class="por-que" id="por-que-bloqueado">{motivoBloqueo}</p>
         {/if}
         <div class="botones" aria-describedby={motivoBloqueo ? 'por-que-bloqueado' : undefined}>
@@ -219,13 +169,6 @@ vez de servir un documento que todavía no es evidencia.
 
   .volver:hover { border-color: var(--accent-main); color: var(--accent-main); }
 
-  /*
-    En escritorio no hay nada a lo que volver: las dos columnas están a la vez.
-    Se oculta con la MISMA consulta de medios que reparte las columnas en
-    `Evidencias.svelte`, y no condicionando la prop desde el guion: el punto de
-    corte tiene que vivir en un solo idioma, o la copia que se olvide de
-    actualizarse deja un botón que no lleva a ninguna parte.
-  */
   @media (min-width: 60.0625rem) {
     .volver { display: none; }
   }
@@ -280,7 +223,6 @@ vez de servir un documento que todavía no es evidencia.
     margin: 2px 0 0;
     font-size: var(--texto-sm);
     color: var(--ink-primary);
-    /* Una huella de 64 caracteres no puede ensanchar la columna. */
     overflow-wrap: anywhere;
   }
 

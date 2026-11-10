@@ -1,4 +1,3 @@
-/** Preferencias propias de avisos opcionales por correo. */
 import { pedir, RUTAS } from './cliente.js';
 
 export function consultar() {

@@ -1,4 +1,4 @@
-<!-- Fase 8 · Indicadores explicables de una clase, sin ceros simulados. -->
+
 <script>
   import CargadorCubo from '../../comun/base/CargadorCubo.svelte';
   import { menuDesplegable } from '../../comun/base/menuDesplegable.js';

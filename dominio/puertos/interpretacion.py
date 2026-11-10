@@ -1,5 +1,3 @@
-"""Interpretación experimental de intención; no evalúa verdad matemática ni personas."""
-
 from dataclasses import dataclass
 from typing import Protocol
 
@@ -20,8 +18,6 @@ class LecturaSemantica:
     error_factores: str = ""
     actos: tuple[dict, ...] = ()
 
-
 class PuertoInterpretacion(Protocol):
     def interpretar(self, entrada: dict) -> LecturaSemantica:
-        """Devuelve una lectura estructurada o falla; la cadena conserva sus reglas."""
         ...

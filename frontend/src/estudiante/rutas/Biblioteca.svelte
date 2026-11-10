@@ -1,4 +1,4 @@
-<!-- Biblioteca navegable del corpus: obras por nombre y partes catalogadas. -->
+
 <script>
   import CargadorCubo from '../../comun/base/CargadorCubo.svelte';
   import Degradacion from '../../comun/estado/Degradacion.svelte';
@@ -31,9 +31,6 @@
     cargando = true;
     fallo = null;
     try {
-      // Las obras y sus partes son el núcleo de la biblioteca. El índice de
-      // pasajes es complementario: si un backend anterior todavía no expone
-      // esa colección, no debe vaciar también el catálogo que sí pudo leer.
       obras = await api.obras();
       await cargarFragmentos();
       if (!seleccionada && obras.length && !globalThis.matchMedia?.('(max-width: 47.999rem)').matches) await elegir(obras[0].clave);

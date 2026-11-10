@@ -1,27 +1,3 @@
-"""
-proceso_aislado.py — Envoltura de aislamiento del motor simbólico
-=================================================================
-
-Implementa la alternativa **B** de `ADR-011`: subproceso persistente con
-límites del sistema operativo.
-
-Por qué un proceso y no un hilo
--------------------------------
-El cálculo simbólico es Python puro ocupando la CPU. **Un hilo de Python no
-puede interrumpirse desde fuera.** El único corte de tiempo fiable es un
-proceso que se pueda terminar. La medición que lo motiva está en `ADR-011` §1.1:
-una suma de veinte términos trigonométricos derivada tres veces supera los doce
-segundos sin terminar, y es una entrada que un estudiante puede escribir.
-
-Qué NO garantiza
-----------------
-`ADR-011` §5.2 lo declara y aquí se repite porque es donde alguien lo leerá: el
-proceso hijo hereda el sistema de archivos y la red del anfitrión. Se cubren
-**tiempo y memoria**, que son los dos límites del riesgo medido. La ausencia de
-red y de sistema de archivos que `RI-08` pide por completo exige una frontera
-del sistema operativo o un contenedor — la alternativa D del ADR.
-"""
-
 from __future__ import annotations
 
 import os
@@ -47,15 +23,12 @@ def _flotante(nombre: str, defecto: float) -> float:
     except ValueError:
         return defecto
 
-
 def _entero(nombre: str, defecto: int) -> int:
     try:
         return int(os.environ.get(nombre, "") or defecto)
     except ValueError:
         return defecto
 
-
-#: Umbrales configurables sin recompilar (`RF-ADM-06` · `RI-13`).
 TIEMPO_MAXIMO_S = _flotante("AGENTE_CAS_TIMEOUT_S", 8.0)
 MEMORIA_MAXIMA_MB = _entero("AGENTE_CAS_MEMORIA_MB", 512)
 
@@ -66,9 +39,7 @@ MENSAJE_TIEMPO = (
 
 
 def aislamiento_activo() -> bool:
-    """Se lee en cada llamada para que las pruebas puedan alternarlo."""
     return os.environ.get("AGENTE_CAS_AISLAR", "").strip() in {"1", "true", "yes"}
-
 
 def _preparar_hijo() -> None:
     if MEMORIA_MAXIMA_MB > 0 and sys.platform != "win32":
@@ -77,28 +48,24 @@ def _preparar_hijo() -> None:
 
             limite = MEMORIA_MAXIMA_MB * 1024 * 1024
             resource.setrlimit(resource.RLIMIT_AS, (limite, limite))
-        except Exception:                                       # pragma: no cover
-            pass                     # si no se puede, el corte de tiempo sigue
-    os.environ["AGENTE_CAS_AISLAR"] = "0"          # evita anidar procesos
-
+        except Exception:
+            pass
+    os.environ["AGENTE_CAS_AISLAR"] = "0"
 
 def _precomputar_hijo(expresion: str, variable: str, orden: int, notacion: str) -> Precomputo:
     from adaptadores.salientes.simbolico.adaptador import AdaptadorSimbolico
 
     return AdaptadorSimbolico().precomputar(expresion, variable, orden, notacion)
 
-
 def _precomputar_limite_hijo(expresion: str, variable: str, valor_limite: str) -> Precomputo:
     from adaptadores.salientes.simbolico.adaptador import AdaptadorSimbolico
 
     return AdaptadorSimbolico().precomputar_limite(expresion, variable, valor_limite)
 
-
 def _verificar_hijo(bloques: tuple) -> InformeVerificacion:
     from adaptadores.salientes.simbolico.adaptador import AdaptadorSimbolico
 
     return AdaptadorSimbolico().verificar(bloques)
-
 
 def _capacidad_hijo(nombre, argumento):
     from adaptadores.salientes.simbolico.adaptador import AdaptadorSimbolico
@@ -106,7 +73,6 @@ def _capacidad_hijo(nombre, argumento):
     if nombre not in ('precomputar_valor', 'objetivos_conversacionales', 'citas_conversacionales_relacionadas', 'referencia_transformada'):
         raise ValueError('capacidad no admitida')
     return getattr(AdaptadorSimbolico(), nombre)(argumento)
-
 
 _ejecutor: ProcessPoolExecutor | None = None
 _candado_ejecutor = Lock()
@@ -116,20 +82,17 @@ def _obtener_ejecutor() -> ProcessPoolExecutor:
     global _ejecutor
     with _candado_ejecutor:
         if _ejecutor is None:
-            # La ruta HTTP llama desde hilos. Fork puede heredar candados de esos
-            # hilos, o del ejecutor descartado, y dejar el nuevo CAS bloqueado.
+
             _ejecutor = ProcessPoolExecutor(max_workers=1, initializer=_preparar_hijo,
                                             mp_context=get_context('spawn'))
         return _ejecutor
 
-
 def reiniciar() -> None:
-    """Descarta el proceso hijo. Es la única forma de recuperarlo si se colgó."""
     global _ejecutor
     with _candado_ejecutor:
         anterior, _ejecutor = _ejecutor, None
     if anterior is not None:
-        # shutdown(wait=False) por sí solo deja vivo un cálculo atascado.
+
         procesos = list((anterior._processes or {}).values())
         for proceso in procesos:
             if proceso.is_alive():
@@ -140,14 +103,7 @@ def reiniciar() -> None:
                 proceso.kill()
         anterior.shutdown(wait=False, cancel_futures=True)
 
-
 class SimbolicoAislado:
-    """Decora un `PuertoSimbolico` con corte de tiempo y límite de memoria.
-
-    Implementa el mismo puerto que decora, de modo que el dominio no distingue
-    si está aislado o no. Es lo que permite probar la lógica de verificación sin
-    pagar la frontera de proceso.
-    """
 
     def __init__(self, interno=None):
         from adaptadores.salientes.simbolico.adaptador import AdaptadorSimbolico
@@ -172,7 +128,7 @@ class SimbolicoAislado:
         try:
             futuro = _obtener_ejecutor().submit(_capacidad_hijo, nombre, argumento)
             return futuro.result(timeout=TIEMPO_MAXIMO_S or None)
-        except Exception:  # noqa: BLE001 — una capacidad opcional no bloquea el chat
+        except Exception:
             reiniciar()
             return fallo
 
@@ -193,17 +149,11 @@ class SimbolicoAislado:
         except TiempoAgotado:
             reiniciar()
             return Precomputo(error=MENSAJE_TIEMPO)
-        except Exception as e:                                  # noqa: BLE001
+        except Exception as e:
             reiniciar()
             return Precomputo(error=f"el cálculo no pudo completarse: {e}")
 
     def precomputar_limite(self, expresion: str, variable: str = "x", valor_limite: str = "0") -> Precomputo:
-        """Igual que `precomputar`, para la capacidad de límites de `PM-B22`.
-
-        No está en `PuertoSimbolico` (ver el docstring del adaptador), pero
-        el aislamiento es del mismo tipo de riesgo —cálculo determinista que
-        puede ser caro— así que se decora igual, por duck typing.
-        """
         if not aislamiento_activo():
             return self._interno.precomputar_limite(expresion, variable, valor_limite)
         try:
@@ -214,7 +164,7 @@ class SimbolicoAislado:
         except TiempoAgotado:
             reiniciar()
             return Precomputo(error=MENSAJE_TIEMPO)
-        except Exception as e:                                  # noqa: BLE001
+        except Exception as e:
             reiniciar()
             return Precomputo(error=f"el cálculo no pudo completarse: {e}")
 
@@ -227,18 +177,12 @@ class SimbolicoAislado:
         except TiempoAgotado:
             reiniciar()
             return self._informe_de_fallo(bloques, MENSAJE_TIEMPO)
-        except Exception as e:                                  # noqa: BLE001
+        except Exception as e:
             reiniciar()
             return self._informe_de_fallo(bloques, f"fallo del motor: {e}")
 
     @staticmethod
     def _informe_de_fallo(bloques, motivo: str) -> InformeVerificacion:
-        """Un fallo del motor **no aprueba**. `ADR-008` V1.
-
-        El modo seguro no hubo que inventarlo: la respuesta desciende al nivel 1
-        de la escala de divulgación, y una pregunta socrática no contiene
-        afirmaciones que verificar (`ADR-008` §6.1).
-        """
         return InformeVerificacion(
             verificaciones=tuple(
                 Verificacion(

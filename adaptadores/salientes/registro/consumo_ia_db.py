@@ -1,5 +1,3 @@
-"""Persistencia, autorización y agregado del consumo institucional de IA."""
-
 from __future__ import annotations
 
 import hashlib
@@ -20,7 +18,7 @@ from dominio.modelo.consumo_ia import (
     costo_estimado_usd,
 )
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from collections.abc import Iterator
 
 ZONA_LOCAL = ZoneInfo("America/Bogota")
@@ -43,13 +41,12 @@ class AdaptadorConsumoIAPostgres:
 
     @contextmanager
     def _conexion(self) -> Iterator[Any]:
-        from adaptadores.salientes.conexion import conectar  # noqa: PLC0415
+        from adaptadores.salientes.conexion import conectar
 
         with traducir_fallo(), conectar(self._cadena) as cnx:
             yield cnx
 
     def registrar(self, registro: RegistroConsumoIA) -> bool:
-        """INSERT idempotente: una respuesta del proveedor tampoco se duplica."""
         with self._conexion() as cnx, cnx.cursor() as cur:
             cur.execute(
                 """
@@ -85,7 +82,6 @@ class AdaptadorConsumoIAPostgres:
         return insertado
 
     def resumen(self, actor: str, desde: datetime, hasta: datetime) -> dict:
-        """Lee bajo rol bloqueado y audita antes del SELECT en la transacción."""
         hechos, tarifas, cache, ultima_cache = self._leer_auditado(actor, desde, hasta)
         fechas = {hecho.instante_utc.astimezone(ZONA_LOCAL).date() for hecho in hechos}
         cache, fallo_trm, ultima_trm = self._completar_trm(
@@ -94,12 +90,6 @@ class AdaptadorConsumoIAPostgres:
         return _agregar(hechos, tarifas, cache, desde, hasta, fallo_trm, ultima_trm)
 
     def resumen_deepseek(self, actor: str, desde: datetime, hasta: datetime) -> dict:
-        """Referencia institucional del intervalo, nunca atribuida a una clase.
-
-        Conserva la misma autorización y auditoría que el informe de consumo.
-        Se filtra antes de calcular costos: los proveedores locales u otros
-        modelos no deben inflar el subtotal presentado como DeepSeek.
-        """
         hechos, tarifas, cache, ultima_cache = self._leer_auditado(actor, desde, hasta)
         hechos = [h for h in hechos if h.proveedor.casefold() == "deepseek"]
         if not hechos:
@@ -116,7 +106,7 @@ class AdaptadorConsumoIAPostgres:
         formato: str,
         documento: bytes,
     ) -> None:
-        """La constancia se confirma antes de que el borde entregue los bytes."""
+
         with self._conexion() as cnx, cnx.cursor() as cur:
             exigir_investigador_administrador(cur, actor)
             anotar(
@@ -214,7 +204,7 @@ class AdaptadorConsumoIAPostgres:
         if faltantes:
             try:
                 nuevas = self._cliente_trm.historica(faltantes[0], faltantes[-1])
-            except Exception:  # noqa: BLE001 — red/XML oficial; se declara ausencia
+            except Exception:
                 fallos.append("no fue posible actualizar la TRM histórica oficial")
         ultima = ultima_cache[0] if ultima_cache is not None else None
         cache_reciente = bool(
@@ -225,7 +215,7 @@ class AdaptadorConsumoIAPostgres:
             try:
                 ultima_nueva = self._cliente_trm.ultima()
                 ultima = ultima_nueva or ultima
-            except Exception:  # noqa: BLE001 — una caché previa sigue siendo visible
+            except Exception:
                 fallos.append("no fue posible actualizar la última TRM oficial")
         if not nuevas and ultima_nueva is None:
             return cache, "; ".join(fallos) or None, ultima
@@ -263,7 +253,6 @@ class AdaptadorConsumoIAPostgres:
             cnx.commit()
         return cache, "; ".join(fallos) or None, ultima
 
-
 def _tarifa(hecho: RegistroConsumoIA, tarifas: list[TarifaIA]) -> TarifaIA | None:
     modelo = _ALIAS_TARIFA.get(hecho.modelo_respondido, hecho.modelo_respondido)
     normalizado = RegistroConsumoIA(
@@ -271,21 +260,17 @@ def _tarifa(hecho: RegistroConsumoIA, tarifas: list[TarifaIA]) -> TarifaIA | Non
     )
     return next((tarifa for tarifa in tarifas if tarifa.aplica(normalizado)), None)
 
-
 def _suma_o_ausencia(hechos: list[RegistroConsumoIA], campo: str) -> int | None:
     valores = [getattr(hecho, campo) for hecho in hechos if getattr(hecho, campo) is not None]
     return sum(valores) if valores else None
 
-
 def _decimal_legible(valor: Decimal | None) -> str | None:
-    """Serializa igual un valor de red y su copia ``numeric`` de PostgreSQL."""
     if valor is None:
         return None
     texto = format(valor, "f")
     return texto.rstrip("0").rstrip(".") if "." in texto else texto
 
-
-def _agregar(  # noqa: PLR0913 — contrato explícito entre lectura, TRM y periodo
+def _agregar(
     hechos: list[RegistroConsumoIA],
     tarifas: list[TarifaIA],
     trm: dict[date, Decimal],

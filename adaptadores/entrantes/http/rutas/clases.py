@@ -1,37 +1,3 @@
-"""
-clases.py — Las trece rutas del espacio de clase · `DD-12` / `EQ-033`
-====================================================================
-
-Crear, solicitar matrícula, listar y resolver solicitudes, listar las clases
-propias, ver integrantes, abrir la ficha de uno, recuperar su foto privada y
-regenerar el código. La frontera de `DD-12` sigue intacta: **sin tareas,
-calificaciones, entregas, calendario ni mensajería**. `EQ-033` añade la
-condición de una única clase activa por estudiante y aprobación humana antes
-de toda alta o cambio.
-
-La ficha (Fase 7) no cruza la frontera de `DD-12`: no añade progreso,
-calificación ni entrega. Devuelve lo que la lista de matriculados ya muestra,
-por una ruta que además dice desde qué clase se mira.
-
-⚠️ No confundir con el almacén. Desde la Fase 2 · sesión 3, el contrato es
-`dominio/puertos/clases.py::PuertoClases` y las dos implementaciones viven en
-`adaptadores/salientes/registro/` —`clases_memoria.py` y `clases_db.py`—. Estas
-rutas dependen del puerto y no saben cuál recibieron. Ver `rutas/__init__.py`.
-
-Quién puede qué, y por qué no es simétrico
--------------------------------------------------
-Crear una clase, listar integrantes, recuperar sus fotos privadas y regenerar
-el código exigen rol docente (`RP-17`) **y** propiedad de la clase. Solicitar
-matrícula exige rol estudiante; aprobar o rechazar corresponde al docente
-propietario de la clase de destino o al investigador, y cancelar sólo al
-estudiante titular. Listar las clases propias no exige rol profesional. La
-propiedad se protege además en el ALMACÉN para cualquier borde que lo llame;
-la ruta conserva la comprobación del rol vigente porque ser creador histórico
-no mantiene permisos docentes después de que el rol se retire (`EQ-023`).
-
-
-"""
-
 from __future__ import annotations
 
 from hashlib import sha256
@@ -50,12 +16,11 @@ from dominio.puertos.clases import ConflictoDeMatricula
 from dominio.puertos.gobierno import SupresionEnCurso
 from dominio.puertos.preferencias_notificacion import SOLICITUDES_MATRICULA
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from adaptadores.entrantes.http.rutas.puerta_de_supresion import PuertaDeSupresion
     from dominio.puertos.clases import PuertoClases
     from dominio.puertos.gobierno import PuertoNotificacion
     from dominio.puertos.preferencias_notificacion import PuertoPreferenciasDeNotificacion
-
 
 _ASUNTO_SOLICITUD = "Nueva solicitud para tu clase en DidaxIa"
 _URL_CLASES = "https://app.didaxia.pro/mis-clases"
@@ -75,9 +40,7 @@ def _mensaje_de_solicitud(solicitud) -> str:
         "Este mensaje es informativo: la matrícula no cambia hasta que una persona autorizada la apruebe."
     )
 
-
 def _destinos_de_investigacion(configuracion: str) -> tuple[str, ...]:
-    """Buzones separados por coma o punto y coma, limpios y sin duplicados."""
     unicos: dict[str, str] = {}
     for fragmento in configuracion.replace(";", ",").split(","):
         correo = fragmento.strip()
@@ -85,8 +48,7 @@ def _destinos_de_investigacion(configuracion: str) -> tuple[str, ...]:
             unicos.setdefault(correo.casefold(), correo)
     return tuple(unicos.values())
 
-
-def crear_router(  # noqa: PLR0913 -- dependencias explícitas de esta frontera HTTP
+def crear_router(
     sesiones: Sesiones,
     clases_almacen: PuertoClases,
     puerta: PuertaDeSupresion,
@@ -96,27 +58,13 @@ def crear_router(  # noqa: PLR0913 -- dependencias explícitas de esta frontera 
     *,
     correo_investigacion: str = "",
 ) -> APIRouter:
-    """Las trece rutas de `DD-12`/`EQ-033`, todas tras la puerta de `EQ-022`.
 
-    ⚠️ **`puerta` es obligatoria**, sin valor por defecto. La tenía —`| None =
-    None`— para no romper composiciones de prueba antiguas, y eso convertía
-    olvidarla en una forma silenciosa de desactivar la regla: un router
-    construido sin ella pasaba todas las pruebas y dejaba el producto abierto.
-    Ahora omitirla es un `TypeError` al componer, que es donde tiene que doler.
-
-    Todas, y no sólo las que escriben: `ESTADO-ACTUAL.md` §10.2 suspende el
-    **uso del producto**, y la lista de mis clases o los integrantes de una no
-    son un derecho del titular sobre sus propios datos — son producto. Lo que sí
-    es derecho propio vive en `/api/datos-personales` y en `/api/datos/supresion`.
-    """
     router = APIRouter()
 
     def _congelada(datos) -> Response | None:
-        """La negativa si esta cuenta tiene el trámite abierto, o `None`."""
         return puerta.negativa(sujeto_de(datos))
 
     def _correo_habilitado(*, sujeto: str = "", correo: str = "") -> bool:
-        """Falla cerrado: sin preferencia afirmativa no sale ningún correo."""
         if preferencias_notificacion is None:
             return False
         try:
@@ -137,8 +85,7 @@ def crear_router(  # noqa: PLR0913 -- dependencias explícitas de esta frontera 
         datos = sesiones.leer(peticion.cookies.get(COOKIE))
         if datos is None:
             return JSONResponse({"detalle": "sin sesión"}, status_code=401)
-        # `EQ-022` · listar las clases propias es usar el producto, no un derecho
-        # del titular sobre sus datos: eso se ejerce en `/api/datos-personales`.
+
         congelada = _congelada(datos)
         if congelada is not None:
             return congelada
@@ -150,10 +97,7 @@ def crear_router(  # noqa: PLR0913 -- dependencias explícitas de esta frontera 
         if error is not None:
             return error
         datos = sesiones.leer(peticion.cookies.get(COOKIE))
-        # `EQ-022` · **antes de leer el cuerpo**. Se comprueba después de la
-        # sesión y el rol —el trámite no exime de autenticarse— y antes de
-        # consumir nada de lo que llegue: un cuerpo que no se lee no hay que
-        # validarlo ni descartarlo.
+
         congelada = _congelada(datos)
         if congelada is not None:
             return congelada
@@ -164,8 +108,7 @@ def crear_router(  # noqa: PLR0913 -- dependencias explícitas de esta frontera 
         try:
             clase = clases_almacen.crear(nombre, sujeto_de(datos))
         except SupresionEnCurso:
-            # La carrera: el trámite se abrió entre la puerta y la escritura, y
-            # el adaptador lo detectó con la fila bloqueada. Mismo contrato.
+
             return respuesta_de_supresion()
         return JSONResponse(clase.como_resumen(), status_code=201)
 
@@ -320,12 +263,7 @@ def crear_router(  # noqa: PLR0913 -- dependencias explícitas de esta frontera 
     async def retirar_integrante_de_clase(
         identificador: str, sujeto: str, peticion: Request
     ) -> Response:
-        """Cierra una matrícula por decisión del docente propietario.
 
-        La cuenta y su historia permanecen intactas. La confirmación visual se
-        hace en el cliente, pero el servidor exige además un motivo explícito y
-        vuelve a comprobar rol, propiedad y trámites de supresión.
-        """
         error = requerir_rol(sesiones, peticion, "docente")
         if error is not None:
             return error
@@ -360,50 +298,10 @@ def crear_router(  # noqa: PLR0913 -- dependencias explícitas de esta frontera 
 
     @router.get("/api/clases/{identificador}/integrantes/{sujeto}")
     def ficha_de_integrante(identificador: str, sujeto: str, peticion: Request) -> Response:
-        """La ficha de UN matriculado, para el docente que creó su clase · Fase 7.
-
-        POR QUÉ CUELGA DE LA CLASE Y NO ES `/api/estudiantes/{id}`
-        -----------------------------------------------------------
-        `panel_docente.py` propuso en su día una ruta por estudiante, y con ella
-        la autorización habría tenido que reconstruirse: «¿existe alguna clase
-        de este docente donde esta persona esté matriculada?». Colgándola de la
-        clase, la pregunta ya está contestada por `integrantes()` —que devuelve
-        `None` si la clase no existe **o no es suya**— y no hay una segunda
-        comprobación de permisos que pueda discrepar de la primera.
-
-        Además obliga a que la ficha diga siempre DESDE QUÉ CLASE se mira, que
-        es lo que un docente con dos grupos necesita para no confundirlas.
-
-        `404` PARA LOS TRES CASOS, Y ESA INDISTINCIÓN ES LA GARANTÍA
-        -------------------------------------------------------------
-        Clase que no existe, clase ajena y persona no matriculada responden lo
-        mismo. Distinguirlas permitiría recorrer identificadores para averiguar
-        qué clases existen y quién está en ellas — el mismo criterio que
-        `GET /api/historial/{sesion}` ya aplica y que `integrantes()` respeta
-        más arriba en este archivo.
-
-        QUÉ DEVUELVE, Y QUÉ NO
-        ------------------------
-        Lo que la lista de matriculados ya muestra —nombre visible, fecha de
-        matrícula y si tiene foto—, más el nombre de la clase. **Nada más.**
-
-        Esta ruta base no lleva vector conductual, diagnóstico, indicadores ni
-        conversaciones. `EQ-032` ya aprobó que 7E.3 los exponga mediante
-        contratos trazables y autorizados; esos contratos todavía no se
-        mezclan aquí antes de existir. No es una prohibición pendiente sino una
-        separación entre la ficha de matrícula ya disponible y la analítica que
-        sigue en construcción.
-
-        La foto no viaja aquí: se pide a `…/foto`, que ya la sirve con
-        `Cache-Control: private, no-store` y sin URL pública permanente.
-        """
         datos = sesiones.leer(peticion.cookies.get(COOKIE))
         if datos is None:
             return JSONResponse({"detalle": "sin sesión"}, status_code=401)
-        # `RP-17` · la ficha de un estudiante es del docente que creó su clase.
-        # Se comprueba el rol ADEMÁS de la propiedad de la clase: un
-        # investigador alcanzará las fichas institucionales mediante el borde
-        # auditado de 7E.4; el modo Tutor de `EQ-031` no sustituye ese borde.
+
         error = requerir_rol(sesiones, peticion, "docente")
         if error is not None:
             return error

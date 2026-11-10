@@ -5,7 +5,6 @@
 
   let { alInsertar, alComando } = $props();
   let pestanaActiva = $state(CATEGORIAS_DE_NOTACION[0].id);
-  /** @type {HTMLButtonElement[]} */
   let botonesDePestana = $state([]);
 
   $effect(() => {
@@ -15,7 +14,6 @@
     if (panel) animarPestanaTeclas(panel);
   });
 
-  /** @param {KeyboardEvent} evento */
   function alTeclearEnPestanas(evento) {
     const indice = CATEGORIAS_DE_NOTACION.findIndex((c) => c.id === pestanaActiva);
     let siguiente = null;
@@ -31,8 +29,6 @@
 
   function teclasDe(categoria) {
     if (categoria.id !== 'numeros') return categoria.teclas;
-    // En el teclado numérico esas acciones ocupaban una quinta columna
-    // intercalada; ahora la misma columna persiste al cambiar de pestaña.
     return categoria.teclas.filter((tecla) =>
       !['deleteBackward', 'moveToPreviousChar', 'moveToNextChar'].includes(tecla.comando)
       && !['\\div', '\\times', '-', '+'].includes(tecla.inserta)

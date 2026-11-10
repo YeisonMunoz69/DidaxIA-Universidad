@@ -1,5 +1,3 @@
-"""Aplicación atómica, ordenada y bloqueada de las migraciones de DidaxIA."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -15,11 +13,7 @@ TABLA_LEDGER = "migracion_esquema"
 ORIGEN_APLICADA = "aplicada"
 ORIGEN_ADOPTADA = "adoptada"
 
-# Durante el despliegue de `8d08548` estas dos migraciones llegaron en el
-# orden contrario al que quedó canónico en `main`. Ambas estructuras se
-# aplicaron correctamente; lo que difiere es exclusivamente la numeración del
-# ledger. Las huellas hacen que esta reconciliación sólo reconozca ese estado
-# histórico exacto y nunca convierta una divergencia desconocida en válida.
+
 _LEDGER_TRANSITORIO_15_16 = (
     (15, "material-del-turno", "94a22c22a326ff43db4dd1b9f6c65002262397442099312157ae59fb534aced0"),
     (16, "foto-perfil", "2a8f9b12aaada5e4cd510ec968826c6419e7215b660b8350a75aa7bc70786235"),
@@ -27,44 +21,35 @@ _LEDGER_TRANSITORIO_15_16 = (
 
 
 class ErrorDeMigracion(RuntimeError):
-    """La evolución no puede continuar sin cambiar el estado actual."""
-
+    pass
 
 class MigracionEnCurso(ErrorDeMigracion):
-    """Otro proceso ya gobierna la evolución de este esquema."""
-
+    pass
 
 class HistorialIncompatible(ErrorDeMigracion):
-    """El ledger no coincide con el catálogo versionado."""
-
+    pass
 
 class BaseExistenteSinLineaBase(ErrorDeMigracion):
-    """Hay una línea histórica reconocible, pero nadie autorizó adoptarla."""
-
+    pass
 
 class EsquemaParcial(ErrorDeMigracion):
-    """La base no representa una secuencia completa de migraciones."""
-
+    pass
 
 class MigracionRequiereDecision(ErrorDeMigracion):
-    """La siguiente migración destruiría o reinterpretaría datos."""
-
+    pass
 
 @dataclass(frozen=True, slots=True)
 class Resultado:
     adoptadas: tuple[int, ...]
     aplicadas: tuple[int, ...]
 
-
 def _fijar_esquema(cur: Any, esquema: str) -> None:
     cur.execute(sql.SQL("SET LOCAL search_path TO {}, public").format(sql.Identifier(esquema)))
-
 
 def _exigir_esquema(cur: Any, esquema: str) -> None:
     cur.execute("SELECT 1 FROM pg_namespace WHERE nspname = %s", (esquema,))
     if cur.fetchone() is None:
         raise ErrorDeMigracion(f"el esquema {esquema!r} no existe")
-
 
 def _tomar_bloqueo(cur: Any, esquema: str) -> None:
     cur.execute(
@@ -73,7 +58,6 @@ def _tomar_bloqueo(cur: Any, esquema: str) -> None:
     )
     if not cur.fetchone()[0]:
         raise MigracionEnCurso(f"ya hay una migración en curso para el esquema {esquema!r}")
-
 
 def _crear_ledger(cur: Any, esquema: str) -> None:
     cur.execute(
@@ -90,7 +74,6 @@ def _crear_ledger(cur: Any, esquema: str) -> None:
         ).format(sql.Identifier(esquema), sql.Identifier(TABLA_LEDGER))
     )
 
-
 def _leer_ledger(cur: Any, esquema: str) -> list[tuple[int, str, str, str]]:
     cur.execute(
         sql.SQL("SELECT version, nombre, checksum, origen FROM {}.{} ORDER BY version").format(
@@ -98,7 +81,6 @@ def _leer_ledger(cur: Any, esquema: str) -> list[tuple[int, str, str, str]]:
         )
     )
     return list(cur.fetchall())
-
 
 def _validar_ledger(filas: list[tuple[int, str, str, str]], catalogo: tuple[Migracion, ...]) -> int:
     for posicion, fila in enumerate(filas, start=1):
@@ -116,21 +98,13 @@ def _validar_ledger(filas: list[tuple[int, str, str, str]], catalogo: tuple[Migr
             raise HistorialIncompatible(f"origen no válido en la migración {version:02d}")
     return len(filas)
 
-
 def _reconciliar_intercambio_15_16(
     cur: Any,
     esquema: str,
     filas: list[tuple[int, str, str, str]],
     catalogo: tuple[Migracion, ...],
 ) -> list[tuple[int, str, str, str]]:
-    """Normaliza el único ledger transitorio publicado por `8d08548`.
 
-    No vuelve tolerante el ledger. Reconoce nombres y checksums exactos,
-    valida primero el prefijo 01--14 y exige las estructuras completas de las
-    dos migraciones antes de reescribir sus dos filas dentro de la misma
-    transacción. Si algo no coincide, la validación inmutable normal conserva
-    el bloqueo.
-    """
     if len(filas) != 16 or len(catalogo) < 16:
         return filas
     firma = tuple((version, nombre, checksum) for version, nombre, checksum, _ in filas[14:16])
@@ -200,7 +174,6 @@ def _reconciliar_intercambio_15_16(
         )
     return _leer_ledger(cur, esquema)
 
-
 def _registrar(cur: Any, esquema: str, migracion: Migracion, origen: str) -> None:
     cur.execute(
         sql.SQL(
@@ -208,7 +181,6 @@ def _registrar(cur: Any, esquema: str, migracion: Migracion, origen: str) -> Non
         ).format(sql.Identifier(esquema), sql.Identifier(TABLA_LEDGER)),
         (migracion.version, migracion.nombre, migracion.checksum, origen),
     )
-
 
 def _adoptar(
     cur: Any,
@@ -238,7 +210,6 @@ def _adoptar(
         adoptadas.append(estado.version)
     return tuple(adoptadas)
 
-
 def _proteger_migracion_04(cur: Any, esquema: str) -> None:
     cur.execute(
         """
@@ -260,7 +231,6 @@ def _proteger_migracion_04(cur: Any, esquema: str) -> None:
             f"{filas} fila(s) de registro_turno; exige respaldo y decisión humana explícita"
         )
 
-
 def ejecutar(
     conexion: Any,
     *,
@@ -268,11 +238,7 @@ def ejecutar(
     directorio: Path | None = None,
     esquema: str = "public",
 ) -> Resultado:
-    """Evoluciona el esquema y el ledger en una sola transacción.
 
-    La conexión ya debe corresponder al entorno autorizado. El CLI de esta
-    sesión sólo obtiene esa conexión mediante la barrera efímera de 2A.
-    """
     catalogo = descubrir(directorio)
     adoptadas: tuple[int, ...] = ()
     aplicadas: list[int] = []

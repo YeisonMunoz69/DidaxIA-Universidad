@@ -1,16 +1,4 @@
-/**
- * Catálogo de fragmentos que el teclado matemático puede insertar.
- *
- * `muestra` conserva por ahora la representación compacta histórica de la
- * tecla. `inserta` es el LaTeX sin delimitadores: el componente visual añade
- * `$...$` al emitirlo. La fase de renderizado matemático podrá cambiar cómo
- * se presenta una tecla sin tocar este contrato de inserción.
- *
- * @typedef {{ muestra: string, vista?: string, inserta?: string, comando?: string | [string, string], nombre: string }} TeclaDeNotacion
- * @typedef {{ id: string, nombre: string, teclas: TeclaDeNotacion[] }} CategoriaDeNotacion
- */
 
-/** @type {TeclaDeNotacion[]} */
 export const TECLAS_RAPIDAS = [
   { muestra: '⁄', inserta: '\\frac{\\placeholder{}}{\\placeholder{}}', nombre: 'fracción' },
   { muestra: '□ⁿ', inserta: '\\placeholder{}^{\\placeholder{}}', nombre: 'potencia con casillas' },
@@ -26,8 +14,6 @@ export const TECLAS_RAPIDAS = [
   { muestra: 'π', inserta: '\\pi', nombre: 'pi' }
 ];
 
-// Estas acciones no dependen de la pestaña: siempre ocupan la primera fila y
-// la columna derecha, tanto en el chat como en la graficadora.
 export const TECLAS_NAVEGACION = [
   { muestra: '↑', comando: 'moveUp', nombre: 'mover cursor arriba' },
   { muestra: '↓', comando: 'moveDown', nombre: 'mover cursor abajo' },
@@ -40,12 +26,9 @@ export const TECLAS_ACCION = [
   { muestra: '+', inserta: '+', nombre: 'más' },
   { muestra: '−', inserta: '-', nombre: 'menos' },
   { muestra: '×', inserta: '\\times', nombre: 'multiplicación' },
-  // MathLive toma el argumento/selección a la izquierda como numerador y deja
-  // una casilla de denominador, como su tecla nativa de división numérica.
   { muestra: '⁄', comando: ['insert', '\\frac{#@}{#?}'], nombre: 'dividir con fracción' }
 ];
 
-/** @type {CategoriaDeNotacion[]} */
 export const CATEGORIAS_DE_NOTACION = [
   {
     id: 'numeros', nombre: '123',

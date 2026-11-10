@@ -1,10 +1,3 @@
-"""Texto académico compartido, determinista y anterior a las cifras conductuales.
-
-Fuentes contrastadas con la síntesis PRISMA del proyecto (A24 y C27) y sus
-editores. Las reglas de frecuencia son decisiones operativas de DidaxIA;
-no se atribuye su validación a esos estudios.
-"""
-
 from xml.sax.saxutils import escape
 
 from reportlab.platypus import PageBreak, Paragraph, Spacer
@@ -24,7 +17,6 @@ def contiene_factores(indicadores):
         or str(i.get("codigo", "")).startswith("conductual.observable_")
         for i in indicadores
     )
-
 
 def explicar_factores(indicadores, estilos):
     if not contiene_factores(indicadores):

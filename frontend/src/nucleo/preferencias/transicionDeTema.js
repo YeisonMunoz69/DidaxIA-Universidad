@@ -1,4 +1,3 @@
-/** Transición visual de tema sin dependencias del árbol privado. */
 function movimientoReducido() {
   return typeof window !== 'undefined'
     && Boolean(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches);

@@ -1,9 +1,3 @@
-"""Álgebra de reglas generales: funciones diferenciables y parámetros constantes.
-
-Esta gramática no cambia el analizador de ejercicios ni evalúa código Python.
-Construye un árbol SymPy desde una lista cerrada de nodos AST; la igualdad
-debe demostrarse simbólicamente, nunca mediante ejemplos numéricos.
-"""
 from __future__ import annotations
 
 import ast
@@ -87,18 +81,14 @@ class _Arbol:
             return sp.Subs(sp.Derivative(self.funciones[nombre[1]](auxiliar), auxiliar), auxiliar, args[0])
         raise EntradaNoAdmitida('función fuera de la gramática de reglas')
 
-
 def es_regla_formal(izquierda: str, derecha: str) -> bool:
-    """No abre esta gramática para una igualdad algebraica ordinaria."""
     texto = izquierda + ' ' + derecha
     incrustado = any(re.search(r'd/d[xtz]', lado) and not re.fullmatch(r'\s*d/d[xtz]\s*\(.+\)\s*', lado, re.S)
                      for lado in (izquierda, derecha))
     return bool(re.search(r"\b[fguv]\s*(?:\(|['′]|\\prime)|\bh\b|\b(?:Derivative|diff)\s*\(", texto)
                 or len(re.findall(r'd/d[xtz]', texto)) > 1 or incrustado)
 
-
 def _operadores_agrupados(texto):
-    """Cada operador conserva su alcance: (d/dx A) por (d/dx B)."""
     for _ in range(20):
         operadores = list(re.finditer(r'd/d([xtz])\s*\(', texto))
         if not operadores:
@@ -114,12 +104,11 @@ def _operadores_agrupados(texto):
         texto = texto[:m.start()] + f'Derivative({texto[inicio+1:fin-1]},{m[1]})' + texto[fin:]
     raise EntradaNoAdmitida('demasiados operadores')
 
-
 def _primas(texto: str) -> str:
     texto = texto.replace('′', "'").replace('’', "'")
     texto = re.sub(r"\b([fguv])\s*(?:\^?\{?\\prime\}?|')\s*(?=\()", r'd\1', texto)
     texto = re.sub(r"\b([fguv])\s*'", r'd\1(x)', texto)
-    # (u*v)' y (f(x)/g(x))': una prima aplicada al grupo completo.
+
     while "'" in texto:
         fin = texto.index("'")
         cierre = fin - 1
@@ -137,16 +126,12 @@ def _primas(texto: str) -> str:
         texto = texto[:inicio] + 'D(' + texto[inicio:cierre+1] + ')' + texto[fin+1:]
     return texto
 
-
 def _incremento_ligado(texto):
-    # Delta x es el incremento ligado por este límite, no una nueva función.
     if re.match(r'^lim\s*_\{\s*(?:\\Delta|Delta)\s*x\s*(?:->|\\to)\s*0\s*\}', texto):
         return re.sub(r'(?:\\Delta|Delta)\s*x\b', 'h', texto)
     return texto
 
-
 def analizar_regla(texto: str, variable: str = 'x', *, evaluar=True) -> sp.Expr:
-    """f/g/u/v son funciones; a/b/c/k/m/n no dependen de la variable."""
     if variable not in ('x', 't', 'z'):
         raise EntradaNoAdmitida('variable formal no admitida')
     if len(texto) > 500:
@@ -166,7 +151,7 @@ def analizar_regla(texto: str, variable: str = 'x', *, evaluar=True) -> sp.Expr:
             texto = '(' + texto[1:-1] + ')'
     normal = _normalizar_texto(texto, variable).replace('^', '**')
     exigir_entrada_admisible(normal)
-    # Multiplicación implícita únicamente entre tokens inequívocos.
+
     normal = re.sub(r'(?<=\d)(?=[a-zA-Z])', '*', normal)
     normal = re.sub(r'\b([abckmn])(?=[xtz]\b)', r'\1*', normal)
     normal = re.sub(r'(?<=\))(?=\(|[a-zA-Z])', '*', normal)
@@ -183,14 +168,7 @@ def analizar_regla(texto: str, variable: str = 'x', *, evaluar=True) -> sp.Expr:
         resultado = sp.Limit(resultado, sp.Symbol('h'), 0, dir='+-')
     return resultado
 
-
 def _definicion_de_derivada(expr, variable):
-    """La definición tiene el cociente incremental exacto, bajo derivabilidad.
-
-    SymPy deja sin evaluar el límite de una función sin expresión conocida.
-    Se comprueba algebraicamente su forma definitoria, no se aproxima con
-    valores numéricos ni se declara válido cualquier límite con funciones.
-    """
     if not isinstance(expr, sp.Limit):
         return expr.doit()
     cociente, incremento, destino, _ = expr.args
@@ -206,9 +184,7 @@ def _definicion_de_derivada(expr, variable):
             return sp.diff(funcion(x), x)
     return expr
 
-
 def comprobar_regla(izquierda: str, derecha: str) -> bool | None:
-    """None significa que esta gramática no pudo comprobar la afirmación."""
     try:
         variable = re.match(r'^d/d([xtz])\b', izquierda.strip())
         var = variable[1] if variable else 'x'

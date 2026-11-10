@@ -1,4 +1,4 @@
-<!-- Fase 7E · Ficha individual con actividad e indicios auditados. -->
+
 <script>
   import CargadorCubo from '../../comun/base/CargadorCubo.svelte';
   import { menuDesplegable } from '../../comun/base/menuDesplegable.js';
@@ -181,9 +181,6 @@
   $effect(() => {
     void mostrandoDirectorio;
     void sesion.rol;
-    // La lectura de `cargandoClases` vive dentro de la función. No debe
-    // convertirse en dependencia del efecto: si lo hace, cada finalización
-    // inicia otra consulta y el selector permanece deshabilitado a intervalos.
     if (mostrandoDirectorio) untrack(() => { void cargarClasesDisponibles(); });
   });
 

@@ -1,10 +1,10 @@
 \encoding UTF8
--- Rectificaciones sucesivas: sustitución explícita y cierre por categoría.
 
 BEGIN;
 
 ALTER TABLE rectificacion_edad_transicion
     DROP CONSTRAINT IF EXISTS rectificacion_edad_transicion_estado_check;
+
 ALTER TABLE rectificacion_edad_transicion
     ADD CONSTRAINT rectificacion_edad_transicion_estado_check CHECK (estado IN (
         'registrada', 'aplicada', 'reconsentimiento_pendiente',
@@ -52,8 +52,5 @@ BEGIN
     RETURN NEW;
 END;
 $$;
-
-COMMENT ON FUNCTION didaxia_cerrar_reconsentimiento_por_edad() IS
-    'Cierra todos los trámites pendientes no sustituidos cuya categoría objetivo coincide con el nuevo consentimiento.';
 
 COMMIT;

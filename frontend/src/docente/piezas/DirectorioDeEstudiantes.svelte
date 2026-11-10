@@ -1,4 +1,4 @@
-<!-- Directorio de acceso a las fichas, paginado por el servidor de 10 en 10. -->
+
 <script>
   import CargadorCubo from '../../comun/base/CargadorCubo.svelte';
   import { untrack } from 'svelte';

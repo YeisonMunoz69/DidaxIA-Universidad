@@ -1,9 +1,3 @@
-"""Preparación gráfica con corte efectivo de tiempo y memoria.
-
-El análisis opcional de fronteras puede exceder el plazo en expresiones
-complejas. En ese caso todavía se prepara la curva, protegida por su dominio
-original, y se declara que no hay evidencia de puntos especiales.
-"""
 import json
 import subprocess
 import sys
@@ -38,7 +32,6 @@ def preparar_curvas_acotadas(solicitudes):
                 curva['dominio']['alcance'] = 'El análisis de puntos no terminó dentro del plazo; se conserva el evaluador original.'
         return curvas
     raise ValueError('no se pudo preparar la gráfica')
-
 
 if __name__ == '__main__':
     from adaptadores.salientes.simbolico.graficadora import preparar_curvas

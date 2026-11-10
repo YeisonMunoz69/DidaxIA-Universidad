@@ -1,4 +1,3 @@
--- Lecturas complementarias versionadas. Nunca reescribe historial_turno.
 CREATE TABLE IF NOT EXISTS analisis_conductual (
     historial bigint NOT NULL REFERENCES historial_turno(id) ON DELETE CASCADE,
     version text NOT NULL CHECK (version <> ''),
@@ -10,5 +9,3 @@ CREATE TABLE IF NOT EXISTS analisis_conductual (
     analizado_en timestamptz NOT NULL DEFAULT now(),
     PRIMARY KEY (historial, version)
 );
-COMMENT ON TABLE analisis_conductual IS
-    'Indicios observables experimentales; una lectura por turno y versión, suprimida con el historial.';

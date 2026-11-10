@@ -1,24 +1,3 @@
-"""
-supervision.py — Dimensión D del catálogo v1.1: supervisión docente
-====================================================================
-
-Siete indicadores. Cinco salen de `cola_revision` tal como la dejaron las
-migraciones 09 y 19; uno sale de `clase` con las columnas curriculares de la
-20; y uno necesita el diagnóstico conceptual que no existe.
-
-La distinción que el encargo pide y la base todavía no da
-------------------------------------------------------------------
-«Tiempo de atención» se define en el encargo como el tiempo *«entre llegada a
-cola y decisión»*. Eso sí está: `cola_revision.recibido` y `resuelto_en`. Lo que
-**no** está es el momento en que el docente **abrió** el elemento, que es otra
-medida y otra pregunta —cuánto tarda en enterarse frente a cuánto tarda en
-decidir—. Se instrumenta la apertura como evento (`supervision.abierta`), pero
-su emisor es la interfaz, así que el indicador derivado de ella se declara
-pendiente en vez de mezclarse con el que sí se puede calcular.
-
-
-"""
-
 from __future__ import annotations
 
 from dominio.kpi.contratos import (
@@ -112,8 +91,7 @@ CARGA_PENDIENTE = DefinicionKPI(
     denominador="no aplica: es un recuento",
     poblacion_elegible="elementos encolados dentro del alcance consultado",
     fuentes=FUENTES,
-    # Es un conteo operativo de la cola propia, no una comparación estadística:
-    # una clase existente basta para distinguir cero pendiente de sin datos.
+
     muestra_minima=1,
     limitaciones=(
         "Es una foto del final del periodo, no un promedio: una cola vaciada "

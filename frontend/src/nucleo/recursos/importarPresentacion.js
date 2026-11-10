@@ -1,4 +1,3 @@
-/** La lectura y el análisis no bloquean la animación ni la interfaz. */
 export function importarPresentacion(archivo) {
   if (archivo.size > 15_000_000) return Promise.reject(new Error('El archivo supera 15 MB. Reduce las imágenes o importa una copia más pequeña.'));
   return new Promise((resolve, reject) => {

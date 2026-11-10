@@ -1,4 +1,3 @@
-"""Separar una entrega de sus muletillas sin reinterpretar el enunciado activo."""
 import re
 
 from dominio.modelo.lectura_oral import LecturaIncierta, expresion_oral
@@ -10,7 +9,6 @@ _FRACCIONES = {'medio': 2, 'medios': 2, 'tercio': 3, 'tercios': 3,
                'sexto': 6, 'sextos': 6, 'séptimo': 7, 'séptimos': 7,
                'octavo': 8, 'octavos': 8, 'noveno': 9, 'novenos': 9,
                'décimo': 10, 'décimos': 10}
-
 
 def leer_propuesta(texto, variable='x'):
     s = texto.strip().rstrip('?.! ')
@@ -27,7 +25,6 @@ def leer_propuesta(texto, variable='x'):
         return formula_acotada(expresion_oral(s, composicion_contextual=True), variable)
     except LecturaIncierta:
         return ''
-
 
 def respuesta_en_contexto(estado, mensaje):
     if not estado.get('activa') or re.search(r'\b(?:nuevo\s+ejercicio|otra\s+funci[oó]n|cambia|corrijo)\b', mensaje, re.I):
@@ -56,13 +53,11 @@ def respuesta_en_contexto(estado, mensaje):
         return True
     return False
 
-
 def _seleccion_de_metodo(estado, mensaje):
     if re.search(r'\b(?:le\s+saco|tom[oa]|aplic[oa])\s+(?:el\s+)?(?:ln|logaritmo)\s+(?:a\s+)?todo', mensaje, re.I):
         estado.update(acto='dialogar', propuesta='', aclaracion='', metodo='logaritmico')
         return True
     return False
-
 
 def _igualdad_escrita(estado, mensaje):
     igualdad = re.search(r'\b(?:queda|obtengo)\s+([^=;!?]+)\s*=\s*(.+)', mensaje, re.I)
@@ -76,7 +71,6 @@ def _igualdad_escrita(estado, mensaje):
             return True
     return False
 
-
 def _resultado_rotulado(estado, mensaje):
     final = re.search(r"\b([a-zA-Z])\s*(['’′]+)\s*\(([^()]+)\)\s*=\s*(.+)", mensaje)
     actual = next((t for t in estado['tareas'] if t['id'] == estado['activa']), {})
@@ -88,17 +82,15 @@ def _resultado_rotulado(estado, mensaje):
         return True
     return False
 
-
 def consulta_sin_entrega(mensaje):
     consulta = re.search(r'\b(?:por\s+qu[eé]|qu[eé]\s+significa|c[oó]mo\s+se\s+explica)\b', mensaje, re.I)
     entrega = re.search(r'\b(?:me\s+(?:dio|da|sale|qued[oó])|obtengo|mi\s+(?:respuesta|resultado|derivada)|yo\s+(?:digo|creo))\b', mensaje, re.I)
     return bool(consulta and not entrega)
 
-
 def _entrega_anunciada(estado, mensaje):
     if consulta_sin_entrega(mensaje):
         return False
-    # Una entrega anunciada es una propuesta, incluso si repite el enunciado.
+
     entregas = list(_ENTREGA.finditer(mensaje))
     if entregas:
         for entrega in reversed(entregas):

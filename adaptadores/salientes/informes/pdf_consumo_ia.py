@@ -1,5 +1,3 @@
-"""PDF determinista del módulo financiero-operativo de consumo de IA."""
-
 from __future__ import annotations
 
 from io import BytesIO
@@ -25,7 +23,7 @@ VERSION_PLANTILLA = "consumo-ia-institucional-1.2"
 
 
 def _fuentes() -> tuple[str, str]:
-    import reportlab  # noqa: PLC0415
+    import reportlab
 
     raiz = Path(reportlab.__file__).resolve().parent / "fonts"
     normal, negrita = raiz / "Vera.ttf", raiz / "VeraBd.ttf"
@@ -36,10 +34,8 @@ def _fuentes() -> tuple[str, str]:
         return "DidaxIAConsumo", "DidaxIAConsumo-Bold"
     return "Helvetica", "Helvetica-Bold"
 
-
 def _texto(valor: object) -> str:
     return "—" if valor is None or valor == "" else escape(str(valor))
-
 
 def _tabla(filas, anchos) -> Table:
     normal, negrita = _fuentes()
@@ -66,7 +62,6 @@ def _tabla(filas, anchos) -> Table:
     )
     return tabla
 
-
 def _pie(canvas, documento) -> None:
     canvas.saveState()
     canvas.setFont(_fuentes()[0], 7)
@@ -74,7 +69,6 @@ def _pie(canvas, documento) -> None:
     canvas.drawString(1.7 * cm, 1.0 * cm, f"DidaxIA · {VERSION_PLANTILLA}")
     canvas.drawRightString(A4[0] - 1.7 * cm, 1.0 * cm, f"Página {documento.page}")
     canvas.restoreState()
-
 
 def generar_informe_consumo_ia(datos: dict, *, secciones: frozenset[str] | None = None) -> bytes:
     normal, negrita = _fuentes()
@@ -283,7 +277,7 @@ def generar_informe_consumo_ia(datos: dict, *, secciones: frozenset[str] | None 
     if trm.get("advertencia"):
         historia.append(Paragraph(f"TRM: {_texto(trm['advertencia'])}", estilos["ConsumoAviso"]))
     if secciones is not None:
-        # El contexto y la metodología se conservan incluso en informes parciales.
+
         grupos = {
             "Cobertura y totales": "totales",
             "Costo estimado y conversión": "totales",

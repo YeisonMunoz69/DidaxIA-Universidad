@@ -1,4 +1,3 @@
-/** Cliente del catálogo KPI v1.1. Ningún filtro se omite silenciosamente. */
 import { pedir } from './cliente.js';
 
 function consulta(parametros = {}) {

@@ -1,9 +1,3 @@
-"""Evidencia de puntos especiales en el plano real, sin rellenar huecos al simplificar.
-
-Las fronteras encontradas no constituyen una prueba de todo el dominio. El
-evaluador original protege también puntos no enumerados y el destino solicitado
-se estudia siempre. Las consultas HTTP acotan el cálculo en un proceso aparte.
-"""
 from __future__ import annotations
 
 import math
@@ -21,9 +15,7 @@ def numero_real(valor):
     except (ValueError, TypeError, OverflowError):
         return None
 
-
 def valor_original(expr, x, a):
-    """Evalúa cada operación antes de recomponer; 0*(1/0) sigue sin existir."""
     if expr == x:
         return a
     if not expr.args:
@@ -40,9 +32,7 @@ def valor_original(expr, x, a):
         return sp.nan
     return expr.func(*argumentos)
 
-
 def fronteras(expr, x):
-    """Raíces finitas de restricciones y cambios de rama; nunca un barrido global."""
     candidatos = set()
     ecuaciones = set()
     for parte in sp.preorder_traversal(expr):
@@ -53,8 +43,7 @@ def fronteras(expr, x):
         elif isinstance(parte, Relational):
             ecuaciones.add(parte.lhs - parte.rhs)
     for ecuacion in ecuaciones:
-        # Las singularidades periódicas/no aisladas se conservan en el evaluador,
-        # pero no se expanden en listas infinitas de marcadores.
+
         try:
             soluciones = sp.solveset(ecuacion, x, domain=sp.S.Reals)
         except (ValueError, NotImplementedError):
@@ -63,13 +52,7 @@ def fronteras(expr, x):
             candidatos.update(v for v in soluciones if numero_real(v) is not None)
     return sorted(candidatos, key=lambda v: float(v))[:16]
 
-
 def rama_lateral(expr, x, a, lado):
-    """Selecciona la rama de un Piecewise ANTES de calcular su límite.
-
-    Evita atribuir la rama cerrada del punto a ambos lados, incluso para |x|.
-    Si una condición no se puede decidir, se declara no verificable.
-    """
     epsilon = sp.Dummy('epsilon', positive=True)
     def elegir(pieza):
         for rama, condicion in pieza.args:
@@ -80,7 +63,7 @@ def rama_lateral(expr, x, a, lado):
                 continue
             if any(not (rel.lhs - rel.rhs).is_polynomial(x) for rel in condicion.atoms(Relational)):
                 raise ValueError('condición lateral no decidida simbólicamente')
-            # Entre fronteras algebraicas la condición mantiene su valor.
+
             raices = fronteras(condicion, x)
             distancias = [abs(v - a) for v in raices if v != a]
             paso = min(distancias, default=sp.Integer(1)) / 2
@@ -92,11 +75,9 @@ def rama_lateral(expr, x, a, lado):
         return sp.nan
     return expr.replace(lambda v: isinstance(v, sp.Piecewise), elegir)
 
-
 def limite_lateral(expr, x, a, lado):
     rama = rama_lateral(expr, x, a, lado)
     return sp.limit(rama, x, a, dir='-' if lado < 0 else '+')
-
 
 def analizar_punto(original, dibujable, x, a, *, derivada=False):
     resultado = {'x': numero_real(a), 'estado': 'no_verificable', 'valor': None,
@@ -130,7 +111,6 @@ def analizar_punto(original, dibujable, x, a, *, derivada=False):
     except (ValueError, TypeError, NotImplementedError, RecursionError):
         resultado['tipo'] = 'no_verificable'
     return resultado
-
 
 def informacion_dominio(original, dibujable, x, *, destino=None, derivada=False):
     puntos = fronteras(original, x)

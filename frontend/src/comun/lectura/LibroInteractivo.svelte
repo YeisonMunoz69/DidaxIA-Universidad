@@ -1,11 +1,4 @@
-<!--
-Lector común con hoja ondulada inspirada en el mockup del programa.
 
-Presenta una página editorial o, cuando se solicita, un pliego en escritorio. El
-arrastre horizontal, los botones y las flechas de teclado comparten una sola
-máquina de estados. El desplazamiento vertical pertenece al contenido de cada
-página y no compite con el gesto hasta que la intención horizontal es clara.
--->
 <script>
   import Icono from '../base/Icono.svelte';
   import { onDestroy, onMount, tick } from 'svelte';
@@ -105,7 +98,6 @@ página y no compite con el gesto hasta que la intención horizontal es clara.
   function alPulsar(evento) {
     if (fase !== 'IDLE' || evento.button !== 0) return;
     if (evento.target.closest('button, a, input, textarea, select, [contenteditable="true"]')) return;
-    // El ratón selecciona texto en el cuerpo; el arrastre nace en el borde.
     if (evento.pointerType === 'mouse') {
       const hoja = evento.target.closest('.pagina');
       const caja = hoja?.getBoundingClientRect();
@@ -178,9 +170,8 @@ página y no compite con el gesto hasta que la intención horizontal es clara.
   const avance = $derived(total > 1 ? ((pagina - 1) / (total - 1)) * 100 : 100);
 </script>
 
-<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
-<!-- svelte-ignore a11y_no_noninteractive_element_interactions
-     Es un control compuesto con botones, teclado y gesto directo. -->
+
+
 <div
   class="lector"
   class:arrastrando={fase === 'DRAGGING'}

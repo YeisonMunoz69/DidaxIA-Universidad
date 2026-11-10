@@ -1,33 +1,11 @@
-<!--
-Cuánta confianza tiene la inferencia.
 
-Va SIEMPRE pegado al vector, nunca suelto, porque un diagnóstico sin su
-incertidumbre invita a leerlo como certeza.
-
-NO SE PINTA COMO UN PORCENTAJE A SECAS, y es la decisión de esta pieza. Un
-«72 %» junto a un rasgo se lee como precisión de instrumento, cuando lo que hay
-detrás es una inferencia sobre indicios conductuales. Se dice en palabras
-—indicio débil, moderado, consistente— y el número va detrás, entre paréntesis,
-para quien quiera el dato.
-
-Y NUNCA DICE «ALTA». Decir que la confianza es alta empuja a actuar como si
-fuera un diagnóstico, que es exactamente lo que `RP-20` prohíbe comunicar. El
-techo del vocabulario es «consistente», que describe los indicios y no la
-persona.
-
-
-
--->
 <script>
   import BotonAyudaTooltip from '../../comun/base/BotonAyudaTooltip.svelte';
   let {
-    /** 0..1 tal como lo emite el servidor. */
     valor = null,
-    /** Cuántas observaciones sostienen la inferencia, si el servidor las manda. */
     observaciones = null
   } = $props();
 
-  /** Los tres tramos. Sin «alta»: ver la cabecera. */
   const nivel = $derived(
     valor == null ? null
     : valor < 0.4 ? { clase: 'debil',       texto: 'indicio débil' }
@@ -44,8 +22,7 @@ persona.
       ? ` · ${observaciones} observaciones` : ''})</span>
   </p>
 {:else}
-  <!-- Sin confianza no se pinta el vector como si fuera fiable: se dice que
-       no se sabe. Es la misma regla que el sello del contrato. -->
+
   <p class="confianza sin-dato">
     <span class="punto" aria-hidden="true"></span>
     <strong>Sin medida de confianza</strong>

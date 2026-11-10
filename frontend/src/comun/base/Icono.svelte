@@ -1,41 +1,10 @@
-<!--
-El juego de iconos.
 
-UNO SOLO Y DIBUJADO A MANO, NO UNA BIBLIOTECA. `package.json` exige
-justificación escrita para cada dependencia y `DD-05` decidió HTML nativo antes
-que bibliotecas de componentes: un juego de iconos son doce trazos SVG, y
-traerse un paquete entero para eso sería pagar una dependencia por algo que
-cabe en un archivo.
-
-SON DECORATIVOS SALVO QUE SE DIGA LO CONTRARIO
------------------------------------------------
-`aria-hidden` por defecto, porque el icono acompaña a un texto que ya dice lo
-mismo y anunciarlo dos veces es peor que no anunciarlo. Cuando un control NO
-lleva texto visible —solo el icono—, el nombre accesible lo pone quien lo usa
-con `aria-label` en el botón, no aquí: el botón es el control, el icono no.
-
-⚠️ `13-Lenguaje-de-Diseno.md` pide trazo simple y aspecto dibujado, y prohíbe
-la iconografía «extremadamente moderna». De ahí salen las tres reglas de este
-archivo: trazo de 1.75, extremos y uniones redondeados, y ni un relleno.
-
-
-
--->
 <script>
   let {
-    /** La clave del trazo. Si no existe, no se pinta nada. */
     nombre,
-    /** Tamaño en píxeles del lado. */
     medida = 18
   } = $props();
 
-  /**
-   * Cada icono es el contenido de su `<svg>`, sin el envoltorio.
-   *
-   * El lienzo es 24x24 para todos: mezclando lienzos, dos iconos del mismo
-   * tamaño declarado se ven de tamaños distintos y no hay forma de cuadrarlo
-   * después salvo a ojo.
-   */
   const TRAZOS = {
     'mas-vertical': '<circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/>',
     notificaciones: '<path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M9 20h6M20 3l2 3M4 3 2 6"/>',
@@ -70,13 +39,7 @@ archivo: trazo de 1.75, extremos y uniones redondeados, y ni un relleno.
     reloj:        '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
     ajustes:      '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .32 1.8l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.6 1.6 0 0 0-1.8-.32 1.6 1.6 0 0 0-1 1.47V21a2 2 0 0 1-4 0v-.1A1.6 1.6 0 0 0 9 19.4a1.6 1.6 0 0 0-1.8.32l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.6 1.6 0 0 0 4.7 15a1.6 1.6 0 0 0-1.47-1H3a2 2 0 0 1 0-4h.1A1.6 1.6 0 0 0 4.6 9a1.6 1.6 0 0 0-.32-1.8l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.6 1.6 0 0 0 9 4.7a1.6 1.6 0 0 0 1-1.47V3a2 2 0 0 1 4 0v.1a1.6 1.6 0 0 0 1 1.47 1.6 1.6 0 0 0 1.8-.32l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.6 1.6 0 0 0 19.4 9a1.6 1.6 0 0 0 1.47 1H21a2 2 0 0 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/>',
     menu:         '<line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>',
-    // Distinto de `menu` a propósito: los dos pueden convivir en la misma
-    // cabecera de teléfono —uno abre el carril, el otro las secciones— y un
-    // mismo trazo para los dos sería confuso para quien ve, no solo para
-    // quien no distingue el `aria-label`.
     mas:          '<circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/>',
-    // Las dos columnas del marco. El trazo dice CUÁL se pliega: la línea va
-    // del lado del panel que el botón gobierna, como en el mockup.
     'panel-izq':  '<rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/>',
     'panel-der':  '<rect x="3" y="3" width="18" height="18" rx="2"/><line x1="15" y1="3" x2="15" y2="21"/>',
     tema:         '<path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/>',
@@ -89,8 +52,6 @@ archivo: trazo de 1.75, extremos y uniones redondeados, y ni un relleno.
     ampliar:      '<path d="M8 3H3v5M16 3h5v5M3 16v5h5M21 16v5h-5"/><path d="m3 3 6 6m12-6-6 6M3 21l6-6m12 6-6-6"/>',
     reducir:      '<path d="M3 9h6V3M21 9h-6V3M9 21v-6H3M15 21v-6h6"/><path d="m3 3 6 6m12-6-6 6M3 21l6-6m12 6-6-6"/>',
     grafica:      '<path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/>',
-    // Ejes, proyecciones discontinuas y punto de intersección; adapta su
-    // color al tema mediante currentColor, como el resto de la cabecera.
     graficadora: '<path d="M5 5v14h14"/><path d="m3.6 7 1.4-2 1.4 2M17 17.6l2 1.4-2 1.4"/><path d="M5 10h10M15 10v9" stroke-dasharray="2 2"/><path d="M13.5 10h3M15 8.5v3"/>',
     fuente:       '<polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/>',
     reiniciar:    '<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/>',
@@ -118,11 +79,6 @@ archivo: trazo de 1.75, extremos y uniones redondeados, y ni un relleno.
     'flecha-izq': '<line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>',
     'flecha-der': '<line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>',
     volver:       '<line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>',
-    // `rutas.js` declara `icono: 'contexto'` para `/contexto` desde el
-    // principio, pero esta clave nunca existió: sin `trazo`, el `{#if}` de
-    // abajo no pinta nada y el hueco pasaba desapercibido porque el rótulo de
-    // texto sigue ahí. Brújula: «contexto curricular» es orientar al sistema
-    // sobre qué se está viendo, no un ajuste de cuenta ni un dato personal.
     contexto:     '<circle cx="12" cy="12" r="9"/><polygon points="14.5 9.5 12 12 9.5 14.5 12 12 14.5 9.5"/>',
     didaxia:      '<path d="M8 6L5 2"/><path d="M16 6L19 2"/><rect x="1" y="10" width="2" height="6" rx="1" fill="currentColor"/><rect x="21" y="10" width="2" height="6" rx="1" fill="currentColor"/><rect x="3" y="6" width="18" height="15" rx="5.5"/><path d="M12 11.5C10 9 6.5 9 6.5 11.5C6.5 14 10 14 12 11.5C14 9 17.5 9 17.5 11.5C17.5 14 14 14 12 11.5Z" stroke-width="1.5"/><path d="M9.5 16.8c1.5 1.8 3.5 1.8 5 0"/>',
     robot:        '<path d="M8 6L5 2"/><path d="M16 6L19 2"/><rect x="1" y="10" width="2" height="6" rx="1" fill="currentColor"/><rect x="21" y="10" width="2" height="6" rx="1" fill="currentColor"/><rect x="3" y="6" width="18" height="15" rx="5.5"/><path d="M12 11.5C10 9 6.5 9 6.5 11.5C6.5 14 10 14 12 11.5Z" stroke-width="1.5"/><path d="M9.5 16.8c1.5 1.8 3.5 1.8 5 0"/>'
@@ -145,8 +101,6 @@ archivo: trazo de 1.75, extremos y uniones redondeados, y ni un relleno.
       grosor: 1.8,
       relleno: 'none',
       trazoColor: 'currentColor',
-      // Un solo contorno y una firma legible también a 18 px. No depende de
-      // variables de marca que cambien de contraste entre temas.
       trazo: '<rect x="4" y="4" width="14" height="17" rx="2"/><path d="M9 4.5V3h4v1.5M7.5 9h7M7.5 12h5"/><path d="m10 16 1.6 1.6L16 13.5"/>'
     },
     'perfil-institucional': {
@@ -207,7 +161,5 @@ archivo: trazo de 1.75, extremos y uniones redondeados, y ni un relleno.
 {/if}
 
 <style>
-  /* `flex-shrink: 0` para que el icono no se aplaste cuando el texto de al
-     lado se recorta, que es exactamente lo que pasa en el carril estrecho. */
   .icono { flex-shrink: 0; display: block; }
 </style>

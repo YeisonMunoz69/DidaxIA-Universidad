@@ -1,5 +1,3 @@
-"""Aplica las migraciones únicamente a la base interna del despliegue Compose."""
-
 from __future__ import annotations
 
 import os
@@ -13,11 +11,9 @@ from infraestructura.migraciones.ejecutor import ErrorDeMigracion, ejecutar
 
 
 class DespliegueNoAutorizado(RuntimeError):
-    """La configuración no identifica inequívocamente la base interna."""
-
+    pass
 
 def cadena_interna_autorizada(entorno: Mapping[str, str] | None = None) -> str:
-    """Devuelve ``AGENTE_BD`` sólo para ``base:5432/agente`` en producción."""
     valores = os.environ if entorno is None else entorno
     if valores.get("AGENTE_ENTORNO", "").strip().lower() != "produccion":
         raise DespliegueNoAutorizado("AGENTE_ENTORNO debe ser 'produccion'")
@@ -43,7 +39,6 @@ def cadena_interna_autorizada(entorno: Mapping[str, str] | None = None) -> str:
         raise DespliegueNoAutorizado("el usuario debe llamarse exactamente 'agente'")
     return cadena
 
-
 def main() -> int:
     try:
         cadena = cadena_interna_autorizada()
@@ -52,7 +47,7 @@ def main() -> int:
     except (DespliegueNoAutorizado, CatalogoInvalido, ErrorDeMigracion) as exc:
         print(f"Migración de despliegue detenida · {exc}", file=sys.stderr)
         return 2
-    except Exception as exc:  # la conexión también debe impedir el arranque
+    except Exception as exc:
         print(f"Migración de despliegue fallida · {type(exc).__name__}: {exc}", file=sys.stderr)
         return 2
 
@@ -61,7 +56,6 @@ def main() -> int:
         f"adoptadas={list(resultado.adoptadas)} aplicadas={list(resultado.aplicadas)}"
     )
     return 0
-
 
 if __name__ == "__main__":
     raise SystemExit(main())

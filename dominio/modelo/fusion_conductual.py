@@ -1,5 +1,3 @@
-"""Decisiones auditables: DeepSeek puede ampliar y rectificar la lectura léxica."""
-
 from dominio.modelo.factores_conductuales import VERSION, validar_factores
 
 
@@ -11,9 +9,7 @@ def lectura_guardada(datos, mensaje):
     except ValueError:
         return {}
 
-
 def combinar(factor, regla, semantica, oportunidad):
-    """No promedio de votos ni umbral de confianza inventado."""
     estado = "no_concluyente"
     fuente = "pendiente"
     motivo = "Sin análisis semántico evaluable; el silencio de las reglas no demuestra ausencia."

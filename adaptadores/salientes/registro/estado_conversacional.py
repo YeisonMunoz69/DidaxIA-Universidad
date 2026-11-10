@@ -1,4 +1,3 @@
-"""Checkpoint de tarea con candado PostgreSQL hasta terminar el turno."""
 import json
 
 from adaptadores.salientes.conexion import conectar

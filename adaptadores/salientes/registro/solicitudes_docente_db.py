@@ -1,23 +1,3 @@
-"""
-solicitudes_docente_db.py — Persistencia de solicitudes de rol docente (`D-16` C)
-
-La mitad de `RegistroDeDocentes` (`adaptadores/entrantes/http/docentes.py`)
-que necesita almacén — la lista manual sigue en `DOCENTES_AUTORIZADOS`, sin
-cambios; esto solo cubre la cola de solicitud y aprobación.
-`RegistroDeDocentes` no se reemplaza entero: recibe un
-`PuertoSolicitudesDocentes` en el constructor y le delega esos métodos — ver
-su docstring sobre por qué las dos mitades no se tratan igual.
-
-El respaldo sin base es `solicitudes_docente_memoria.py`, que satisface el
-mismo puerto.
-
-Reconstruye `Solicitud` de `dominio/puertos/rol_docente.py` por la misma
-razón que `clases_db.py` reconstruye `Clase`/`Matricula`: duplicarlo
-arriesgaría que `como_elemento()` divergiera entre las dos mitades. Hasta la
-Fase 2 · sesión 3 el tipo se importaba de `entrantes/http/docentes.py`,
-porque «no hay una versión de dominio del tipo»; ahora la hay y es neutral.
-"""
-
 from __future__ import annotations
 
 import secrets
@@ -31,21 +11,17 @@ from dominio.puertos.rol_docente import (
     Solicitud,
 )
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from collections.abc import Iterator
 
-
 class AdaptadorSolicitudesDocentesPostgres:
-    """Los seis métodos de `PuertoSolicitudesDocentes`, incluido
-    `aprobada()` — lo que `es_docente()` necesita y que en memoria es un
-    `any()` sobre las solicitudes guardadas."""
 
     def __init__(self, cadena_de_conexion: str) -> None:
         self._cadena = cadena_de_conexion
 
     @contextmanager
     def _conexion(self) -> Iterator[Any]:
-        from adaptadores.salientes.conexion import conectar  # noqa: PLC0415
+        from adaptadores.salientes.conexion import conectar
 
         with conectar(self._cadena) as cnx:
             yield cnx
@@ -58,8 +34,6 @@ class AdaptadorSolicitudesDocentesPostgres:
         )
 
     def solicitar(self, correo: str) -> Solicitud:
-        """Reutiliza la pendiente si ya existe una — mismo contrato que la
-        versión en memoria: pedirlo dos veces seguidas no duplica la cola."""
         correo_norm = correo.strip().lower()
         with self._conexion() as cnx, cnx.cursor() as cur:
             cur.execute(
@@ -108,8 +82,6 @@ class AdaptadorSolicitudesDocentesPostgres:
         return afectadas > 0
 
     def pedir_mas_informacion(self, identificador: str, mensaje: str) -> bool:
-        """La solicitud sigue pendiente — solo gana una nota. Mismo contrato
-        que la versión en memoria: no es un tercer estado de resolución."""
         with self._conexion() as cnx, cnx.cursor() as cur:
             cur.execute(
                 "UPDATE solicitud_docente SET nota = %s WHERE id = %s AND estado = %s",
@@ -120,9 +92,6 @@ class AdaptadorSolicitudesDocentesPostgres:
         return afectadas > 0
 
     def aprobada(self, correo: str) -> bool:
-        """Lo que `RegistroDeDocentes.es_docente()` necesita: si hay alguna
-        solicitud aprobada para este correo, entre los dos mecanismos de
-        `D-16` opción C."""
         correo_norm = correo.strip().lower()
         with self._conexion() as cnx, cnx.cursor() as cur:
             cur.execute(

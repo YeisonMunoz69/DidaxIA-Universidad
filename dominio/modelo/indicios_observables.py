@@ -1,8 +1,3 @@
-"""Indicios del periodo: frecuencia léxica observable, nunca estado psicológico.
-
-Recalcular sobre historial elegible permite inspeccionar periodos anteriores.
-No modifica el perfil adaptativo ni su memoria exponencial ni sus umbrales.
-"""
 from dominio.deteccion.patrones import VERSION_BANCO, extraer
 from dominio.kpi.instrumentos import FUNDAMENTO
 

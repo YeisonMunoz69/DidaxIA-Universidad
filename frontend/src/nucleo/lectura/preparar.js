@@ -1,4 +1,3 @@
-/** Precálculo del corpus en pausas pequeñas; no monta DOM oculto ni usa HTML del servidor. */
 import { renderizar } from '../formato/notacion.js';
 import { registrarLimpiezaDeLectura } from './cache.js';
 let generacion = 0;
@@ -43,7 +42,6 @@ export async function prepararTextoDelCorpus(datos) {
                 setTimeout(trabajar, 0);
         });
     }
-    // Señal local de rendimiento. No se transmite ni conserva fuera de la RAM.
     if (vigente === generacion && datos?.parte?.identificador) {
         globalThis.performance?.mark?.('didaxia:corpus-preparado', { detail: datos.parte.identificador });
     }

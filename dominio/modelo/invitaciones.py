@@ -1,5 +1,3 @@
-"""Modelo pequeño y cerrado de invitaciones institucionales previas."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -14,7 +12,6 @@ class EstadoDeInvitacion(StrEnum):
     ACEPTADA = "aceptada"
     REVOCADA = "revocada"
     EXPIRADA = "expirada"
-
 
 @dataclass(frozen=True, slots=True)
 class InvitacionDeRol:

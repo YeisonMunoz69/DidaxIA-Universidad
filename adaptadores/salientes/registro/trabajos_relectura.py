@@ -1,9 +1,3 @@
-"""Lotes confirmados y persistentes, sin mensajes en el estado del trabajo.
-
-El proveedor se ejecuta fuera de las transacciones HTTP. Un reinicio conserva
-las lecturas ya guardadas; el operador confirma otro lote para los pendientes.
-"""
-
 import json
 from datetime import UTC, datetime, timedelta
 from uuid import uuid4
@@ -20,8 +14,7 @@ from dominio.puertos.almacen import AlmacenNoConfigurado
 
 
 class ConflictoRelectura(ValueError):
-    """La confirmación expiró o ya hay un trabajo activo."""
-
+    pass
 
 class TrabajosRelecturaPostgres:
     def __init__(self, cadena, *, interprete=None):
@@ -35,8 +28,6 @@ class TrabajosRelecturaPostgres:
 
     @staticmethod
     def _recuperar(cur):
-        # Sólo abandona un trabajo sin pulso cuando el motor común ya no está
-        # bloqueado. Un proveedor lento o un CLI activo no habilitan otro lote.
         cur.execute(
             "SELECT 1 FROM relectura_conductual_trabajo "
             "WHERE estado IN ('en_cola','en_curso') "
@@ -119,7 +110,7 @@ class TrabajosRelecturaPostgres:
             raise ValueError("elige un máximo entre 1 y 200 llamadas")
         with self._conexion() as cnx, cnx.cursor() as cur:
             autorizar_operador(cur, actor)
-            # Serializa confirmaciones entre procesos sin depender del navegador.
+
             cur.execute("SELECT pg_advisory_xact_lock(hashtext('didaxia.factores.confirmacion'))")
             self._recuperar(cur)
             cur.execute(
@@ -155,7 +146,6 @@ class TrabajosRelecturaPostgres:
             return self._leer(cur, actor, identificador), True
 
     def procesar(self, actor, identificador):
-        """La tarea HTTP sólo despacha trabajos confirmados; no reintenta IA sola."""
         try:
             with self._conexion() as cnx, cnx.cursor() as cur:
                 autorizar_operador(cur, actor)
@@ -195,7 +185,7 @@ class TrabajosRelecturaPostgres:
                 resumen=resumen,
                 motivo=(resumen.get("motivo_fallo") or "proveedor_sin_lectura") if resumen.get('detenido', resumen.get('fase') == 'interrumpido') else None,
             )
-        except Exception:  # noqa: BLE001 — no almacena mensajes, credenciales ni error del proveedor
+        except Exception:
             self._terminar(actor, identificador, motivo="ejecucion_interrumpida")
 
     def _terminar(self, actor, identificador, *, resumen=None, motivo=None):
@@ -213,5 +203,5 @@ class TrabajosRelecturaPostgres:
                         actor,
                     ),
                 )
-        except Exception:  # noqa: BLE001 — se recupera sin gasto automático tras perder el pulso
+        except Exception:
             return

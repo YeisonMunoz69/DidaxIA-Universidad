@@ -1,14 +1,4 @@
-<!--
-Perfil propio de docente e investigador.
 
-La fotografía usa exactamente la misma custodia privada que el estudiante y
-Google sigue siendo sólo el valor inicial: una imagen subida por la persona no
-se reemplaza al volver a entrar. Los datos de identidad son de solo lectura
-porque su autoridad es la cuenta institucional; la facultad docente la gobierna
-el equipo para no abrir dos fuentes de verdad.
-
-
--->
 <script>
   import CargadorCubo from '../base/CargadorCubo.svelte';
   import { onMount } from 'svelte';

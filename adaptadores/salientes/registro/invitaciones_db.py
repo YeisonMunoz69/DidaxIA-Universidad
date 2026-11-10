@@ -1,5 +1,3 @@
-"""Invitaciones previas sobre PostgreSQL, con autorización y auditoría atómicas."""
-
 from __future__ import annotations
 
 from datetime import timedelta
@@ -21,14 +19,12 @@ def _correo(valor: str) -> str:
         raise ValueError("el correo institucional no es válido")
     return normalizado
 
-
 def _fila(fila) -> InvitacionDeRol:
     return InvitacionDeRol(
         secuencia=fila[0], correo=fila[1], rol=Rol(fila[2]), emitida_por=fila[3],
         emitida_en=fila[4], expira_en=fila[5], estado=EstadoDeInvitacion(fila[6]),
         aceptada_en=fila[7], revocada_en=fila[8],
     )
-
 
 _COLUMNAS = (
     "id, correo, rol, emitida_por, emitida_en, expira_en, estado, "

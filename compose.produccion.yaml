@@ -1,61 +1,3 @@
-# compose.produccion.yaml — El sistema entero, para el servidor · `PM-B23`
-# =============================================================================
-#
-# `compose.yaml` —el de desarrollo— levanta UNA cosa: la base. Backend y
-# frontend se arrancan a mano en el equipo de cada autor, y eso no se puede
-# subir a un VPS. Este archivo levanta la base, aplica el esquema, inicia el
-# backend, construye el frontend y coloca Caddy delante de la aplicación.
-#
-# Consola: PowerShell o el shell del servidor, DESDE LA RAÍZ DEL REPOSITORIO
-# — igual que `compose.yaml`, por el mismo motivo (`ANTES-DE-MODIFICAR.md`
-# §2.bis):
-#
-#     $env:PGPASSWORD_AGENTE   = "la de producción, no la de desarrollo"
-#     $env:AGENTE_BD           = "postgresql://agente:$($env:PGPASSWORD_AGENTE)@base:5432/agente"
-#     $env:DEEPSEEK_API_KEY    = "<definir fuera del repositorio>"
-#     $env:AGENTE_LLM          = "deepseek"
-#     $env:DOMINIO             = "app.didaxia.pro"        # opcional — sin él, Caddy sirve la APLICACIÓN en :80 sin TLS
-#     $env:DOMINIO_PUBLICO     = "didaxia.pro"            # opcional — sin él, la portada queda en :8081 sin publicar
-#     $env:DIDAXIA_IP_PUBLICACION = "0.0.0.0"              # opcional; 127.0.0.1 detrás de un proxy institucional
-#     $env:DIDAXIA_PUERTO_HTTP    = "80"                   # opcional; la VPS compartida puede asignar otro
-#     $env:DIDAXIA_PUERTO_HTTPS   = "443"                  # opcional; la VPS compartida puede asignar otro
-#     docker compose --env-file .env -f compose.produccion.yaml up -d --wait --build
-#
-# DOS SUPERFICIES DESDE `D1A` · `D0` §10.1
-# -----------------------------------------
-# `DOMINIO` conserva su nombre y su significado —la dirección de la APLICACIÓN,
-# `app.didaxia.pro` en producción— y `DOMINIO_PUBLICO` es la nueva presencia
-# pública, `didaxia.pro`. Sólo el sitio de la aplicación proxifica `/api/*`;
-# en el público esa petición se responde con un 404 dentro de Caddy. Ver
-# `Caddyfile`.
-#
-# Sin `DOMINIO_PUBLICO`, la portada escucha en `:8081` DENTRO del contenedor y
-# **no se publica en el host**: este archivo sólo mapea 80 y 443, así que probar
-# el compose en un equipo sin dominio levanta el tutor en el puerto 80 igual que
-# antes. Para ver la portada en local está `npm run dev-publico`
-# (`http://localhost:5174`), documentado en `frontend/package.json`.
-#
-# `AGENTE_PILOTO_TESIS` NO hay que ponerla: viene encendida en el servicio
-# `backend` de abajo, porque este archivo ES el despliegue del piloto. Lo que
-# hay que saber de ella es cómo APAGARLA — `DD-26` §4, y está comentado ahí
-# mismo, en el sitio donde alguien la encontrará.
-#
-# El servicio `migraciones` aplica el catálogo versionado antes de iniciar el
-# backend. Al repetir, informa `aplicadas=[]` si no hay cambios pendientes.
-# La guarda sólo admite la base interna `base:5432/agente`, nunca una URL remota.
-# Una base histórica que necesite adopción se detiene para revisión manual.
-#
-# ⚠️ NINGUNA CLAVE EN ESTE ARCHIVO. Las cuatro variables de arriba son
-# obligatorias — `${VAR:?mensaje}` hace que el arranque FALLE RUIDOSAMENTE
-# si falta alguna, como ya hacía `compose.yaml` con `PGPASSWORD_AGENTE`.
-# Fallar al arrancar es correcto; arrancar a medias no.
-#
-# ⚠️ EL CORPUS SE MONTA, NO SE EMPAQUETA. `./contenido` del repositorio se
-# monta de solo lectura en el backend — ver el docstring de
-# `Dockerfile.backend`. Reconstruir la imagen por cada fragmento nuevo de
-# Fabián sería acoplar el despliegue al contenido, que es justo lo que
-# `ADR-001` evita en el código.
-
 name: agente-calculo-produccion
 
 services:
@@ -77,10 +19,6 @@ services:
       retries: 10
       start_period: 10s
     restart: unless-stopped
-    # SIN `ports:`. En desarrollo el 5433 se expone para depurar desde el
-    # equipo del autor; en producción la base solo es alcanzable desde la
-    # red interna de este compose, que es lo que el encargo pide en su
-    # apartado 3.
 
   migraciones:
     build:
@@ -97,10 +35,6 @@ services:
         condition: service_healthy
     restart: "no"
 
-  # El índice no es una caché opcional: es la biblioteca que respalda cada
-  # respuesta. Tras crear o reiniciar la base debe poblarse antes de aceptar
-  # tráfico. `ingesta.py` usa UPSERT, por lo que repetir este servicio actualiza
-  # el corpus sin duplicarlo y un fallo detiene el arranque del backend.
   ingesta:
     build:
       context: .
@@ -123,195 +57,49 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.backend
-      # ⚠️ `target` EXPLÍCITO desde la Fase 2 · sesión 2A. `Dockerfile.backend`
-      # tiene ahora una etapa `pruebas` con `pytest` y `pruebas/` dentro, y una
-      # etapa `runtime` sin ninguna de las dos. `runtime` es la última del
-      # archivo —así que también sería la que un `docker build` sin `--target`
-      # elegiría—, pero el orden de un archivo se reordena sin querer y esta
-      # línea no. Es la diferencia entre desplegar el sistema y desplegar el
-      # sistema con el ejecutor de pruebas puesto al lado de los datos reales.
       target: runtime
     container_name: agente-calculo-backend-prod
     dns:
       - 8.8.8.8
       - 1.1.1.1
     environment:
-      # Fase 2 · sesión 2A · lo que este contenedor DICE QUE ES.
-      #
-      # No la lee el backend: la lee `pruebas/soporte/guarda_bd_pruebas.py`,
-      # que exige `AGENTE_ENTORNO=pruebas` antes de dejar que una prueba
-      # escriba en una base. Declararlo aquí convierte la marca en una
-      # afirmación y no en una ausencia — si algún día `pruebas/` volviera a
-      # colarse en esta imagen, la barrera seguiría cerrada porque este
-      # contenedor declara activamente que es producción.
       AGENTE_ENTORNO: produccion
       AGENTE_BD: ${AGENTE_BD:?falta definir AGENTE_BD en el entorno (postgresql://agente:contraseña@base:5432/agente)}
       DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:?falta definir DEEPSEEK_API_KEY en el entorno}
       AGENTE_LLM: ${AGENTE_LLM:?falta definir AGENTE_LLM en el entorno (ollama | deepseek)}
-      # `PM-B42`, 2026-08-18 · el modelo sale del entorno y no del código.
-      # Antes estaba fijo en `deepseek.py` y cambiarlo exigía editar Python y
-      # reconstruir la imagen. Con respaldo declarado —no `:?`— porque un
-      # despliegue sin esta variable funciona: cae al valor por defecto del
-      # adaptador, y `GET /api/salud` dice cuál está usando.
       AGENTE_LLM_MODELO: ${AGENTE_LLM_MODELO:-}
       AGENTE_LLM_TIEMPO_MAXIMO_S: ${AGENTE_LLM_TIEMPO_MAXIMO_S:-60}
-      # Mejoras validadas en la rama de Semana 4; reversibles por configuración.
       AGENTE_INTERPRETACION: ${AGENTE_INTERPRETACION:-corroboracion}
       AGENTE_CONTINUIDAD_TUTOR: ${AGENTE_CONTINUIDAD_TUTOR:-1}
       AGENTE_FACTORES_CONDUCTUALES: ${AGENTE_FACTORES_CONDUCTUALES:-1}
       AGENTE_RETROALIMENTACION_DIRECTA: ${AGENTE_RETROALIMENTACION_DIRECTA:-1}
       AGENTE_CONTEXTO_CONVERSACIONAL: ${AGENTE_CONTEXTO_CONVERSACIONAL:-reforzado}
-      # Umbrales de `RF-ADM-06`, opcionales: si no se ponen, cada módulo usa
-      # su valor por defecto documentado (`limitador.py`, `guardia.py`,
-      # `proceso_aislado.py`, `config_limits`-equivalentes).
       AGENTE_LIMITE_SESION: ${AGENTE_LIMITE_SESION:-20}
       AGENTE_LIMITE_IP: ${AGENTE_LIMITE_IP:-60}
       AGENTE_LIMITE_IP_AUTENTICADA: ${AGENTE_LIMITE_IP_AUTENTICADA:-300}
       AGENTE_LIMITE_VENTANA_S: ${AGENTE_LIMITE_VENTANA_S:-60}
       AGENTE_CAS_AISLAR: ${AGENTE_CAS_AISLAR:-1}
-      # `PM-B15` · identidad delegada (`DD-18`) y rol docente (`D-16` opción C).
-      # Sin estas tres, `identidad.py` y `docentes.py` leen del entorno del
-      # contenedor y no encuentran nada: el login de Google devolvería 401
-      # aunque la consola de Google esté bien configurada.
-      #
-      # ⚠️ `GOOGLE_CLIENT_ID` va con DEFECTO VACÍO y no con `:?` como
-      # `DEEPSEEK_API_KEY`, y la diferencia está razonada: sin generador el
-      # sistema NO PUEDE hacer su trabajo —todo turno degrada—, mientras que
-      # sin cliente de Google el sistema funciona entero salvo el rol docente.
-      # Hoy además no hay botón que dispare ese login (`PM-X08` sin crear), así
-      # que `:?` impediría arrancar el despliegue por una capacidad que todavía
-      # no se puede usar. El hueco NO queda callado: `identidad.py` tiene piso
-      # `False` —sin client id ningún token verifica— y `/api/salud` lo publica
-      # en `faltantes`, que es donde quien opera el sistema ya mira.
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
-      # El dominio institucional cuyo claim `hd` se exige (`DD-18`). Es de
-      # prueba y configurable: otra institución cambia un valor, no el código.
       DOMINIO_INSTITUCIONAL: ${DOMINIO_INSTITUCIONAL:-unimayor.edu.co}
-      # `D-16` opción C · la lista a mano, correos separados por coma. Vacía es
-      # un estado VÁLIDO —nadie es docente todavía— y `docentes.py` ya lo
-      # documenta: la cola de solicitud sigue siendo la otra vía.
       DOCENTES_AUTORIZADOS: ${DOCENTES_AUTORIZADOS:-}
-      # Aprovisiona el rol persistente al iniciar sesión. La cuenta principal
-      # ratificada queda operativa incluso en una VPS cuyo `.env` todavía no
-      # conozca esta variable; asignar explícitamente una cadena vacía permite
-      # desactivar el aprovisionamiento sin editar este archivo.
-      # Núcleo aprobado por la institución. La variable del `.env` puede
-      # reemplazar la lista completa; el valor de respaldo evita que un reinicio
-      # con un `.env` anterior deje al sistema sin ninguna cuenta propietaria.
-      # Núcleo institucional de producción. No depende del `.env` del host:
-      # estas tres cuentas son inamovibles también después de recrear el
-      # contenedor. Desarrollo conserva su propia lista en `.env`.
       INVESTIGADORES_PROPIETARIOS: yjmunoz@unimayor.edu.co,fahoyos@unimayor.edu.co,jjcaiza@unimayor.edu.co
       INVESTIGADORES_AUTORIZADOS: ${INVESTIGADORES_AUTORIZADOS:-}
-      # ⚠️⚠️ ESTA LÍNEA CADUCA CON EL SEMESTRE · `DD-26` §4 ⚠️⚠️
-      #
-      # Enciende el «modo piloto de tesis»: la sesión asume `edad = 18` en vez
-      # de exigir la confirmación activa que `RL-09` describe. Es una
-      # CONVENIENCIA DE PILOTO, no una posición permanente — el motivo entero
-      # está en `04-Decisiones-de-Detalle.md` §DD-26 y en `D-17`.
-      #
-      # **BORRAR ESTAS DOS LÍNEAS es todo lo que hay que hacer** el día que el
-      # sistema cambie de dueño: sin la variable, `aviso_legal.py` cae al
-      # `RL-09` original —edad no declarada, módulo conductual deshabilitado
-      # hasta que alguien la confirme— y nada más hay que tocar. Es
-      # exactamente lo que `DD-26` §4 pide: una línea de configuración, no una
-      # arqueología de código.
       AGENTE_PILOTO_TESIS: ${AGENTE_PILOTO_TESIS:-1}
-      # `D2` · el canal de avisos de `EQ-022`/`EQ-024`. Las variables ya
-      # decididas en `Guia-Resend.md` §5, ninguna nueva.
-      #
-      # ⚠️ **Con defecto vacío y no con `:?`**, y está razonado igual
-      # que `GOOGLE_CLIENT_ID`: sin canal el sistema funciona entero —registra
-      # la decisión conjunta y la solicitud de supresión, y responde
-      # `aviso_enviado: false`—, mientras que un `:?` impediría arrancar el
-      # despliegue por un correo que no decide ningún trámite. Eso es
-      # exactamente lo que `EQ-024` prohíbe que el canal haga.
-      #
-      # El hueco no queda callado: `GET /api/salud` publica en `notificacion`
-      # si el canal está configurado, a medias o ausente, **sin valores**.
-      #
-      # `RESEND_API_KEY` es el único secreto del canal. Como el resto, se
-      # inyecta desde el entorno y no se escribe aquí: este archivo se versiona.
       RESEND_API_KEY: ${RESEND_API_KEY:-}
       RESEND_REMITENTE: ${RESEND_REMITENTE:-}
-      # El mismo nombre que ya consume el `frontend-build` de abajo para las
-      # páginas públicas. Una variable para el buzón de privacidad, no una por
-      # carril: aquí decide a dónde alerta el monitor de disponibilidad de
-      # `EQ-024`; allí, qué escribe la página pública.
       CORREO_PRIVACIDAD: ${CORREO_PRIVACIDAD:-}
-      # Buzones institucionales para las solicitudes de matrícula, separados
-      # por coma. Son destinos públicos, no credenciales. El valor ratificado
-      # evita que una VPS anterior quede incompleta sólo porque su `.env`
-      # todavía no conocía esta variable; el operador puede sustituir la lista.
       CORREO_INVESTIGACION: ${CORREO_INVESTIGACION:-yjmunoz@unimayor.edu.co,fahoyos@unimayor.edu.co,privacidad.didaxia.pro@gmail.com}
-      # `D3` · dónde vive la autorización firmada del representante (`EQ-021`).
-      #
-      # ⚠️ **Es una ruta INTERNA del contenedor y no se sustituye desde fuera.**
-      # No lleva `${...}` a propósito: lo que cambia entre este equipo y la VPS
-      # institucional es el ORIGEN FÍSICO del volumen `autorizaciones` —qué disco
-      # y qué carpeta del anfitrión hay detrás—, y eso se declara en la sección
-      # `volumes:` del final, no aquí. Con la ruta interna fija, el mismo Python
-      # sirve para los cuatro sitios donde tiene que servir: una carpeta temporal
-      # en las pruebas, una carpeta privada fuera del repositorio en la
-      # demostración, este volumen en producción y el volumen institucional el
-      # día que exista.
-      #
-      # `/custodia/autorizaciones` está **fuera de `/app`**, que es lo que pide
-      # la decisión D3: fuera del árbol de código y fuera de la capa escribible
-      # del contenedor. Un directorio dentro de `/app` habría quedado dentro de
-      # la imagen, se habría perdido en cada despliegue y habría convivido con el
-      # código que lo lee.
-      #
-      # Con valor fijo y no con `:?`: un despliegue al que le falte el montaje
-      # arranca y **no acepta evidencias**, que es lo correcto —`EQ-024` prohíbe
-      # el éxito parcial y `GET /api/salud` publica la carencia—. Un `:?` habría
-      # impedido levantar el sistema entero por una custodia que sólo hace falta
-      # cuando se matricula un menor de edad.
       ALMACENAMIENTO_PRIVADO_RUTA: /custodia/autorizaciones
-      # Fotografías recodificadas, sin EXIF y no públicas. Otro volumen porque
-      # no comparten régimen ni respaldo con autorizaciones de representantes.
       FOTOS_PERFIL_RUTA: /custodia/fotos-perfil
     volumes:
-      # Solo lectura: el backend no escribe contenido, lo consume.
       - ./contenido:/app/contenido:ro
-      # El modelo e5 (~1,1 GB) persiste aquí entre reconstrucciones de la
-      # imagen — ver el docstring de `Dockerfile.backend`.
       - cache-modelos:/cache-modelos
-      # `DD-08` · el archivo del turno que el filtro 12 escribe (`PM-B20`).
-      # Nombrado y no bind: son datos personales generados en ejecución, no
-      # material del repositorio —por eso `.gitignore` los excluye—, y sin
-      # volumen se perderían en cada despliegue mientras su fila en
-      # `registro_turno` sobrevive, dejando el índice apuntando a archivos que
-      # ya no existen. `RD-22` necesita las dos mitades vivas para que
-      # `suprimir_sesion()` borre de verdad.
       - registro-turnos:/app/infraestructura/registro_turnos
-      # `D3` · la custodia privada de `EQ-021`. **Sólo aquí.**
-      #
-      # No se monta en `frontend-build` —que no escribe nada y sólo construye
-      # estáticos—, no se monta en `caddy` —que sirve como archivo lo que hay
-      # bajo `/srv/frontend` y publicaría el PDF firmado como un recurso más— y
-      # no se monta en `base` —que no tiene por qué ver los bytes de los que
-      # sólo guarda la referencia—. Un montaje de más en cualquiera de los tres
-      # convierte la custodia en un directorio público.
-      #
-      # Volumen NOMBRADO y no `bind`: son datos personales generados en
-      # ejecución, no material del repositorio, y un `bind` contra una carpeta
-      # del árbol los habría puesto justo donde `ESTADO-ACTUAL.md` §10.4 dice
-      # que nunca deben estar. Tampoco entra en ninguna imagen: `Dockerfile.
-      # backend` no crea ni copia `/custodia`, así que lo que hay ahí llegó por
-      # este montaje y por ningún otro camino.
-      #
-      # Sin `:ro`: el backend es el único que escribe aquí, y tiene que poder.
       - autorizaciones:/custodia/autorizaciones
       - fotos-perfil:/custodia/fotos-perfil
     depends_on:
       ingesta:
         condition: service_completed_successfully
-    # El primer arranque descarga el modelo semántico (~1,1 GB) al volumen
-    # `cache-modelos`. El proceso puede estar vivo varios minutos antes de
-    # abrir el puerto; sin una sonda, `docker compose up --wait` declaraba el
-    # despliegue listo y Caddy devolvía 502. Durante `start_period` los fallos
-    # son calentamiento, no caída; cualquier éxito lo marca sano de inmediato.
     healthcheck:
       test:
         - CMD
@@ -323,43 +111,11 @@ services:
       retries: 12
       start_period: 30m
     restart: unless-stopped
-    # SIN `ports:` tampoco: solo Caddy le habla, por la red interna.
 
   frontend-build:
     build:
       context: frontend
       dockerfile: ../Dockerfile.frontend
-      # `PM-B34` · va como ARGUMENTO DE CONSTRUCCIÓN y no en `environment`,
-      # y la diferencia es la tarea entera: `vite.config.js` lo sustituye por
-      # un literal dentro del paquete, así que cuando existiría un
-      # `environment` el `.js` ya está escrito. Este servicio construye y
-      # termina; no hay ejecución en la que una variable pudiera leerse.
-      #
-      # Mismo defecto vacío que en `backend` de arriba, por el mismo motivo:
-      # sin cliente de Google el sistema funciona entero salvo el rol docente.
-      #
-      # `D1A` · los dos orígenes y el canal de privacidad van por el MISMO
-      # camino y por el mismo motivo: `vite.config.js` los sustituye por
-      # literales dentro del paquete, así que cuando existiría un `environment`
-      # el `.js` ya está escrito.
-      #
-      # Los respaldos son los de `D0` §10.1 —`https://didaxia.pro` y
-      # `https://app.didaxia.pro`— y viven en
-      # `frontend/src/nucleo/configuracion/origenes.js`. Cambiarlos aquí sirve
-      # para desplegar contra otras direcciones de prueba y **no toca ninguna
-      # barrera**: la separación real la ejerce `Caddyfile` con un sitio por
-      # dominio, y el backend detrás.
-      #
-      # ⚠️ `CORREO_PRIVACIDAD` va VACÍO a propósito. `ESTADO-ACTUAL.md` §10.9
-      # deja pendiente la definición del canal para derechos e incidentes, y
-      # §10.1 dice que el correo de preparación no se presenta como canal
-      # institucional. Sin valor, las páginas públicas escriben que está
-      # pendiente de confirmación en vez de ofrecer un buzón que nadie atiende.
-      #
-      # Es el MISMO nombre que ya usan `Guia-Dominios-y-Publicacion.md` y
-      # `Guia-Resend.md`: una sola variable para el buzón de privacidad, no una
-      # por carril. Poner el correo aquí no conecta Resend ni habilita ningún
-      # envío; sólo decide qué escribe la página pública.
       args:
         GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
         ORIGEN_PUBLICO: ${ORIGEN_PUBLICO:-https://didaxia.pro}
@@ -369,28 +125,16 @@ services:
     volumes:
       - frontend-estatico:/salida
     restart: "no"
-    # Este servicio TERMINA — no es un error verlo "Exited (0)" en
-    # `docker compose ps`. Caddy espera a que termine bien (abajo) antes de
-    # servir, así que un frontend a medio construir nunca llega a publicarse.
 
   caddy:
     image: caddy:2-alpine
     container_name: agente-calculo-caddy-prod
     environment:
-      # La APLICACIÓN. Sin dominio, `:80` sin TLS — el modo local de siempre.
       DOMINIO: ${DOMINIO:-:80}
-      # La PRESENCIA PÚBLICA · `D1A`. Sin dominio, un puerto interno que este
-      # archivo NO publica: el modo local sigue levantando el tutor en :80 y
-      # no aparece ningún servicio nuevo alcanzable desde fuera.
       DOMINIO_PUBLICO: ${DOMINIO_PUBLICO:-:8081}
       DIDAXIA_ALIAS_CADDY: ${DIDAXIA_DOMINIO_ALIAS:-www.didaxia.pro}
       ORIGEN_PUBLICO: ${ORIGEN_PUBLICO:-https://didaxia.pro}
     ports:
-      # Sólo el borde se publica: la base y el backend siguen dentro de la red
-      # de Compose. Los respaldos conservan el despliegue autónomo habitual,
-      # pero una VPS compartida puede asignar puertos altos o exigir que el
-      # proxy institucional sea el único que los alcance. En ese caso se usa
-      # `127.0.0.1` y los puertos entregados, sin editar este archivo.
       - "${DIDAXIA_IP_PUBLICACION:-0.0.0.0}:${DIDAXIA_PUERTO_HTTP:-80}:80"
       - "${DIDAXIA_IP_PUBLICACION:-0.0.0.0}:${DIDAXIA_PUERTO_HTTPS:-443}:443"
     volumes:
@@ -412,21 +156,6 @@ volumes:
     name: agente-calculo-cache-modelos
   registro-turnos:
     name: agente-calculo-registro-turnos
-  # `D3` · el volumen de la custodia privada. Nombre propio e inequívoco: no lo
-  # comparte con `registro-turnos` ni con `datos-base-prod` porque lo que guarda
-  # tiene otro régimen de respaldo, otro de retención y otro de eliminación
-  # (`EQ-021`, `EQ-022`), y un volumen compartido habría hecho imposible
-  # restaurar uno sin restaurar el otro.
-  #
-  # ⚠️ **Aquí es donde se sustituye el origen físico cuando exista la VPS.** Hoy
-  # es un volumen local gestionado por Docker. El día que Gestión de Recursos
-  # Tecnológicos entregue un disco o una ruta, se declara con `driver_opts`
-  # apuntando a ella y el contenedor sigue viendo `/custodia/autorizaciones`: no
-  # cambia ni una línea de Python, ni una ruta HTTP, ni el dominio.
-  #
-  # La ruta del anfitrión **no se escribe aquí todavía**, y no es un olvido:
-  # depende de una infraestructura que aún no está provisionada, y poner una
-  # supuesta la convertiría en documentación de algo que nadie ha entregado.
   autorizaciones:
     name: agente-calculo-autorizaciones
   fotos-perfil:

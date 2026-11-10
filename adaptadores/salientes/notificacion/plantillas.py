@@ -1,10 +1,3 @@
-"""Plantillas transaccionales de DidaxIa, sin depender del proveedor de correo.
-
-Todo aviso del sistema pasa por el mismo armazón visual, pero conserva título,
-etiqueta, color y acción propios. Los valores dinámicos se escapan aquí; el
-adaptador de Resend sólo transporta el HTML resultante.
-"""
-
 from __future__ import annotations
 
 from html import escape
@@ -26,8 +19,7 @@ def _parrafos(texto: str) -> str:
             )
     return "".join(bloques)
 
-
-def correo_didaxia(  # noqa: PLR0913 -- contrato visual explícito
+def correo_didaxia(
     *,
     destinatario: str,
     etiqueta: str,
@@ -38,7 +30,7 @@ def correo_didaxia(  # noqa: PLR0913 -- contrato visual explícito
     color: str = "#b64d00",
     prueba: bool = False,
 ) -> str:
-    """Armazón compatible con clientes restrictivos y sin HTML dinámico crudo."""
+
     saludo = escape(destinatario.strip() or "Hola")
     rotulo = escape(etiqueta.strip())
     encabezado = escape(titulo.strip())
@@ -85,7 +77,7 @@ def correo_didaxia(  # noqa: PLR0913 -- contrato visual explícito
 def solicitud_de_matricula(
     *, destinatario: str, estudiante: str, clase: str, url_accion: str, prueba: bool = False
 ) -> str:
-    """Correo compatible con clientes restrictivos; todos los datos dinámicos se escapan."""
+
     return correo_didaxia(
         destinatario=destinatario,
         etiqueta="SOLICITUD DE MATRÍCULA",
@@ -99,7 +91,6 @@ def solicitud_de_matricula(
         url_accion=url_accion,
         prueba=prueba,
     )
-
 
 def decision_registrada(*, destinatario: str, url_accion: str, prueba: bool = False) -> str:
     return correo_didaxia(
@@ -117,7 +108,6 @@ def decision_registrada(*, destinatario: str, url_accion: str, prueba: bool = Fa
         prueba=prueba,
     )
 
-
 def supresion_recibida(*, destinatario: str, url_accion: str, prueba: bool = False) -> str:
     return correo_didaxia(
         destinatario=destinatario,
@@ -132,7 +122,6 @@ def supresion_recibida(*, destinatario: str, url_accion: str, prueba: bool = Fal
         color="#8b3d75",
         prueba=prueba,
     )
-
 
 def invitacion_institucional(
     *, destinatario: str, rol: str, correo: str, vence: str, url_accion: str,
@@ -152,7 +141,6 @@ def invitacion_institucional(
         prueba=prueba,
     )
 
-
 def alerta_operativa(
     *, titulo: str, mensaje: str, recuperado: bool = False, prueba: bool = False
 ) -> str:
@@ -166,7 +154,6 @@ def alerta_operativa(
         color="#16795b" if recuperado else "#8b3d75",
         prueba=prueba,
     )
-
 
 def mensaje_institucional(
     *, destinatario: str, titulo: str, mensaje: str, prueba: bool = False,

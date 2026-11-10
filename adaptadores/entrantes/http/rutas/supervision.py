@@ -1,25 +1,3 @@
-"""
-supervision.py — La cola de revisión del docente · `RU-12`
-====================================================================
-
-Listar lo pendiente y las **tres acciones distintas** que `RU-12` fija:
-aprobar, editar, rechazar. No hay «aprobar todo», ni aquí ni en el almacén —
-la ausencia es la decisión, y `supervision.py` no ofrece un método que la
-deshaga por atrás.
-
-Las cuatro exigen rol docente. Aquí SÍ viajan los campos que el árbol del
-estudiante tiene prohibidos (`08-Contrato-del-Turno.md` §9): la frontera es
-estudiante frente a no-estudiante, y `requerir_rol` es quien la impone.
-
-⚠️ No confundir con el almacén. Desde la Fase 2 · sesión 3, el contrato es
-`dominio/puertos/supervision.py::PuertoColaDeRevision` y las dos
-implementaciones viven en `adaptadores/salientes/registro/`
-—`cola_revision_memoria.py` y `cola_revision_db.py`—. Estas rutas dependen del
-puerto y no saben cuál recibieron. Ver `rutas/__init__.py`.
-
-
-"""
-
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -36,11 +14,10 @@ from adaptadores.entrantes.http.rutas.comun import json_del_cuerpo, requerir_rol
 from adaptadores.entrantes.http.sesiones import COOKIE, Sesiones, sujeto_de
 from dominio.modelo.contexto_de_uso import ContextoDeUso
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from adaptadores.entrantes.http.rutas.puerta_de_supresion import PuertaDeSupresion
     from dominio.puertos.clases import PuertoClases
     from dominio.puertos.supervision import PuertoColaDeRevision
-
 
 def crear_router(
     sesiones: Sesiones,
@@ -49,26 +26,13 @@ def crear_router(
     clases_almacen: PuertoClases | None = None,
     instrumentador: Instrumentador = SIN_INSTRUMENTAR,
 ) -> APIRouter:
-    """La cola de revisión docente, con la puerta de `EQ-022` en las cuatro.
 
-    ⚠️ **Listar también**, y es la corrección de esta tanda. Estaba abierto por
-    «consultar es un derecho», y no lo es: el derecho del titular es ver **sus**
-    datos, no la cola de trabajo de un docente. Es uso del producto.
-    """
     router = APIRouter()
 
     def _congelada(peticion: Request) -> Response | None:
-        """La negativa si el ACTOR tiene su propio trámite abierto, o `None`.
-
-        ⚠️ **El actor, no la persona afectada.** `cola_revision` no identifica al
-        titular de cada elemento —ver el informe de esta corrección—, así que
-        aquí no se puede comprobar nada sobre él. Lo que sí se comprueba, y es lo
-        que `ESTADO-ACTUAL.md` §10.2 pide, es que quien ejecuta la acción no
-        tenga su propia cuenta congelada.
-        """
         datos = sesiones.leer(peticion.cookies.get(COOKIE))
         if datos is None:
-            return None  # sin sesión ya respondió `requerir_rol()`
+            return None
         return puerta.negativa(sujeto_de(datos))
 
     def _alcance_docente(peticion: Request) -> tuple[str, tuple[str, ...]]:
@@ -79,18 +43,6 @@ def crear_router(
         return actor, tuple(c.identificador for c in clases_almacen.mias(actor))
 
     def _anotar_decision(actor: str, identificador: str, decision: str) -> None:
-        """Fase 8 · la decisión del docente, medida sin tocar la cola.
-
-        El sujeto del evento es el **docente que decide**, no el estudiante del
-        elemento: lo que se mide aquí es el trabajo de supervisión, y atribuirlo
-        al estudiante convertiría la carga del docente en actividad de la
-        persona supervisada.
-
-        Sin clase: `cola_revision` la admite nula y el elemento puede no
-        tenerla. Un evento sin clase es legítimo; inventarle una a partir de
-        las del docente sería atribuir un hecho a un curso que quizá no es el
-        suyo.
-        """
         instrumentador.supervision_decidida(
             SelloDelTurno(
                 sujeto=actor,
@@ -101,7 +53,6 @@ def crear_router(
             item=identificador,
             decision=decision,
         )
-
 
     @router.get("/api/supervision")
     def listar_supervision(peticion: Request) -> Response:
@@ -180,9 +131,7 @@ def crear_router(
         if congelada is not None:
             return congelada
         cuerpo = await json_del_cuerpo(peticion)
-        # `motivo` se admite durante la transición para clientes ya abiertos;
-        # el contrato nuevo lo llama `texto` porque llega al estudiante como
-        # una corrección, no queda escondido como una nota administrativa.
+
         motivo = str(cuerpo.get("texto") or cuerpo.get("motivo") or "").strip()
         if not motivo:
             return JSONResponse(
@@ -198,7 +147,6 @@ def crear_router(
 
     @router.get("/api/supervision/mis-aclaraciones")
     def aclaraciones_del_hilo(peticion: Request) -> Response:
-        """Sólo el titular puede recuperar las aclaraciones de su conversación."""
         error = requerir_rol(sesiones, peticion, "estudiante")
         if error is not None:
             return error

@@ -1,5 +1,3 @@
-"""Compositor de correo del investigador, limitado, auditado y sin listas públicas."""
-
 from __future__ import annotations
 
 import asyncio
@@ -27,10 +25,9 @@ from adaptadores.salientes.notificacion.plantillas import (
 )
 from dominio.puertos.almacen import AlmacenNoConfigurado, AlmacenNoDisponible, EscrituraRechazada
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from adaptadores.entrantes.http.rutas.puerta_de_supresion import PuertaDeSupresion
     from dominio.puertos.gobierno import PuertoAuditoria, PuertoNotificacion
-
 
 MAX_DESTINATARIOS = 35
 MAX_ADJUNTOS = 3
@@ -69,7 +66,6 @@ class Destinatario:
     nombre: str
     correo: str
 
-
 _PLANTILLAS = (
     ("mensaje-institucional", "Mensaje institucional", "Comunicación libre con identidad visual DidaxIa."),
     ("solicitud-matricula", "Solicitud de matrícula", "Aviso al docente o al equipo de investigación."),
@@ -84,7 +80,6 @@ _IDENTIFICADORES = frozenset(item[0] for item in _PLANTILLAS)
 
 def _error(detalle: str, estado: int = 400) -> JSONResponse:
     return JSONResponse({"detalle": detalle}, status_code=estado)
-
 
 def _destinatarios(valor: object) -> tuple[Destinatario, ...]:
     if not isinstance(valor, list) or not valor:
@@ -104,9 +99,7 @@ def _destinatarios(valor: object) -> tuple[Destinatario, ...]:
         unicos.setdefault(correo.casefold(), Destinatario(nombre=nombre, correo=correo))
     return tuple(unicos.values())
 
-
 def _validar_contenido(nombre: str, tipo: str, contenido: bytes) -> None:
-    """Comprueba la forma real mínima; el `Content-Type` del navegador no es autoridad."""
     extension = Path(nombre).suffix.lower()
     esperada = _EXTENSION_DE_TIPO[tipo]
     if extension not in ((esperada,) if isinstance(esperada, str) else esperada):
@@ -132,7 +125,6 @@ def _validar_contenido(nombre: str, tipo: str, contenido: bytes) -> None:
             raise ValueError(f"«{nombre}» no contiene un documento Office reconocible") from None
         if "[Content_Types].xml" not in nombres or _PIEZA_OFFICE[extension] not in nombres:
             raise ValueError(f"«{nombre}» no contiene un documento Office reconocible")
-
 
 def _adjuntos(valor: object) -> tuple[tuple[dict[str, str], ...], int]:
     if valor in (None, []):
@@ -166,7 +158,6 @@ def _adjuntos(valor: object) -> tuple[tuple[dict[str, str], ...], int]:
             "content": base64.b64encode(bytes_archivo).decode("ascii"),
         })
     return tuple(salida), total
-
 
 def _contenido(
     plantilla: str, destinatario: Destinatario, asunto: str, mensaje: str,
@@ -208,7 +199,6 @@ def _contenido(
         titulo=titulo, mensaje=texto, recuperado=recuperado, prueba=True
     )
 
-
 def _catalogo() -> list[dict]:
     muestra = Destinatario(nombre="Persona destinataria", correo="persona@example.com")
     salida = []
@@ -222,7 +212,6 @@ def _catalogo() -> list[dict]:
             "solo_prueba": identificador != "mensaje-institucional",
         })
     return salida
-
 
 def crear_router(
     sesiones: Sesiones,
@@ -253,7 +242,6 @@ def crear_router(
                             "adjuntos_bytes": MAX_ADJUNTOS_BYTES}}
 
     def preparar(cuerpo):
-        """La vista previa y cada envío resuelven la misma copia, antes de auditar."""
         plantilla = str(cuerpo.get("plantilla") or "").strip()
         if plantilla not in _IDENTIFICADORES:
             raise ValueError("elige una plantilla disponible")
@@ -279,10 +267,7 @@ def crear_router(
                     return valor.strip()
                 titulo = _VARIABLE.sub(reemplazar, asunto)
                 texto = _VARIABLE.sub(reemplazar, mensaje)
-                # Los campos estructurados del compositor también deben verse
-                # cuando quien redacta no insertó su marcador. Vista previa y
-                # envío comparten este camino: nunca se muestra una copia que
-                # difiera silenciosamente de la enviada.
+
                 etiquetas = {"cohorte": "Clase o grupo", "nodo_didactico": "Nodo didáctico",
                              "fecha_limite": "Fecha u horario acordado"}
                 adicionales = [f"{etiqueta}: {valor.strip()}" for clave, etiqueta in etiquetas.items()
@@ -310,7 +295,7 @@ def crear_router(
         except ValueError as error:
             return _error(str(error))
         _, asunto, _, html = copias[0]
-        # Render de lectura: no contacta al canal, no persiste el borrador ni audita un envío.
+
         return {"asunto": asunto, "html": html}
 
     @router.post("/api/investigacion/correos/enviar")
@@ -347,15 +332,13 @@ def crear_router(
 
         resultados = []
         for indice, (destino, asunto_final, mensaje, html) in enumerate(copias, start=1):
-            # Espaciar las copias limita cada acción a menos de cinco llamadas/s.
-            # https://resend.com/docs/api-reference/rate-limit
+
             if indice > 1 and pausa_entre_envios_s > 0:
                 await asyncio.sleep(pausa_entre_envios_s)
             texto = mensaje if plantilla == "mensaje-institucional" else (
                 "Este es un ensayo visual de una plantilla de DidaxIa. No corresponde a un evento real."
             )
-            # El canal es síncrono: 35 plazos de red no deben bloquear el loop
-            # que también atiende las conversaciones del tutor.
+
             salio = await asyncio.to_thread(
                 notificacion.avisar,
                 destino.correo,

@@ -22,9 +22,6 @@
     const roles = p.roles ?? [];
     const termino = buscando.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
     const texto = `${p.nombre} ${p.correo}`.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-    // La matrícula, no rol_asignacion, identifica al estudiante. En la base real
-    // las cuentas estudiantiles normalmente tienen roles=[]; "estudiante" es
-    // el rol de sesión, no una asignación profesional del directorio.
     const matriculada = (p.clases?.length ?? 0) > 0;
     const profesional = esProfesional(p);
     const coincideRol = !rol || (rol === 'estudiante' ? matriculada && !profesional : roles.some((r) => r.startsWith(rol)) || (rol === 'docente' && p.es_docente));

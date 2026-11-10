@@ -1,4 +1,3 @@
-/** Conversión estable del selector: nunca depende del formato regional del móvil. */
 export function descomponerFecha(valor, conHora = false) {
   const coincide = /^(\d{4})-(\d{2})-(\d{2})(?:T(\d{2}):(\d{2})(?::(\d{2}))?)?$/.exec(String(valor ?? ''));
   const hoy = new Date();

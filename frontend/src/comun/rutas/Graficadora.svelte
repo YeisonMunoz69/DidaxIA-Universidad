@@ -27,7 +27,7 @@
         expresion: datos.expresion || '', funcion_js: datos.funcion_js,
         limite_destino: datos.limite_destino, limite_x: datos.limite_x
       }];
-    } catch { /* Una definición dañada se muestra como error en Grafica. */ }
+    } catch {  }
     return [];
   }
 
@@ -61,8 +61,6 @@
     ? estadosDeCurva[curvaActiva.id].estado : 'neutro');
   let relojDibujo;
 
-  // Sólo permite enviar el operador completo al servidor. El CAS verifica
-  // su destino; el cliente no infiere el valor matemático.
   const destinoIncluido = entrada => /^\$*\s*(?:\\lim(?![a-zA-Z])|lim\s*(?:[a-zA-Zθ]\s*)?(?:-+>|→))/.test(entrada.expresion.trim());
   const destinoFaltante = entrada => entrada.tipo === 'limite' && !entrada.destino.trim() && !destinoIncluido(entrada);
 
@@ -139,9 +137,6 @@
   }
 
   async function dibujar() {
-    // Una respuesta anterior no debe reemplazar un dibujo más reciente.
-    // Al elegir un ejemplo durante la preparación inicial había una carrera:
-    // el segundo intento se ignoraba por `ocupada`.
     const solicitud = ++solicitudActual;
     const firma = firmaEntradas;
     const idEditada = entradaActiva;

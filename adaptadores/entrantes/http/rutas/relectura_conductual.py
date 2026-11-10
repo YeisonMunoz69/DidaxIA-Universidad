@@ -1,5 +1,3 @@
-"""Consulta sin IA y confirmación explícita de un lote histórico acotado."""
-
 from datetime import datetime
 from typing import Annotated, Literal
 from uuid import UUID
@@ -21,7 +19,6 @@ class AlcanceRelectura(BaseModel):
     desde: datetime | None = None
     hasta: datetime | None = None
 
-
 class ConfirmacionRelectura(BaseModel):
     model_config = ConfigDict(extra="forbid")
     confirmar: Literal[True]
@@ -33,7 +30,6 @@ class ConfirmacionRelectura(BaseModel):
         if valor is not True:
             raise ValueError("se requiere confirmación explícita")
         return valor
-
 
 def crear_router(sesiones, trabajos, puerta):
     router = APIRouter()

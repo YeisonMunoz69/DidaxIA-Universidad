@@ -1,4 +1,3 @@
-"""GestiÃ³n transaccional de invitaciones; el recurso serializa respuestas/retiros."""
 from adaptadores.salientes.registro.auditoria_sql import anotar
 from adaptadores.salientes.registro.autorizacion_sql import DOCENTE_VIGENTE_SQL
 from adaptadores.salientes.registro.base_postgres import FILTRO_PERSONA_SIN_SUPRESION_SQL
@@ -12,7 +11,6 @@ def validar_destinos(clases, audiencia):
     if audiencia not in ('estudiantes', 'docentes', 'individuales'):
         raise RecursoInvalido('Selecciona cursos, estudiantes concretos o docentes.')
     return sorted(set(clases))
-
 
 def comprobar_destinos(cur, destinos, audiencia):
     if audiencia == 'estudiantes':
@@ -28,7 +26,6 @@ def comprobar_destinos(cur, destinos, audiencia):
                     f"{DOCENTE_VIGENTE_SQL} OR EXISTS (SELECT 1 FROM solicitud_docente s WHERE s.correo=p.correo AND s.estado='aprobada')) FOR SHARE", (destinos,))
     if {f[0] for f in cur.fetchall()} != set(destinos):
         raise RecursoInvalido('Hay destinatarios inexistentes, archivados o no disponibles. No se aplicÃ³ ningÃºn cambio.')
-
 
 class DestinatariosRecursos:
     def estudiantes_destinatarios(self, actor):

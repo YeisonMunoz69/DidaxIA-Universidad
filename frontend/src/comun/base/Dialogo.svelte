@@ -1,22 +1,4 @@
-<!--
-Envuelve <dialog>.
 
-DD-05 decidió HTML nativo primero. Con su gestión de foco y cierre con Esc.
-
-Se usa `showModal()` y no `show()`. La diferencia importa: `showModal()` deja
-el resto de la página inerte, atrapa el foco dentro del diálogo y habilita
-Esc, las tres cosas de serie. Con `show()` habría que implementarlas a mano y
-la trampa de foco escrita a mano es de los errores más frecuentes.
-
-Al cerrarse devuelve el foco al elemento que lo abrió. Sin eso, el foco vuelve
-al principio del documento y quien navega por teclado pierde su sitio.
-
-`bloqueado` (C2B) cierra las tres vías mientras una petición está en vuelo. Ver
-la prop.
-
-
-
--->
 <script>
   import Icono from "./Icono.svelte";
 
@@ -25,18 +7,6 @@ la prop.
     titulo,
     tipo = null,
     ancho = null,
-    /**
-     * Mientras hay una petición en vuelo, el diálogo NO se puede cerrar · C2B.
-     *
-     * Ni con Esc, ni con la X, ni haciendo clic fuera. No es una molestia
-     * gratuita: cerrar a mitad de una aprobación deja a quien la pidió sin
-     * saber si quedó registrada, y la respuesta honesta a esa duda es volver a
-     * intentarlo — que puede resolver dos veces lo mismo.
-     *
-     * Se añadió aquí y no en cada diálogo porque las tres vías de cierre las
-     * gobierna este componente: un guardián que viviera fuera tendría que
-     * reimplementarlas y se dejaría alguna.
-     */
     bloqueado = false,
     children,
     acciones,
@@ -49,8 +19,6 @@ la prop.
 
   $effect(() => {
     if (!elemento) return;
-    // Conserva la referencia de esta ejecución. Al desmontar condicionalmente
-    // el diálogo, `bind:this` vuelve `elemento` a null antes del teardown.
     const nodo = elemento;
     if (abierto && !nodo.open) {
       devolverFocoA = document.activeElement;
@@ -80,8 +48,6 @@ la prop.
   });
 
   function cerrar() {
-    // Ver la prop `bloqueado`. Se comprueba aquí —y no en cada llamador— para
-    // que las tres vías de cierre queden cubiertas por una sola línea.
     if (bloqueado) return;
     abierto = false;
     if (elemento && elemento.open) {
@@ -135,12 +101,6 @@ la prop.
 </dialog>
 
 <style>
-  /*
-    UNA HOJA PUESTA ENCIMA DEL CUADERNO, no un foco de teatro. Por eso lleva
-    borde —una hoja tiene canto— y una sombra corta: `--shadow-float` bajó de
-    20/50 px a 8/20 en la revisión del lenguaje. El velo de detrás también se
-    aclaró, en `tokens.css`, para que se siga viendo que debajo hay trabajo.
-  */
   dialog:not([open]) {
     display: none !important;
   }

@@ -1,4 +1,3 @@
-/** Rasterizar elimina metadatos; se conserva suficiente resolución para fórmulas. */
 export async function prepararImagenEncuesta(archivo) {
  if(!['image/png','image/jpeg','image/webp'].includes(archivo.type))throw new Error('Usa una imagen PNG, JPEG o WebP.');
  if(archivo.size>12_000_000)throw new Error('El archivo supera 12 MB. Recorta o reduce la captura.');

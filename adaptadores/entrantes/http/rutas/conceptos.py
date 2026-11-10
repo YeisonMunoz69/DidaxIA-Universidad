@@ -1,17 +1,3 @@
-"""
-conceptos.py — El banco de conceptos · `DD-13`
-========================================================
-
-Dos rutas, y las únicas del sistema que **no piden sesión**: es material del
-curso, no un dato del estudiante. Pedir sesión aquí convertiría una
-explicación pública en algo que hay que autorizar para leer.
-
-Se sirven a los **dos** árboles, y por eso no viven ni en el del estudiante ni
-en el del docente.
-
-
-"""
-
 from __future__ import annotations
 
 from fastapi import APIRouter, Response

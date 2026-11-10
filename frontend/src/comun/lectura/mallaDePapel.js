@@ -1,32 +1,19 @@
-/** Papel flexible inspirado en HojaDeformable del mockup libro-3d-interactivo.
- * Una malla y una textura de la zona visible, sin copias del árbol del capítulo.
- * WebGL nativo evita otra dependencia. El DOM original sigue siendo accesible.
- */
 const COLUMNAS = 64, FILAS = 16;
 const motores = new WeakMap();
 const texturas = new WeakMap();
 const SELECTOR_DE_PAPEL = '.texto-del-corpus > *, .cabecera-detalle, .seccion-bloque, .franja-prerrequisitos, .formulas-concepto, .naturaleza, .pasaje-citado, .continuar-capitulo';
 
-/** Sin leer geometría de capítulos ocultos ni comparar cada bloque con todos
- * los demás. Una raíz ya contiene sus descendientes (p. ej. el pasaje citado).
- */
 export function raicesVisibles(fuente, caja) {
   const candidatos = [...fuente.querySelectorAll(SELECTOR_DE_PAPEL)];
   const raices = candidatos.length ? candidatos : [...fuente.children];
   return raices.filter(n => {
     if (n.closest('[hidden]') || n.parentElement?.closest(SELECTOR_DE_PAPEL)) return false;
-    // Leer un descendiente de content-visibility:auto puede despertar su
-    // diseño. El navegador sabe qué bloques siguen fuera de pantalla.
     if (n.checkVisibility && !n.checkVisibility({ contentVisibilityAuto: true })) return false;
     const r = n.getBoundingClientRect();
     return r.width && r.height && r.bottom > caja.top && r.top < caja.bottom && r.right > caja.left && r.left < caja.right;
   });
 }
 
-/** Intersección del papel con los paneles desplazables de la transcripción.
- * Se memoriza por captura: KaTeX puede tener cientos de descendientes que
- * comparten el mismo recorte de una cita, tabla o fórmula horizontal.
- */
 export function recorteDeLectura(nodo, caja, memoria = new WeakMap()) {
   if (!nodo || nodo === document.documentElement) return caja;
   if (memoria.has(nodo)) return memoria.get(nodo);
@@ -73,9 +60,6 @@ export function geometriaDePapel(ancho, alto, progreso, sentido = 'siguiente', s
   return salida;
 }
 
-/** Pinta sólo lo que está visible, con los glifos y fuentes ya cargados.
- * No serializa HTML ni carga imágenes/font externos dentro de la textura.
- */
 function* pintarTextura(pagina, caja, escala) {
   const canvas = document.createElement('canvas');
   canvas.width = Math.ceil(caja.width * escala); canvas.height = Math.ceil(caja.height * escala);
@@ -93,13 +77,10 @@ function* pintarTextura(pagina, caja, escala) {
   function recortar(c) {
     ctx.beginPath(); ctx.rect(c.left - caja.left, c.top - caja.top, c.right - c.left, c.bottom - c.top); ctx.clip();
   }
-  // No recorrer los miles de nodos de fórmulas de un capítulo fuera de pantalla.
   for (const raiz of raices) for (const nodo of [raiz, ...raiz.querySelectorAll('*')]) {
     if (nodo.closest('.katex-mathml,svg,[hidden]')) continue;
     const r = nodo.getBoundingClientRect();
     if (!visible(r)) continue;
-    // El fondo y el borde del panel pertenecen a su caja exterior; sólo sus
-    // descendientes quedan recortados por el área interna desplazable.
     const limite = recorteDeLectura(nodo.parentElement, caja, recortes);
     if (!enRecorte(r, limite)) continue;
     const estilo = getComputedStyle(nodo);
@@ -110,7 +91,6 @@ function* pintarTextura(pagina, caja, escala) {
       ctx.fillStyle = estilo.backgroundColor;
       ctx.beginPath(); ctx.roundRect(x, y, r.width, r.height, Math.min(parseFloat(estilo.borderRadius) || 0, r.width / 2, r.height / 2)); ctx.fill();
     }
-    // Incluye las barras de fracciones, raíces y recuadros de KaTeX.
     for (const lado of ['Top', 'Bottom', 'Left', 'Right']) {
       const grosor = parseFloat(estilo[`border${lado}Width`]);
       if (!grosor || estilo[`border${lado}Style`] === 'none') continue;
@@ -139,15 +119,12 @@ function* pintarTextura(pagina, caja, escala) {
       const metricas = ctx.measureText('Mg');
       const ascenso = metricas.fontBoundingBoxAscent ?? parseFloat(estilo.fontSize) * .8;
       const descenso = metricas.fontBoundingBoxDescent ?? parseFloat(estilo.fontSize) * .2;
-      // Un rango por palabra y una pintura por línea, en lugar de miles de
-      // lecturas de diseño y fillText por carácter al pulsar una página.
       ctx.letterSpacing = estilo.letterSpacing === 'normal' ? '0px' : estilo.letterSpacing;
       let linea;
       const pintar = () => { if (linea) ctx.fillText(linea.texto, linea.x, linea.base); };
       for (const palabra of texto.textContent.matchAll(/\S+\s*/g)) {
         rango.setStart(texto, palabra.index); rango.setEnd(texto, palabra.index + palabra[0].length);
         const rectangulos = [...rango.getClientRects()];
-        // Una palabra excepcionalmente larga puede partirse en varias líneas.
         const fragmentos = rectangulos.length > 1 ? [...palabra[0]].map((caracter, i) => {
           rango.setStart(texto, palabra.index + i); rango.setEnd(texto, palabra.index + i + 1);
           return { texto: caracter, r: rango.getBoundingClientRect() };
@@ -179,10 +156,6 @@ function texturaVisible(pagina, caja, escala) {
   return paso.value;
 }
 
-/** Prepara únicamente las páginas visibles con un presupuesto de 4 ms de reposo.
- * Cualquier cambio de contenido, desplazamiento, tamaño o tema invalida la
- * captura. No hay almacenamiento persistente ni lecturas del capítulo oculto.
- */
 export function vigilarPapel(mesa, permitido = () => true) {
   if (!mesa || !globalThis.requestIdleCallback) return () => {};
   let version = 0, espera, pendiente, destruido = false;
@@ -224,7 +197,6 @@ export function vigilarPapel(mesa, permitido = () => true) {
     pendiente = requestIdleCallback(paso);
   }
   const contenido = new MutationObserver(cambios => {
-    // Deshabilitar los botones de navegación no cambia la imagen del papel.
     const cambiaPagina = c => {
       const elemento = c.target.nodeType === 1 ? c.target : c.target.parentElement;
       if (elemento?.closest('.onda-papel')) return false;
@@ -332,9 +304,6 @@ export function prepararMalla(pagina, capa, sentido, caja, mesaCaja) {
   textura.width = textura.height = 1;
   canvas.width = Math.ceil(mesaCaja.width * escala); canvas.height = Math.ceil(mesaCaja.height * escala);
   gl.viewport(0, 0, canvas.width, canvas.height);
-  // El lienzo ocupa la mesa completa, aunque su contenedor mida una página.
-  // La regla global de imágenes/canvas (max-inline-size:100%) lo comprimía
-  // sólo en horizontal y convertía el giro en una franja de texto estrecha.
   Object.assign(canvas.style, { position: 'absolute', left: `${mesaCaja.left - caja.left}px`, top: `${mesaCaja.top - caja.top}px`, width: `${mesaCaja.width}px`, height: `${mesaCaja.height}px`, maxInlineSize: 'none' });
   const color = getComputedStyle(pagina).backgroundColor.match(/[\d.]+/g)?.slice(0, 3).map(Number) || [255, 248, 236];
   gl.uniform3fv(uniformes.reverso, color.map(c => c / 255));
@@ -344,7 +313,6 @@ export function prepararMalla(pagina, capa, sentido, caja, mesaCaja) {
   gl.uniform2f(uniformes.tamano, caja.width, caja.height);
   capa.appendChild(canvas);
   let actual = 0;
-  // Geometría sólo bajo demanda para diagnóstico; la animación la calcula GPU.
   Object.defineProperty(canvas, 'formaDePapel', { configurable: true, get: () => ({ progreso: actual, puntos: geometriaDePapel(caja.width, caja.height, actual, sentido), columnas: COLUMNAS, filas: FILAS }) });
   return {
     hoja: canvas,

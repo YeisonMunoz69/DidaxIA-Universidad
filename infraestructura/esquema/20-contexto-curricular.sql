@@ -1,6 +1,3 @@
--- Contexto curricular persistente por clase · Fase 7E
--- Aditiva y repetible: conserva todas las clases existentes con valores vacíos.
-
 ALTER TABLE clase
     ADD COLUMN IF NOT EXISTS unidad_curricular text NOT NULL DEFAULT '',
     ADD COLUMN IF NOT EXISTS notacion_curricular text NOT NULL DEFAULT 'sen',
@@ -17,8 +14,3 @@ BEGIN
     END IF;
 END
 $$;
-
-COMMENT ON COLUMN clase.unidad_curricular IS
-    'Unidad que el docente declara vigente para esta clase.';
-COMMENT ON COLUMN clase.observaciones_curriculares IS
-    'Notas del curso; no describen ni clasifican a estudiantes.';

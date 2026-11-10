@@ -1,19 +1,4 @@
-<!--
-`D-21` · `PM-B32` · En qué notación quiere leer el estudiante lo que se le escribe.
 
-POR QUÉ EXISTE, Y NO ES UNA PREFERENCIA ESTÉTICA
--------------------------------------------------
-La revisión sistemática lo registra dos veces. **La densidad notacional fue el
-disparador principal de ansiedad en 23 de 29 participantes** (Lanius et al.
-2024, `hallazgos-eje-a.md`), y la incomodidad con los símbolos —*«no sé cómo
-escribir esto»*— es un **indicador afectivo** de la subescala de confianza del
-EMARS. Leer una derivada en la notación con la que uno estudió no es comodidad:
-es una cosa menos que traducir mientras se resuelve otra difícil.
-
-
-Contrato en OE3-Implementacion/08-Contrato-del-Turno.md §3.ter
-
--->
 <script>
   import { preferencias } from '../../nucleo/preferencias/preferencias.svelte.js';
   import { NOTACIONES, ADMITIDAS, POR_DEFECTO } from '../../nucleo/formato/notaciones.js';

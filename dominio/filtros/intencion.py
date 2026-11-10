@@ -1,47 +1,3 @@
-"""
-intencion.py — Filtro 2 · clasificación de intención
-=======================================================
-
-`ADR-007` §6.3 fijó cuatro clases —`conceptual`, `procedimental`, `emocional` y
-**`ambigua`**— y una cascada determinista-primero (I2). La fase 4 **conserva
-esa cascada y le cambia el vocabulario**: la clase que este filtro deja en el
-contexto es ahora una de las diez del catálogo v1
-(`dominio/pedagogia/intenciones.py`), y las cuatro familias de `ADR-007` se
-**derivan** de ella con `familia_de()`.
-
-Por qué el catálogo cambió, con la cifra que lo obligó
----------------------------------------------------------
-Las cuatro familias no distinguen *pedir un ejemplo* de *pedir la respuesta*, y
-las dos son `procedimental`. `EQ-011` pide seleccionar estrategia a partir de la
-intención; con cuatro familias, la intención no puede decidir casi nada. Y la
-medición del banco congelado de la fase 4 lo remató: **27 de 43 turnos caían en
-`ambigua`**, incluidos turnos que estaban resolviendo un ejercicio. Con el
-catálogo v1 caen 7, y los siete lo son de verdad.
-
-Qué sigue igual, y es lo que importa que no cambie
------------------------------------------------------
-`ADR-007` I4: **una clasificación indecisa se declara como tal**. Lo que
-ninguna regla resuelve sale `ambigua` con origen `sin_resolver`, nunca una clase
-sustantiva con confianza baja — que es el modo de fallo de `agent/intent.py` de
-la iteración 0 que `06-Guia-de-Reutilizacion.md` registra.
-
-`RNF-EFI-01` sigue prohibiendo una llamada de red para decidir en ruta
-caliente, así que **no hay escalada a un modelo**, y `ERS-01` §6.4 lo confirma
-desde el otro lado: la intención gobierna la estrategia, y eso es una decisión
-crítica que no se delega al generador.
-
-`PM-B24` · el límite sigue reconociéndose aquí
--------------------------------------------------
-`_intento_de_limite()` no cambia: dos formas —«límite cuando x→D de E» y
-«límite de E cuando x→D»— y sólo cuando las dos mitades se extraen a la vez. Lo
-que cambia es a qué clase promueve: antes forzaba `procedimental`, ahora deja
-que la cascada decida y **sólo interviene si la cascada no resolvió nada**, para
-que «explícame el límite cuando x→∞ de 1/x» siga siendo una explicación directa
-y no una petición de cálculo.
-
-
-"""
-
 from __future__ import annotations
 
 import re
@@ -84,21 +40,18 @@ __all__ = [
 ]
 
 
-#: `PM-B24` · a qué tiende la variable. Las mismas formas que
-#: `adaptadores/salientes/simbolico/limites.py::analizar_destino_del_limite`
-#: ya sabe leer, para no inventar una segunda gramática de destinos.
 _NUMEROS_DESTINO = "|".join(sorted(map(re.escape, NUMEROS_ESCRITOS), key=len, reverse=True))
 _DESTINO_LIMITE = rf"(?P<destino>menos\s+infinito|infinito|(?:menos\s+)?(?:{_NUMEROS_DESTINO})|[-+]?\\infty|[-+]?∞|[-+]?oo|[-+]?inf\b|(?:\\pi|π|pi)(?:\s*/\s*\d+)?|[-+]?\d+(?:[.,]\d+)?[+-]?)"
 _VARIABLE_LIMITE = r"(?P<variable>[a-zA-Zθ])"
 
-#: «límite cuando x→∞ de 1/x» — el orden del caso literal de `RF-IUC-03`.
+
 _LIMITE_CUANDO_DE = re.compile(
     rf"l[ií]mite\s+cuando\s+{_VARIABLE_LIMITE}\s*(?:→|->|tiende\s+a|se\s+acerca\s+a)\s*{_DESTINO_LIMITE}\s+de\s+"
     rf"(?P<expresion>[^?!]+)",
     re.IGNORECASE,
 )
 
-#: «límite de 1/x cuando x tiende a infinito» — el orden inverso.
+
 _LIMITE_DE_CUANDO = re.compile(
     rf"l[ií]mite\s+de\s+(?P<expresion>.+?)\s+cuando\s+{_VARIABLE_LIMITE}\s*(?:→|->|tiende\s+a|se\s+acerca\s+a)\s*"
     rf"{_DESTINO_LIMITE}",
@@ -127,16 +80,15 @@ _LIMITE_SUBINDICE = re.compile(
     rf"{_DESTINO_LIMITE}\s*\}}\s*(?P<expresion>.+)",
     re.IGNORECASE,
 )
-# Una formulación espontánea frecuente en el aula no dice «límite» ni usa →.
-# Se exige el verbo introductorio y las dos mitades para no convertir cualquier
-# mención de una función y un punto en un ejercicio nuevo.
+
+
 _LIMITE_COLOQUIAL = re.compile(
     rf"\b(?:tengo|veo|analizo|calculo)\s+(?P<expresion>.+?)\s+cuando\s+"
     rf"(?:la\s+)?{_VARIABLE_LIMITE}\s+(?:se\s+arrima|se\s+acerca|tiende)\s+a\s+"
     rf"{_DESTINO_LIMITE}", re.IGNORECASE,
 )
-# «el límite de x cuando tiende a 1 para (x²-1)/(x-1)».
-# Se exige una función aparte; «el límite de x cuando tiende a 1» es incompleto.
+
+
 _LIMITE_VARIABLE_CUANDO = re.compile(
     rf"l[ií]mite\s+de\s+{_VARIABLE_LIMITE}\s+cuando\s+(?:tiende|se\s+acerca)\s+a\s*"
     rf"{_DESTINO_LIMITE}\s+(?:para|de|en)\s+(?P<expresion>.+)", re.I,
@@ -159,7 +111,6 @@ _VALOR_EXPLICITO = re.compile(
 
 
 def _destino_normalizado(texto: str) -> str:
-    """A la forma que `limites.py` ya analiza: `oo`, `-oo`, o un número."""
     plano = texto.strip().lower()
     if "infinito" in plano or "infty" in plano or "∞" in plano or plano.lstrip("+-") in ("oo", "inf"):
         return "-oo" if "menos" in plano or plano.startswith("-") else "oo"
@@ -168,13 +119,7 @@ def _destino_normalizado(texto: str) -> str:
         return ("-" if plano.startswith("menos ") else "") + str(NUMEROS_ESCRITOS[nombre])
     return plano.replace(r"\pi", "pi").replace("π", "pi").replace(" ", "").replace(",", ".")
 
-
 def _funcion_sin_comentario(texto: str) -> str:
-    """Conserva agrupaciones anidadas y corta comentarios, sin resolver matemática.
-
-    No corta el punto decimal ni el interior de paréntesis. Una agrupación
-    incompleta se conserva para que el CAS la rechace, nunca se repara adivinando.
-    """
     s = texto.strip().strip("$").strip()
     s = re.split(r"[;!?¿¡]|\.(?=\s|$)|,\s*(?=[a-záéíóúñ])|\s+(?:y\s+(?:c[oó]mo|explica\w*|dime|muestra\w*|cuenta\w*|por\s+qu[eé])|"
                  r"con\s+la\s+regla\b|respecto\s+(?:de|a)\b|"
@@ -186,17 +131,12 @@ def _funcion_sin_comentario(texto: str) -> str:
     s = s.replace("[", "(").replace("]", ")")
     return normalizar_frase_matematica(s)
 
-
 def _intento_de_limite(texto: str) -> tuple[str, str, str] | None:
-    """`(expresión, destino, variable)` si el texto declara un límite con una de las
-    dos formas reconocidas — `None` si no se pueden extraer las dos mitades
-    a la vez. No se fuerza una mitad sin la otra: un destino sin expresión
-    —o al revés— no es suficiente para precomputar nada."""
     normalizado = normalizar_escritura_matematica(texto).strip().strip("$").strip()
-    # NFKC convierte 0⁺ en 0^(+); también admite 0^+ y 0^{+}.
+
     normalizado = re.sub(r"(?<=\d)\s*\^\s*(?:\{\s*([+-])\s*\}|\(\s*([+-])\s*\)|([+-]))",
                         lambda m: next(g for g in m.groups() if g), normalizado)
-    # Dos límites explícitos requieren elegir uno; no se toma silenciosamente el primero.
+
     if len(re.findall(r"(?:\\lim\b|(?<!\\)\blim\s*(?:\(|_|[a-z]\s*(?:->|→))|\bl[ií]mite\s+(?:de(?!\s+lim\b)|cuando))", normalizado, re.I)) > 1:
         return None
     for patron in (
@@ -212,7 +152,6 @@ def _intento_de_limite(texto: str) -> tuple[str, str, str] | None:
                 return expresion, _destino_normalizado(coincidencia.group("destino")), coincidencia.group("variable")
     return None
 
-
 def _derivada_de_funcion_declarada(texto: str) -> dict[str, str] | None:
     if not re.search(r"\bderivad[ao]\b|\bderivar\b", texto, re.I):
         return None
@@ -223,7 +162,6 @@ def _derivada_de_funcion_declarada(texto: str) -> dict[str, str] | None:
     if not expresion or '=' in expresion:
         return None
     return {"tipo": "derivada", "expresion": expresion, "variable": "x", "destino": ""}
-
 
 def _quitar_nombre_y_operador_derivada(expresion: str) -> str:
     expresion = quitar_delimitadores_matematicos(expresion)
@@ -236,14 +174,7 @@ def _quitar_nombre_y_operador_derivada(expresion: str) -> str:
     expresion = quitar_delimitadores_matematicos(expresion)
     return "" if '=' in expresion else expresion
 
-
 def extraer_ejercicio_explicito(texto: str) -> dict[str, str] | None:
-    """Identifica un ejercicio nuevo; jamás deduce uno de una propuesta aislada.
-
-    El dict sólo se conserva en la sesión del servidor. El CAS decide después
-    si la expresión extraída es admisible; reconocer texto no equivale a
-    declararlo matemáticamente válido.
-    """
     limite = _intento_de_limite(texto)
     if limite is not None:
         expresion, destino, variable = limite
@@ -280,9 +211,7 @@ def extraer_ejercicio_explicito(texto: str) -> dict[str, str] | None:
         return None
     return {"tipo": "derivada", "expresion": normalizar_frase_matematica(expresion), "variable": "x", "destino": ""}
 
-
 def extraer_curva_solicitada(texto: str) -> str:
-    """Lee la función pedida para dibujar sin perder términos finales."""
     normalizado = normalizar_escritura_matematica(texto)
     añadida = re.search(
         r"\b(?:a[nñ]ade|agrega)\b[^.;]*?\b[a-zA-Z]\s*\(\s*x\s*\)\s*=\s*",
@@ -301,17 +230,14 @@ def extraer_curva_solicitada(texto: str) -> str:
         r"\s+(?:cerca|para|pero|como)\b|\.(?!\d)|[;!?]",
         resto, maxsplit=1, flags=re.I,
     )[0].strip().strip('$')
-    # El nombre identifica la función; no es parte de la expresión que el CAS
-    # debe evaluar. También admite constantes declaradas, como g(x)=2.
+
     sin_nombre = re.sub(r"^(?:[a-zA-Z]\s*(?:\\left\s*)?\(\s*x\s*(?:\\right\s*)?\)|y)\s*=\s*", "", expresion, flags=re.I)
     declarada = sin_nombre != expresion
     expresion = sin_nombre
     expresion = normalizar_frase_matematica(expresion)
     return expresion if expresion and (declarada or re.search(r"[xX]", expresion)) else ""
 
-
 def destino_solicitado_para_limite(texto: str, destino_actual: str = "") -> str:
-    """Detecta un cambio explícito de destino dentro del límite activo."""
     patron = re.compile(
         rf"(?<![/\w])x\s*(?:cuando\s+)?(?:→|->|tiende\s+a|se\s+acerca\s+a|acerc[aá]ndose\s+a)\s*"
         rf"{_DESTINO_LIMITE}", re.I,
@@ -319,7 +245,7 @@ def destino_solicitado_para_limite(texto: str, destino_actual: str = "") -> str:
     coincidencia = patron.search(normalizar_escritura_matematica(texto))
     if coincidencia:
         return _destino_normalizado(coincidencia["destino"])
-    # Un cambio de lado conserva el punto explícito previo, sin adivinar uno nuevo.
+
     if destino_actual and destino_actual not in ("oo", "-oo"):
         punto = destino_actual.rstrip("+-")
         if re.search(r"\b(?:por\s+)?(?:ambos\s+lados|los\s+dos\s+lados|bilateral)\b", texto, re.I):
@@ -330,24 +256,18 @@ def destino_solicitado_para_limite(texto: str, destino_actual: str = "") -> str:
             return punto + "+"
     return ""
 
-
 def _contenido_matematico(ctx: ContextoTurno) -> bool:
-    """Si el filtro 1 ya corrió, se confía en su segmentación y no se repite
-    el trabajo. Si no corrió, se cae al mismo detector que `respuesta.py`."""
     if ctx.expresiones and not ctx.expresiones_heredadas:
         return True
     if ctx.ejercicio_activo and re.search(
         r"\b(?:resultado|me\s+da|me\s+dio|me\s+sale|obtengo|me\s+queda|no\s+existe|diverge)\b",
         ctx.texto_estudiante, re.IGNORECASE,
     ):
-        # Una respuesta verbal como «el resultado es menos uno» es contenido
-        # matemático sólo porque ya existe un ejercicio explícito en sesión.
+
         return True
     return bool(hallar_matematica(ctx.texto_estudiante))
 
-
 def _respuesta_breve_al_ejercicio(texto: str) -> bool:
-    """Una fórmula o cantidad sola es un intento si ya hay ejercicio activo."""
     from dominio.filtros.intento import propuesta_en_el_turno
 
     propuesta = propuesta_en_el_turno(texto)
@@ -357,9 +277,7 @@ def _respuesta_breve_al_ejercicio(texto: str) -> bool:
     propuesto = normalizar_frase_matematica(propuesta)
     return re.sub(r"\s+", "", escrito).replace(",", ".") == re.sub(r"\s+", "", propuesto).replace(",", ".")
 
-
 class FiltroIntencion(Filtro):
-    """Filtro 2 de `ADR-001` §6.3."""
 
     nombre = "clasificación de intención"
     ruta = "caliente"
@@ -396,9 +314,7 @@ class FiltroIntencion(Filtro):
                 and intencion.clase in (AMBIGUA, PETICION_SOLUCION, CONSULTA_CONCEPTUAL, EXPLICACION_DIRECTA, PRACTICA_GUIADA)
                 and anuncia_resultado(ctx.texto_estudiante)
                 and not niega_resultado(ctx.texto_estudiante)):
-            # Si la cascada vio «creo que...» como consulta, el precómputo
-            # no se ejecutaría y el filtro 6.6 no tendría qué comprobar.
-            # La propuesta se extrae aquí; su verdad sigue siendo del CAS.
+
             intencion = replace(
                 intencion, clase=INTENTO_RESOLUCION, origen=ORIGEN_REGLA,
                 motivo="propone un resultado para el ejercicio activo",
@@ -406,9 +322,7 @@ class FiltroIntencion(Filtro):
             )
 
         limite = _intento_de_limite(ctx.texto_estudiante)
-        # «Quiero ver la gráfica» conserva el límite activo, incluido su
-        # destino. El turno anterior puede estar en $$...$$ y no debe pasar
-        # por el camino de derivación como si toda la notación fuera f(x).
+
         if (
             limite is None
             and ctx.expresiones_heredadas
@@ -422,12 +336,6 @@ class FiltroIntencion(Filtro):
         es_limite = limite is not None
         limite_expresion, limite_destino, limite_variable = limite if limite is not None else ("", "", "x")
 
-        # Un límite reconocido en un turno que la cascada no supo leer **es**
-        # pedir un cálculo: «no entiendo el límite cuando x→∞ de 1/x» no lleva
-        # ningún verbo de la lista. Pero si la cascada sí resolvió —«explícame
-        # el límite…»—, manda ella: el límite dice de QUÉ se habla, no qué se
-        # pide, y confundirlos convertiría toda explicación sobre un límite en
-        # una petición de resultado.
         if _intento_de_limite(ctx.texto_estudiante) is not None and intencion.clase == AMBIGUA:
             intencion = replace(
                 intencion,
@@ -443,8 +351,7 @@ class FiltroIntencion(Filtro):
             "familia": intencion.familia,
             "contenido_matematico": con_matematica,
             "es_limite": es_limite,
-            # `RF-REG-06` · el estrato de decisión completo, no sólo su
-            # resultado: qué se evaluó, qué casó y qué no ganó.
+
             "intencion": intencion.como_dict(),
         }
         if es_limite:

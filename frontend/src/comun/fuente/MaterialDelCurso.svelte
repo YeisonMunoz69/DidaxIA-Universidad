@@ -1,34 +1,4 @@
-<!--
-«Material del curso»: lo que el turno recuperó, como controles accionables.
 
-QUÉ AFIRMA ESTE RÓTULO, Y QUÉ NO
----------------------------------
-Afirma **«esto se recuperó para este turno»**. No afirma que la respuesta lo
-use, ni que una frase concreta se apoye en uno de estos fragmentos: el motor no
-produce ese mapeo y el contrato lo dice con `relacion: 'recuperado'`.
-
-Por eso el encabezado dice «Material consultado para esta respuesta» y no
-«Fuentes que demuestran esta explicación». La segunda frase sería falsa hoy, y
-lo seguiría siendo aunque quedara bonita. El día que exista trazabilidad por
-afirmación, el contrato traerá otra `relacion` y este componente dirá otra cosa
-— hasta entonces, no.
-
-EL IDENTIFICADOR ES DATO SECUNDARIO
-------------------------------------
-El título que se lee es de la obra y su página. El `F-*` va debajo, en pequeño
-y con su propio rótulo accesible: sirve para trazar y para reportar, no para
-que alguien tenga que aprenderse un código para saber qué está leyendo.
-
-SUSTITUYE AL TEXTO PLANO, NO AL AVISO
---------------------------------------
-`AvisoDeProcedencia.svelte` sigue diciendo **si** hubo material o si el turno
-operó sin fuente; eso es un estado del turno y no cambia. Lo que cambia es que
-la lista de identificadores deja de ser una cadena y pasa a ser navegable.
-
-
-Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
-
--->
 <script>
   import { tick } from 'svelte';
   import Icono from '../base/Icono.svelte';
@@ -36,11 +6,8 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
   import { caminoDeFuente } from '../../nucleo/fuentes/navegacion.js';
 
   let {
-    /** Las piezas del contrato §7.bis: { id, obra, titulo, relacion }. */
     material = [],
-    /** El camino al que volver desde la fuente. Se valida al usarlo. */
     volverA = undefined,
-    /** El turno gobierna el botón; esta pieza gobierna la hoja modal. */
     abierto = $bindable(false)
   } = $props();
 
@@ -99,9 +66,6 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
             <a
               href={caminoDeFuente(pieza.id, volverA)}
               onclick={(evento) => {
-                /* Es un enlace de verdad —se puede copiar, abrir en otra pestaña
-                   y usar con el teclado— y además navega sin recargar cuando se
-                   pulsa normal. */
                 if (evento.metaKey || evento.ctrlKey || evento.shiftKey || evento.button) return;
                 evento.preventDefault();
                 abrir(pieza.id);
@@ -130,13 +94,7 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
 {/if}
 
 <style>
-  /* El hilo y el panel de recursos son hermanos con capas propias. Mientras
-     esta hoja está abierta, el hilo sube temporalmente para que la gráfica no
-     atraviese visualmente el papel del diálogo. */
   :global(.hilo:has(.velo)) { z-index: 70; }
-  /* En teléfono el acceso flotante al panel de conceptos es hermano del hilo.
-     Ocultarlo mientras esta hoja está abierta garantiza que nunca tape la X
-     ni intercepte su pulsación, aunque cambie el orden de capas del marco. */
   :global(.conversacion:has(.velo) .abrir-panel-movil) {
     visibility: hidden;
     pointer-events: none;
@@ -145,12 +103,6 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
   .velo {
     position: fixed;
     z-index: 95;
-    /* `Turno` vive dentro del contenido, que forma una capa inferior a la
-       cabecera global. La hoja empieza debajo de esa cabecera en vez de
-       intentar taparla desde una capa hija y dejar el título oculto. */
-    /* Se centra dentro del espacio realmente legible: entre la cabecera y el
-       redactor flotante. Centrar contra todo el viewport lo hacía caer sobre
-       la caja de escritura, especialmente en teléfonos. */
     inset: 3.45rem 0 9.5rem;
     display: flex;
     align-items: center;
@@ -171,8 +123,6 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
     overflow: hidden;
     border: 1px solid var(--trazo-suave);
     border-radius: var(--radius-lg);
-    /* La transparencia pertenece a los mensajes; una hoja de consulta debe
-       separar con nitidez sus enlaces del gráfico que pueda haber debajo. */
     background: var(--surface-paper);
     box-shadow: var(--shadow-dialog);
     animation: deslizar .26s cubic-bezier(.22, 1, .36, 1) both;
@@ -228,10 +178,7 @@ Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
     background: var(--surface-paper);
     color: var(--ink-primary);
     text-decoration: none;
-    /* En 360 px el título largo de una obra se parte en varias líneas en vez
-       de empujar la burbuja del turno fuera del viewport. */
     overflow-wrap: anywhere;
-    /* El objetivo táctil no baja de 44 px aunque el texto sea de una línea. */
     min-height: 58px;
   }
 

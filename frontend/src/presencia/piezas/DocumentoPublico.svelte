@@ -1,42 +1,8 @@
-<!--
-El armazón de un documento público. **Uno solo para los tres.**
 
-Privacidad, condiciones e investigación tienen exactamente la misma forma
-—título, entradilla, índice, secciones con párrafos y listas, y el canal de
-contacto al final— y el texto de cada uno vive en `contenido/`. Con un
-componente por documento habrían salido tres copias del mismo marcado y de la
-misma hoja de estilos.
-
-QUÉ RECIBE, Y POR QUÉ ES TEXTO PLANO
----------------------------------------
-Un objeto con `titulo`, `entradilla` y `secciones`. Cada sección trae
-`parrafos`, `lista` y `cierre`, todos opcionales, y **todos como cadenas que
-se pintan como texto**. No hay `{@html}` en ninguna parte: el proyecto ya
-tomó esa decisión en `Prosa.svelte` y un documento legal es justo donde menos
-conviene abrir esa puerta.
-
-EL ÍNDICE ES NAVEGACIÓN, NO ADORNO
--------------------------------------
-Estas páginas son largas y se leen para buscar algo concreto —«qué datos»,
-«qué puedo pedir»—. Los anclajes hacen que ese salto exista para quien navega
-con teclado y para quien comparte el enlace de una sección.
-
-⚠️ **Y AQUÍ NO SE REPITE LA LISTA DE DOCUMENTOS.** La tentación era cerrar
-cada documento con «los otros dos», pero `PiePublico.svelte` ya los pinta en
-todas las páginas y la cabecera también: serían tres listas de lo mismo en una
-sola pantalla. La navegación entre superficies sale de un sitio —
-`nucleo/configuracion/origenes.js`— y se pinta en dos, que son los dos que
-tienen una razón distinta para existir.
-
-
-Lenguaje declarado en OE3-Implementacion/13-Lenguaje-de-Diseno.md
-
--->
 <script>
   import CanalDePrivacidad from './CanalDePrivacidad.svelte';
 
   let {
-    /** El documento, tal como lo declara `contenido/<clave>.js`. */
     documento
   } = $props();
 </script>
@@ -147,7 +113,6 @@ Lenguaje declarado en OE3-Implementacion/13-Lenguaje-de-Diseno.md
 
   .indice li { max-inline-size: none; }
 
-  /* Navegación, no prosa: `2.5.8` aplica y `base.css` deja al `<a>` fuera. */
   .indice a {
     display: inline-flex;
     align-items: center;
@@ -182,7 +147,6 @@ Lenguaje declarado en OE3-Implementacion/13-Lenguaje-de-Diseno.md
     border: 1px solid color-mix(in srgb, var(--trazo-suave) 58%, transparent);
     border-radius: var(--radius-lg);
     box-shadow: 0 10px 34px color-mix(in srgb, var(--ink-primary) 4%, transparent);
-    /* El anclaje no queda pegado al borde superior al saltar. */
     scroll-margin-block-start: var(--espacio-lg);
   }
 

@@ -1,5 +1,3 @@
-"""Cierre seguro de las preferencias cuando PostgreSQL no está configurado."""
-
 from __future__ import annotations
 
 from dominio.puertos.almacen import AlmacenNoConfigurado

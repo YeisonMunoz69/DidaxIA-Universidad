@@ -1,26 +1,8 @@
-  <!--
-  La progresión de fases mientras se espera.
 
-  Fase en curso destacada, cumplidas con su marca. Es el componente que el mockup
-  ya ensayó y que `DD-11` convirtió en decisión.
-
-  Por qué acumula en vez de sustituir: una espera muda no distingue un sistema que
-  trabaja de uno que se colgó. Al terminar se lee el recorrido completo.
-
-  Accesibilidad. `role="status"` con `aria-live="polite"` para que el lector de
-  pantalla anuncie cada fase SIN interrumpir lo que esté leyendo — con `assertive`
-  cortaría al estudiante a media frase en cada fase, que sería peor que callar.
-  Las marcas son `aria-hidden` porque el texto ya dice lo que hay que saber, y la
-  animación se desactiva bajo `prefers-reduced-motion`.
-
-
-
-  -->
 <script>
   import { animarEntradaLoader } from '../../nucleo/animaciones/gsap.js';
 
   let {
-    /** Estado creado con `crearProgreso()`. */
     progreso = null
   } = $props();
 

@@ -1,5 +1,3 @@
-"""Persistencia y auditoría atómica de reportes de usuario."""
-
 from __future__ import annotations
 
 import hashlib
@@ -26,7 +24,6 @@ def _desde_fila(fila, *, con_reportante: bool = False) -> Reporte:
         reportante = {"nombre": nombre or "Cuenta institucional", "correo": correo}
     return Reporte(*base, reportante=reportante)
 
-
 _CAMPOS = """
     r.id, r.reportado_por, r.rol_reportante, r.categoria, r.titulo,
     r.descripcion, r.pasos, r.ruta, r.estado, (r.captura IS NOT NULL),
@@ -35,7 +32,7 @@ _CAMPOS = """
 
 
 class AdaptadorReportesPostgres(RepositorioPostgres):
-    def crear(  # noqa: PLR0913 -- campos explícitos del formulario
+    def crear(
         self, *, actor: str, rol: str, categoria: str, titulo: str,
         descripcion: str, pasos: str, ruta: str, captura: bytes | None,
     ) -> Reporte:
@@ -57,7 +54,7 @@ class AdaptadorReportesPostgres(RepositorioPostgres):
                     pasos, ruta, captura, captura_tipo, captura_sha256, captura_bytes
                 ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                 RETURNING {_CAMPOS.replace('r.', '')}
-                """,  # noqa: S608 -- campos constantes
+                """,
                 (
                     actor, rol, categoria, titulo, descripcion, pasos, ruta,
                     captura, "image/webp" if captura else None,
@@ -97,7 +94,7 @@ class AdaptadorReportesPostgres(RepositorioPostgres):
                   JOIN persona p ON p.sujeto_google = r.reportado_por
                  WHERE (%s = '' OR r.estado = %s)
                  ORDER BY r.creado_en DESC, r.id DESC LIMIT 100
-                """,  # noqa: S608 -- campos constantes
+                """,
                 (estado, estado),
             )
             return tuple(_desde_fila(fila, con_reportante=True) for fila in cur.fetchall())
@@ -148,7 +145,7 @@ class AdaptadorReportesPostgres(RepositorioPostgres):
                        resuelto_por = %s, resuelto_en = %s
                  WHERE id = %s
                 RETURNING {_CAMPOS.replace('r.', '')}
-                """,  # noqa: S608 -- campos constantes
+                """,
                 (
                     estado, respuesta, actor if resuelto else None,
                     datetime.now(UTC) if resuelto else None, reporte,

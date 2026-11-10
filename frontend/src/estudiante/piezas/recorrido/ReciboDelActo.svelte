@@ -1,39 +1,13 @@
-<!--
-El recibo que devolvió el servidor · `EQ-021`, hito R3.
 
-⚠️ ESTE COMPONENTE NO CALCULA NADA, Y ES SU RAZÓN DE SER
----------------------------------------------------------
-Los seis campos —secuencia, momento, versión, alcance, decisión y huella— los
-asigna PostgreSQL y los devuelve `_recibo()`. La huella es el SHA-256 que
-`comprobante_de()` calcula en el servidor sobre sujeto, código de versión,
-huella del documento y decisión.
-
-Un comprobante que el navegador construyera probaría lo que el navegador
-quisiera. Por eso aquí sólo se pinta lo que llegó: si un campo falta, se dice
-que falta; no se rellena con la hora del equipo ni con un identificador local.
-
-Sin `secuencia` y `momento`, dos actos idénticos del mismo sujeto sobre la
-misma versión serían indistinguibles en el recibo — por eso los seis se
-enseñan y no sólo la huella.
-
-Y no se guarda en ningún almacén del navegador: es la constancia de un acto
-sobre datos personales y vive donde vive el acto.
-
-
-
--->
 <script>
   import { ayudaContextual } from '../../../comun/base/ayudaContextual.js';
   import Icono from '../../../comun/base/Icono.svelte';
 
   let {
-    /** El objeto `recibo` de la respuesta. Tal cual llegó. */
     recibo,
-    /** Qué se acaba de hacer, para encabezarlo en lenguaje humano. */
     titulo = 'Quedó registrado'
   } = $props();
 
-  /** Cómo se nombra cada decisión. El valor crudo también se enseña. */
   const DECISION = {
     otorgado: 'Autorizaste',
     rechazado: 'No autorizaste',
@@ -46,13 +20,6 @@ sobre datos personales y vive donde vive el acto.
     representante: 'Autorización del representante'
   };
 
-  /**
-   * La fecha, en la zona del navegador y con su valor original a la vista.
-   *
-   * El servidor manda ISO 8601 con zona; formatearlo es presentación. Se
-   * conserva el original en `title` para que quien tenga que auditarlo pueda
-   * leer exactamente lo que se guardó, sin depender del reloj de nadie.
-   */
   function comoFecha(iso) {
     if (!iso) return '';
     const fecha = new Date(iso);
@@ -173,8 +140,6 @@ sobre datos personales y vive donde vive el acto.
 
   .monoespaciado { font-family: var(--fuente-mono, ui-monospace, monospace); }
 
-  /* La huella son 64 caracteres: se parte donde quepa en vez de desbordar la
-     tarjeta a 360 px, y se puede seleccionar entera para copiarla. */
   .huella {
     font-size: var(--texto-xs);
     overflow-wrap: anywhere;

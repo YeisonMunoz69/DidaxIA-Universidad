@@ -1,7 +1,3 @@
--- Invitaciones previas a cuentas institucionales · Fase 8
--- Aditiva e idempotente. El correo permite enlazar el primer inicio verificado;
--- el secreto del enlace nunca se conserva, sólo su SHA-256.
-
 CREATE TABLE IF NOT EXISTS invitacion_rol (
     id              bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     correo          text NOT NULL CHECK (lower(correo) ~ '^[^@[:space:]]+@unimayor\.edu\.co$'),
@@ -35,6 +31,3 @@ CREATE UNIQUE INDEX IF NOT EXISTS invitacion_rol_pendiente_unica
 
 CREATE INDEX IF NOT EXISTS invitacion_rol_por_estado
     ON invitacion_rol (estado, expira_en, emitida_en DESC, id DESC);
-
-COMMENT ON TABLE invitacion_rol IS
-    'Invitaciones institucionales previas. Conserva historia y sólo la huella del token.';

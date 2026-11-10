@@ -1,25 +1,4 @@
-<!--
-Las inferencias son probabilísticas.
 
-`RP-18` lo exige persistente y NO DESCARTABLE. Por eso este componente no lleva
-botón de cerrar, y eso es intencionado: si se pudiera descartar, dejaría de
-cumplir su función el segundo día de uso.
-
-`RP-20` es inusualmente específico sobre la REDACCION, y su criterio de
-aceptación lo dice con estas palabras:
-
-    el aviso emplea formulaciones del tipo «indicios» y NUNCA del tipo
-    «tienes ansiedad matemática».
-
-De ahí que el texto por defecto hable de indicios y de apoyo, y nunca nombre un
-estado del estudiante. Si alguien lo reescribe, esa es la línea que no se cruza.
-
-El texto vive AQUI y no viaja en cada turno, para que ninguna respuesta pueda
-alterarlo.
-
-
-
--->
 <script>
   let {
     texto = 'Este es un sistema automatizado. Lo que observa son indicios ' +

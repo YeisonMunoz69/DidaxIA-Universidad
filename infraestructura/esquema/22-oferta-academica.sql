@@ -1,10 +1,3 @@
--- Fase 7E · Facultad y programa como pareja institucional trazable.
---
--- Las filas anteriores se conservan con `facultad = ''`. Esto permite aplicar
--- la migración sin inventar a qué facultad pertenece un programa histórico.
--- Onboarding exige la pareja completa desde esta versión y docentes o
--- investigadores pueden corregir los registros heredados desde la ficha.
-
 ALTER TABLE persona
     ADD COLUMN IF NOT EXISTS facultad text NOT NULL DEFAULT '';
 
@@ -43,6 +36,3 @@ ALTER TABLE rol_asignacion
 ALTER TABLE rol_asignacion
     ADD CONSTRAINT rol_asignacion_rol_check
     CHECK (rol IN ('investigador_administrador', 'docente'));
-
-COMMENT ON COLUMN persona.facultad IS
-    'Facultad institucional elegida junto al programa; vacío sólo en filas heredadas pendientes de corrección.';

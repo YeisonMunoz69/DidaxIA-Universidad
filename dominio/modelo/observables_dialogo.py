@@ -1,8 +1,3 @@
-"""Relectura reproducible del diálogo elegible para los KPI propios.
-
-Se consume texto en memoria, nunca se devuelve. La identificación sólo sirve
-para evitar duplicados y separar hilos, problemas y pares temporales.
-"""
 from __future__ import annotations
 
 from collections import Counter
@@ -22,7 +17,6 @@ def _momento(valor):
         return resultado if isinstance(resultado, datetime) and resultado.tzinfo else None
     except ValueError:
         return None
-
 
 def _reintentos(registros, desde, hasta):
     intentos = [
@@ -49,8 +43,7 @@ def _reintentos(registros, desde, hasta):
         if anterior is not None:
             partes["recuperacion"][1] += 1
             partes["recuperacion"][0] += veredicto == "valida"
-            # Una misma ventana para éxitos y casos sin seguimiento. Un turno
-            # reciente no recibe ventaja por tener ya un reintento positivo.
+
             if anterior + timedelta(hours=24) < hasta:
                 partes["reintento"][0] += momento <= anterior + timedelta(hours=24)
         if veredicto == "invalida":
@@ -61,7 +54,6 @@ def _reintentos(registros, desde, hasta):
                 censuradas += 1
     return partes, {"ventana_horas": 24, "episodios_recientes_excluidos": censuradas,
                    "intentos_sin_fecha": sum(bool(i) and not m for _, i, m in intentos)}
-
 
 def resumir_observables(mensajes, registros, desde, hasta, faltantes_traza=0):
     if desde.tzinfo is None or hasta.tzinfo is None or desde >= hasta:
@@ -115,7 +107,6 @@ def resumir_observables(mensajes, registros, desde, hasta, faltantes_traza=0):
                    "mensajes_sin_fecha": sin_fecha, "corte_intermedio": mitad.isoformat()},
     }
 
-
 def calcular_observables(resumen, contexto, *, individual=False):
     salida = []
     for original in CATALOGO:
@@ -141,7 +132,6 @@ def calcular_observables(resumen, contexto, *, individual=False):
         salida.append(replace(resultado, medicion=replace(resultado.medicion,
                              detalle={**resultado.medicion.detalle, **detalle})))
     return salida
-
 
 def _detalle(clave, resumen):
     if clave in ("error_verificado", "recuperacion", "reintento"):

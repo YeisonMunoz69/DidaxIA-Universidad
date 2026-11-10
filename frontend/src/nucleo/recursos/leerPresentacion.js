@@ -1,4 +1,3 @@
-/** Extrae únicamente el documento editable. Nunca interpreta el HTML. */
 export function leerPresentacion(texto, nombre) {
   let datos = texto;
   if (/\.html?$/i.test(nombre)) {

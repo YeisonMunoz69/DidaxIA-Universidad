@@ -1,5 +1,3 @@
-"""Ficha individual exportable a partir del contrato ya autorizado y auditado."""
-
 from __future__ import annotations
 
 from io import BytesIO
@@ -30,7 +28,6 @@ from adaptadores.salientes.informes.graficas_pdf import (
 def _texto(valor: object) -> str:
     return escape("—" if valor is None else str(valor))
 
-
 def _parrafos_cobertura(detalle: dict, estilos) -> list:
     parrafos = []
     if detalle.get("motivo_cobertura"):
@@ -50,15 +47,12 @@ def _parrafos_cobertura(detalle: dict, estilos) -> list:
             f"{codigo} · {dato['nombre']}: {dato['mensajes']} mensajes candidatos"), estilos["Normal"]))
     return parrafos
 
-
 def _valor_indicador(indicador, valor):
     if valor is None:
         return "sin dato"
     return f"{100 * valor:.1f} %" if indicador.get("unidad") == "proporcion" else f"{valor:.1f} puntos porcentuales"
 
-
 def generar_ficha_estudiante(datos: dict) -> bytes:
-    """PDF sin texto libre ni datos que no estén en la ficha de la API."""
     salida = BytesIO()
     estilos = getSampleStyleSheet()
     documento = SimpleDocTemplate(
@@ -100,7 +94,7 @@ def generar_ficha_estudiante(datos: dict) -> bytes:
     ]))
     historia.extend((tabla, Spacer(1, .4 * cm)))
     from adaptadores.salientes.informes.explicacion_factores import (
-        explicar_factores,  # noqa: PLC0415
+        explicar_factores,
     )
 
     historia.extend(explicar_factores([*kpi, *datos.get("indicadores_anteproyecto", [])], estilos))
@@ -190,7 +184,6 @@ def generar_ficha_estudiante(datos: dict) -> bytes:
             ))
     documento.build(historia)
     return salida.getvalue()
-
 
 def _seccion_anteproyecto(indicadores: list[dict], estilos) -> list:
     if not indicadores:

@@ -1,0 +1,909 @@
+{
+  "desfases": {
+    "LOP": 0,
+    "PUR": 19,
+    "SPI": 7,
+    "PIS": null,
+    "LEI": 22
+  },
+  "pdf_completo": {
+    "LOP": "lop.pdf",
+    "PUR": "pur.pdf",
+    "LEI": "lei.pdf",
+    "SPI": "spi.pdf",
+    "PIS": ""
+  },
+  "partes": [
+    {
+      "identificador": "LEI:1-1",
+      "obra": "LEI",
+      "titulo": "Sección 1.1",
+      "pagina_impresa_inicial": 2,
+      "pagina_impresa_final": 12,
+      "archivo_markdown": "1_1.md",
+      "archivo_pdf": ""
+    },
+    {
+      "identificador": "LEI:1-2",
+      "obra": "LEI",
+      "titulo": "Sección 1.2",
+      "pagina_impresa_inicial": 12,
+      "pagina_impresa_final": 20,
+      "archivo_markdown": "1_2.md",
+      "archivo_pdf": ""
+    },
+    {
+      "identificador": "LEI:1-3",
+      "obra": "LEI",
+      "titulo": "Sección 1.3",
+      "pagina_impresa_inicial": 20,
+      "pagina_impresa_final": 28,
+      "archivo_markdown": "1_3.md",
+      "archivo_pdf": ""
+    },
+    {
+      "identificador": "LEI:1-4",
+      "obra": "LEI",
+      "titulo": "Sección 1.4",
+      "pagina_impresa_inicial": 28,
+      "pagina_impresa_final": 38,
+      "archivo_markdown": "1_4.md",
+      "archivo_pdf": ""
+    },
+    {
+      "identificador": "LEI:1-5",
+      "obra": "LEI",
+      "titulo": "Sección 1.5",
+      "pagina_impresa_inicial": 38,
+      "pagina_impresa_final": 48,
+      "archivo_markdown": "1_5.md",
+      "archivo_pdf": ""
+    },
+    {
+      "identificador": "LEI:1-6",
+      "obra": "LEI",
+      "titulo": "Sección 1.6",
+      "pagina_impresa_inicial": 49,
+      "pagina_impresa_final": 54,
+      "archivo_markdown": "1_6.md",
+      "archivo_pdf": ""
+    },
+    {
+      "identificador": "LEI:1-7",
+      "obra": "LEI",
+      "titulo": "Sección 1.7",
+      "pagina_impresa_inicial": 55,
+      "pagina_impresa_final": 66,
+      "archivo_markdown": "1_7.md",
+      "archivo_pdf": ""
+    },
+    {
+      "identificador": "LEI:1-8",
+      "obra": "LEI",
+      "titulo": "Sección 1.8",
+      "pagina_impresa_inicial": 67,
+      "pagina_impresa_final": 76,
+      "archivo_markdown": "1_8.md",
+      "archivo_pdf": ""
+    },
+    {
+      "identificador": "LEI:1-9",
+      "obra": "LEI",
+      "titulo": "Sección 1.9",
+      "pagina_impresa_inicial": 76,
+      "pagina_impresa_final": 84,
+      "archivo_markdown": "1_9.md",
+      "archivo_pdf": ""
+    },
+    {
+      "identificador": "LEI:1-10",
+      "obra": "LEI",
+      "titulo": "Sección 1.10",
+      "pagina_impresa_inicial": 85,
+      "pagina_impresa_final": 93,
+      "archivo_markdown": "1_10.md",
+      "archivo_pdf": ""
+    },
+    {
+      "identificador": "LEI:2-1",
+      "obra": "LEI",
+      "titulo": "Sección 2.1",
+      "pagina_impresa_inicial": 101,
+      "pagina_impresa_final": 109,
+      "archivo_markdown": "2_1.md",
+      "archivo_pdf": ""
+    },
+    {
+      "identificador": "LEI:2-2",
+      "obra": "LEI",
+      "titulo": "Sección 2.2",
+      "pagina_impresa_inicial": 109,
+      "pagina_impresa_final": 118,
+      "archivo_markdown": "2_2.md",
+      "archivo_pdf": ""
+    },
+    {
+      "identificador": "LEI:2-3",
+      "obra": "LEI",
+      "titulo": "Sección 2.3",
+      "pagina_impresa_inicial": 118,
+      "pagina_impresa_final": 122,
+      "archivo_markdown": "2_3.md",
+      "archivo_pdf": ""
+    },
+    {
+      "identificador": "LEI:2-4",
+      "obra": "LEI",
+      "titulo": "Sección 2.4",
+      "pagina_impresa_inicial": 123,
+      "pagina_impresa_final": 132,
+      "archivo_markdown": "2_4.md",
+      "archivo_pdf": ""
+    },
+    {
+      "identificador": "LEI:2-5",
+      "obra": "LEI",
+      "titulo": "Sección 2.5",
+      "pagina_impresa_inicial": 132,
+      "pagina_impresa_final": 145,
+      "archivo_markdown": "2_5.md",
+      "archivo_pdf": ""
+    },
+    {
+      "identificador": "LEI:2-6",
+      "obra": "LEI",
+      "titulo": "Sección 2.6",
+      "pagina_impresa_inicial": 145,
+      "pagina_impresa_final": 152,
+      "archivo_markdown": "2_6.md",
+      "archivo_pdf": ""
+    },
+    {
+      "identificador": "LEI:2-7",
+      "obra": "LEI",
+      "titulo": "Sección 2.7",
+      "pagina_impresa_inicial": 152,
+      "pagina_impresa_final": 162,
+      "archivo_markdown": "2_7.md",
+      "archivo_pdf": ""
+    },
+    {
+      "identificador": "LEI:2-8",
+      "obra": "LEI",
+      "titulo": "Sección 2.8",
+      "pagina_impresa_inicial": 162,
+      "pagina_impresa_final": 172,
+      "archivo_markdown": "2_8.md",
+      "archivo_pdf": ""
+    },
+    {
+      "identificador": "LEI:2-9",
+      "obra": "LEI",
+      "titulo": "Sección 2.9",
+      "pagina_impresa_inicial": 172,
+      "pagina_impresa_final": 182,
+      "archivo_markdown": "2_9.md",
+      "archivo_pdf": ""
+    },
+    {
+      "identificador": "LEI:2-10",
+      "obra": "LEI",
+      "titulo": "Sección 2.10",
+      "pagina_impresa_inicial": 182,
+      "pagina_impresa_final": 190,
+      "archivo_markdown": "2_10.md",
+      "archivo_pdf": ""
+    },
+    {
+      "identificador": "LEI:3-1",
+      "obra": "LEI",
+      "titulo": "Sección 3.1",
+      "pagina_impresa_inicial": 198,
+      "pagina_impresa_final": 206,
+      "archivo_markdown": "3_1.md",
+      "archivo_pdf": ""
+    },
+    {
+      "identificador": "LEI:3-2",
+      "obra": "LEI",
+      "titulo": "Sección 3.2",
+      "pagina_impresa_inicial": 207,
+      "pagina_impresa_final": 214,
+      "archivo_markdown": "3_2.md",
+      "archivo_pdf": ""
+    },
+    {
+      "identificador": "LEI:3-3",
+      "obra": "LEI",
+      "titulo": "Sección 3.3",
+      "pagina_impresa_inicial": 215,
+      "pagina_impresa_final": 222,
+      "archivo_markdown": "3_3.md",
+      "archivo_pdf": ""
+    },
+    {
+      "identificador": "LEI:3-4",
+      "obra": "LEI",
+      "titulo": "Sección 3.4",
+      "pagina_impresa_inicial": 223,
+      "pagina_impresa_final": 230,
+      "archivo_markdown": "3_4.md",
+      "archivo_pdf": ""
+    },
+    {
+      "identificador": "LEI:3-5",
+      "obra": "LEI",
+      "titulo": "Sección 3.5",
+      "pagina_impresa_inicial": 231,
+      "pagina_impresa_final": 242,
+      "archivo_markdown": "3_5.md",
+      "archivo_pdf": ""
+    },
+    {
+      "identificador": "LEI:3-6",
+      "obra": "LEI",
+      "titulo": "Sección 3.6",
+      "pagina_impresa_inicial": 242,
+      "pagina_impresa_final": 248,
+      "archivo_markdown": "3_6.md",
+      "archivo_pdf": ""
+    },
+    {
+      "identificador": "LEI:3-7",
+      "obra": "LEI",
+      "titulo": "Sección 3.7",
+      "pagina_impresa_inicial": 249,
+      "pagina_impresa_final": 260,
+      "archivo_markdown": "3_7.md",
+      "archivo_pdf": ""
+    },
+    {
+      "identificador": "LEI:3-8",
+      "obra": "LEI",
+      "titulo": "Sección 3.8",
+      "pagina_impresa_inicial": 260,
+      "pagina_impresa_final": 266,
+      "archivo_markdown": "3_8.md",
+      "archivo_pdf": ""
+    },
+    {
+      "identificador": "LEI:3-9",
+      "obra": "LEI",
+      "titulo": "Sección 3.9",
+      "pagina_impresa_inicial": 266,
+      "pagina_impresa_final": 274,
+      "archivo_markdown": "3_9.md",
+      "archivo_pdf": ""
+    },
+    {
+      "identificador": "LEI:3-10",
+      "obra": "LEI",
+      "titulo": "Sección 3.10",
+      "pagina_impresa_inicial": 275,
+      "pagina_impresa_final": 287,
+      "archivo_markdown": "3_10.md",
+      "archivo_pdf": ""
+    },
+    {
+      "identificador": "PIS:1",
+      "obra": "PIS",
+      "titulo": "Parte 1",
+      "pagina_impresa_inicial": 7,
+      "pagina_impresa_final": 15,
+      "archivo_markdown": "1.md",
+      "archivo_pdf": "1.pdf"
+    },
+    {
+      "identificador": "PIS:2",
+      "obra": "PIS",
+      "titulo": "Parte 2",
+      "pagina_impresa_inicial": 16,
+      "pagina_impresa_final": 27,
+      "archivo_markdown": "2.md",
+      "archivo_pdf": "2.pdf"
+    },
+    {
+      "identificador": "PIS:3",
+      "obra": "PIS",
+      "titulo": "Parte 3",
+      "pagina_impresa_inicial": 28,
+      "pagina_impresa_final": 38,
+      "archivo_markdown": "3.md",
+      "archivo_pdf": "3.pdf"
+    },
+    {
+      "identificador": "PIS:4",
+      "obra": "PIS",
+      "titulo": "Parte 4",
+      "pagina_impresa_inicial": 39,
+      "pagina_impresa_final": 50,
+      "archivo_markdown": "4.md",
+      "archivo_pdf": "4.pdf"
+    },
+    {
+      "identificador": "PIS:5",
+      "obra": "PIS",
+      "titulo": "Parte 5",
+      "pagina_impresa_inicial": 51,
+      "pagina_impresa_final": 67,
+      "archivo_markdown": "5.md",
+      "archivo_pdf": "5.pdf"
+    },
+    {
+      "identificador": "PIS:6",
+      "obra": "PIS",
+      "titulo": "Parte 6",
+      "pagina_impresa_inicial": 69,
+      "pagina_impresa_final": 77,
+      "archivo_markdown": "6.md",
+      "archivo_pdf": "6.pdf"
+    },
+    {
+      "identificador": "PIS:7",
+      "obra": "PIS",
+      "titulo": "Parte 7",
+      "pagina_impresa_inicial": 78,
+      "pagina_impresa_final": 87,
+      "archivo_markdown": "7.md",
+      "archivo_pdf": "7.pdf"
+    },
+    {
+      "identificador": "PIS:8",
+      "obra": "PIS",
+      "titulo": "Parte 8",
+      "pagina_impresa_inicial": 88,
+      "pagina_impresa_final": 99,
+      "archivo_markdown": "8.md",
+      "archivo_pdf": "8.pdf"
+    },
+    {
+      "identificador": "PIS:9",
+      "obra": "PIS",
+      "titulo": "Parte 9",
+      "pagina_impresa_inicial": 100,
+      "pagina_impresa_final": 110,
+      "archivo_markdown": "9.md",
+      "archivo_pdf": "9.pdf"
+    },
+    {
+      "identificador": "PIS:10",
+      "obra": "PIS",
+      "titulo": "Parte 10",
+      "pagina_impresa_inicial": 111,
+      "pagina_impresa_final": 121,
+      "archivo_markdown": "10.md",
+      "archivo_pdf": "10.pdf"
+    },
+    {
+      "identificador": "PIS:11",
+      "obra": "PIS",
+      "titulo": "Parte 11",
+      "pagina_impresa_inicial": 122,
+      "pagina_impresa_final": 131,
+      "archivo_markdown": "11.md",
+      "archivo_pdf": "11.pdf"
+    },
+    {
+      "identificador": "PIS:12",
+      "obra": "PIS",
+      "titulo": "Parte 12",
+      "pagina_impresa_inicial": 132,
+      "pagina_impresa_final": 140,
+      "archivo_markdown": "12.md",
+      "archivo_pdf": "12.pdf"
+    },
+    {
+      "identificador": "PIS:13",
+      "obra": "PIS",
+      "titulo": "Parte 13",
+      "pagina_impresa_inicial": 141,
+      "pagina_impresa_final": 157,
+      "archivo_markdown": "13.md",
+      "archivo_pdf": "13.pdf"
+    },
+    {
+      "identificador": "PIS:14",
+      "obra": "PIS",
+      "titulo": "Parte 14",
+      "pagina_impresa_inicial": 158,
+      "pagina_impresa_final": 165,
+      "archivo_markdown": "14.md",
+      "archivo_pdf": "14.pdf"
+    },
+    {
+      "identificador": "PIS:15",
+      "obra": "PIS",
+      "titulo": "Parte 15",
+      "pagina_impresa_inicial": 167,
+      "pagina_impresa_final": 175,
+      "archivo_markdown": "15.md",
+      "archivo_pdf": "15.pdf"
+    },
+    {
+      "identificador": "PIS:16",
+      "obra": "PIS",
+      "titulo": "Parte 16",
+      "pagina_impresa_inicial": 176,
+      "pagina_impresa_final": 187,
+      "archivo_markdown": "16.md",
+      "archivo_pdf": "16.pdf"
+    },
+    {
+      "identificador": "PIS:17",
+      "obra": "PIS",
+      "titulo": "Parte 17",
+      "pagina_impresa_inicial": 188,
+      "pagina_impresa_final": 200,
+      "archivo_markdown": "17.md",
+      "archivo_pdf": "17.pdf"
+    },
+    {
+      "identificador": "PIS:18",
+      "obra": "PIS",
+      "titulo": "Parte 18",
+      "pagina_impresa_inicial": 201,
+      "pagina_impresa_final": 213,
+      "archivo_markdown": "18.md",
+      "archivo_pdf": "18.pdf"
+    },
+    {
+      "identificador": "PIS:19",
+      "obra": "PIS",
+      "titulo": "Parte 19",
+      "pagina_impresa_inicial": 214,
+      "pagina_impresa_final": 222,
+      "archivo_markdown": "19.md",
+      "archivo_pdf": "19.pdf"
+    },
+    {
+      "identificador": "PIS:20",
+      "obra": "PIS",
+      "titulo": "Parte 20",
+      "pagina_impresa_inicial": 223,
+      "pagina_impresa_final": 232,
+      "archivo_markdown": "20.md",
+      "archivo_pdf": "20.pdf"
+    },
+    {
+      "identificador": "PIS:21",
+      "obra": "PIS",
+      "titulo": "Parte 21",
+      "pagina_impresa_inicial": 233,
+      "pagina_impresa_final": 240,
+      "archivo_markdown": "21.md",
+      "archivo_pdf": "21.pdf"
+    },
+    {
+      "identificador": "PIS:22",
+      "obra": "PIS",
+      "titulo": "Parte 22",
+      "pagina_impresa_inicial": 242,
+      "pagina_impresa_final": 254,
+      "archivo_markdown": "22.md",
+      "archivo_pdf": "22.pdf"
+    },
+    {
+      "identificador": "PIS:23",
+      "obra": "PIS",
+      "titulo": "Parte 23",
+      "pagina_impresa_inicial": 255,
+      "pagina_impresa_final": 267,
+      "archivo_markdown": "23.md",
+      "archivo_pdf": "23.pdf"
+    },
+    {
+      "identificador": "PIS:24",
+      "obra": "PIS",
+      "titulo": "Parte 24",
+      "pagina_impresa_inicial": 269,
+      "pagina_impresa_final": 278,
+      "archivo_markdown": "24.md",
+      "archivo_pdf": "24.pdf"
+    },
+    {
+      "identificador": "PIS:25",
+      "obra": "PIS",
+      "titulo": "Parte 25",
+      "pagina_impresa_inicial": 279,
+      "pagina_impresa_final": 289,
+      "archivo_markdown": "25.md",
+      "archivo_pdf": "25.pdf"
+    },
+    {
+      "identificador": "PIS:26",
+      "obra": "PIS",
+      "titulo": "Parte 26",
+      "pagina_impresa_inicial": 290,
+      "pagina_impresa_final": 299,
+      "archivo_markdown": "26.md",
+      "archivo_pdf": "26.pdf"
+    },
+    {
+      "identificador": "PIS:27",
+      "obra": "PIS",
+      "titulo": "Parte 27",
+      "pagina_impresa_inicial": 300,
+      "pagina_impresa_final": 308,
+      "archivo_markdown": "27.md",
+      "archivo_pdf": "27.pdf"
+    },
+    {
+      "identificador": "PIS:28",
+      "obra": "PIS",
+      "titulo": "Parte 28",
+      "pagina_impresa_inicial": 309,
+      "pagina_impresa_final": 323,
+      "archivo_markdown": "28.md",
+      "archivo_pdf": "28.pdf"
+    },
+    {
+      "identificador": "PIS:29",
+      "obra": "PIS",
+      "titulo": "Parte 29",
+      "pagina_impresa_inicial": 324,
+      "pagina_impresa_final": 336,
+      "archivo_markdown": "29.md",
+      "archivo_pdf": "29.pdf"
+    },
+    {
+      "identificador": "PIS:30",
+      "obra": "PIS",
+      "titulo": "Parte 30",
+      "pagina_impresa_inicial": 337,
+      "pagina_impresa_final": 371,
+      "archivo_markdown": "30.md",
+      "archivo_pdf": "30.pdf"
+    },
+    {
+      "identificador": "PUR:0-1-0-3",
+      "obra": "PUR",
+      "titulo": "Secciones 0-1-0-3",
+      "pagina_impresa_inicial": 1,
+      "pagina_impresa_final": 24,
+      "archivo_markdown": "0-1_0-3.md",
+      "archivo_pdf": "0-1_0-3.pdf"
+    },
+    {
+      "identificador": "PUR:0-4-0-6",
+      "obra": "PUR",
+      "titulo": "Secciones 0-4-0-6",
+      "pagina_impresa_inicial": 24,
+      "pagina_impresa_final": 40,
+      "archivo_markdown": "0-4_0-6.md",
+      "archivo_pdf": "0-4_0-6.pdf"
+    },
+    {
+      "identificador": "PUR:0-7-0-8",
+      "obra": "PUR",
+      "titulo": "Secciones 0-7-0-8",
+      "pagina_impresa_inicial": 41,
+      "pagina_impresa_final": 54,
+      "archivo_markdown": "0-7_0-8.md",
+      "archivo_pdf": "0-7_0-8.pdf"
+    },
+    {
+      "identificador": "PUR:1-1-1-4",
+      "obra": "PUR",
+      "titulo": "Secciones 1-1-1-4",
+      "pagina_impresa_inicial": 55,
+      "pagina_impresa_final": 76,
+      "archivo_markdown": "1-1_1-4.md",
+      "archivo_pdf": "1-1_1-4.pdf"
+    },
+    {
+      "identificador": "PUR:1-5-2-1",
+      "obra": "PUR",
+      "titulo": "Secciones 1-5-2-1",
+      "pagina_impresa_inicial": 77,
+      "pagina_impresa_final": 99,
+      "archivo_markdown": "1-5_2-1.md",
+      "archivo_pdf": "1-5_2-1.pdf"
+    },
+    {
+      "identificador": "PUR:2-2-2-5",
+      "obra": "PUR",
+      "titulo": "Secciones 2-2-2-5",
+      "pagina_impresa_inicial": 100,
+      "pagina_impresa_final": 124,
+      "archivo_markdown": "2-2_2-5.md",
+      "archivo_pdf": "2-2_2-5.pdf"
+    },
+    {
+      "identificador": "PUR:2-6-2-10",
+      "obra": "PUR",
+      "titulo": "Secciones 2-6-2-10",
+      "pagina_impresa_inicial": 125,
+      "pagina_impresa_final": 150,
+      "archivo_markdown": "2-6_2-10.md",
+      "archivo_pdf": "2-6_2-10.pdf"
+    },
+    {
+      "identificador": "SPI:1",
+      "obra": "SPI",
+      "titulo": "Parte 1",
+      "pagina_impresa_inicial": 3,
+      "pagina_impresa_final": 26,
+      "archivo_markdown": "1.md",
+      "archivo_pdf": "1.pdf"
+    },
+    {
+      "identificador": "SPI:2",
+      "obra": "SPI",
+      "titulo": "Parte 2",
+      "pagina_impresa_inicial": 27,
+      "pagina_impresa_final": 45,
+      "archivo_markdown": "2.md",
+      "archivo_pdf": "2.pdf"
+    },
+    {
+      "identificador": "SPI:3",
+      "obra": "SPI",
+      "titulo": "Parte 3",
+      "pagina_impresa_inicial": 49,
+      "pagina_impresa_final": 70,
+      "archivo_markdown": "3.md",
+      "archivo_pdf": "3.pdf"
+    },
+    {
+      "identificador": "SPI:4",
+      "obra": "SPI",
+      "titulo": "Parte 4",
+      "pagina_impresa_inicial": 71,
+      "pagina_impresa_final": 81,
+      "archivo_markdown": "4.md",
+      "archivo_pdf": "4.pdf"
+    },
+    {
+      "identificador": "SPI:5",
+      "obra": "SPI",
+      "titulo": "Parte 5",
+      "pagina_impresa_inicial": 82,
+      "pagina_impresa_final": 97,
+      "archivo_markdown": "5.md",
+      "archivo_pdf": "5.pdf"
+    },
+    {
+      "identificador": "SPI:6",
+      "obra": "SPI",
+      "titulo": "Parte 6",
+      "pagina_impresa_inicial": 98,
+      "pagina_impresa_final": 105,
+      "archivo_markdown": "6.md",
+      "archivo_pdf": "6.pdf"
+    },
+    {
+      "identificador": "SPI:7",
+      "obra": "SPI",
+      "titulo": "Parte 7",
+      "pagina_impresa_inicial": 107,
+      "pagina_impresa_final": 125,
+      "archivo_markdown": "7.md",
+      "archivo_pdf": "7.pdf"
+    },
+    {
+      "identificador": "SPI:8",
+      "obra": "SPI",
+      "titulo": "Parte 8",
+      "pagina_impresa_inicial": 126,
+      "pagina_impresa_final": 140,
+      "archivo_markdown": "8.md",
+      "archivo_pdf": "8.pdf"
+    },
+    {
+      "identificador": "SPI:9",
+      "obra": "SPI",
+      "titulo": "Parte 9",
+      "pagina_impresa_inicial": 141,
+      "pagina_impresa_final": 150,
+      "archivo_markdown": "9.md",
+      "archivo_pdf": "9.pdf"
+    },
+    {
+      "identificador": "SPI:10",
+      "obra": "SPI",
+      "titulo": "Parte 10",
+      "pagina_impresa_inicial": 151,
+      "pagina_impresa_final": 170,
+      "archivo_markdown": "10.md",
+      "archivo_pdf": "10.pdf"
+    },
+    {
+      "identificador": "SPI:11",
+      "obra": "SPI",
+      "titulo": "Parte 11",
+      "pagina_impresa_inicial": 171,
+      "pagina_impresa_final": 192,
+      "archivo_markdown": "11.md",
+      "archivo_pdf": "11.pdf"
+    },
+    {
+      "identificador": "SPI:12",
+      "obra": "SPI",
+      "titulo": "Parte 12",
+      "pagina_impresa_inicial": 197,
+      "pagina_impresa_final": 208,
+      "archivo_markdown": "12.md",
+      "archivo_pdf": "12.pdf"
+    },
+    {
+      "identificador": "SPI:13",
+      "obra": "SPI",
+      "titulo": "Parte 13",
+      "pagina_impresa_inicial": 209,
+      "pagina_impresa_final": 226,
+      "archivo_markdown": "13.md",
+      "archivo_pdf": "13.pdf"
+    },
+    {
+      "identificador": "SPI:14",
+      "obra": "SPI",
+      "titulo": "Parte 14",
+      "pagina_impresa_inicial": 227,
+      "pagina_impresa_final": 234,
+      "archivo_markdown": "14.md",
+      "archivo_pdf": "14.pdf"
+    },
+    {
+      "identificador": "SPI:15",
+      "obra": "SPI",
+      "titulo": "Parte 15",
+      "pagina_impresa_inicial": 235,
+      "pagina_impresa_final": 245,
+      "archivo_markdown": "15.md",
+      "archivo_pdf": "15.pdf"
+    },
+    {
+      "identificador": "SPI:16",
+      "obra": "SPI",
+      "titulo": "Parte 16",
+      "pagina_impresa_inicial": 246,
+      "pagina_impresa_final": 253,
+      "archivo_markdown": "16.md",
+      "archivo_pdf": "16.pdf"
+    },
+    {
+      "identificador": "SPI:17",
+      "obra": "SPI",
+      "titulo": "Parte 17",
+      "pagina_impresa_inicial": 255,
+      "pagina_impresa_final": 274,
+      "archivo_markdown": "17.md",
+      "archivo_pdf": "17.pdf"
+    },
+    {
+      "identificador": "SPI:18",
+      "obra": "SPI",
+      "titulo": "Parte 18",
+      "pagina_impresa_inicial": 275,
+      "pagina_impresa_final": 286,
+      "archivo_markdown": "18.md",
+      "archivo_pdf": "18.pdf"
+    },
+    {
+      "identificador": "SPI:19",
+      "obra": "SPI",
+      "titulo": "Parte 19",
+      "pagina_impresa_inicial": 287,
+      "pagina_impresa_final": 301,
+      "archivo_markdown": "19.md",
+      "archivo_pdf": "19.pdf"
+    },
+    {
+      "identificador": "SPI:20",
+      "obra": "SPI",
+      "titulo": "Parte 20",
+      "pagina_impresa_inicial": 302,
+      "pagina_impresa_final": 316,
+      "archivo_markdown": "20.md",
+      "archivo_pdf": "20.pdf"
+    },
+    {
+      "identificador": "SPI:21",
+      "obra": "SPI",
+      "titulo": "Parte 21",
+      "pagina_impresa_inicial": 317,
+      "pagina_impresa_final": 343,
+      "archivo_markdown": "21.md",
+      "archivo_pdf": "21.pdf"
+    },
+    {
+      "identificador": "SPI:22",
+      "obra": "SPI",
+      "titulo": "Parte 22",
+      "pagina_impresa_inicial": 345,
+      "pagina_impresa_final": 354,
+      "archivo_markdown": "22.md",
+      "archivo_pdf": "22.pdf"
+    },
+    {
+      "identificador": "LOP:1",
+      "obra": "LOP",
+      "titulo": "Parte 1",
+      "pagina_impresa_inicial": 13,
+      "pagina_impresa_final": 42,
+      "archivo_markdown": "1.md",
+      "archivo_pdf": "1.pdf"
+    },
+    {
+      "identificador": "LOP:2",
+      "obra": "LOP",
+      "titulo": "Parte 2",
+      "pagina_impresa_inicial": 42,
+      "pagina_impresa_final": 61,
+      "archivo_markdown": "2.md",
+      "archivo_pdf": "2.pdf"
+    },
+    {
+      "identificador": "LOP:3",
+      "obra": "LOP",
+      "titulo": "Parte 3",
+      "pagina_impresa_inicial": 62,
+      "pagina_impresa_final": 83,
+      "archivo_markdown": "3.md",
+      "archivo_pdf": "3.pdf"
+    },
+    {
+      "identificador": "LOP:4",
+      "obra": "LOP",
+      "titulo": "Parte 4",
+      "pagina_impresa_inicial": 84,
+      "pagina_impresa_final": 93,
+      "archivo_markdown": "4.md",
+      "archivo_pdf": "4.pdf"
+    },
+    {
+      "identificador": "LOP:5",
+      "obra": "LOP",
+      "titulo": "Parte 5",
+      "pagina_impresa_inicial": 94,
+      "pagina_impresa_final": 120,
+      "archivo_markdown": "5.md",
+      "archivo_pdf": "5.pdf"
+    },
+    {
+      "identificador": "LOP:6",
+      "obra": "LOP",
+      "titulo": "Parte 6",
+      "pagina_impresa_inicial": 121,
+      "pagina_impresa_final": 145,
+      "archivo_markdown": "6.md",
+      "archivo_pdf": "6.pdf"
+    },
+    {
+      "identificador": "LOP:7",
+      "obra": "LOP",
+      "titulo": "Parte 7",
+      "pagina_impresa_inicial": 146,
+      "pagina_impresa_final": 173,
+      "archivo_markdown": "7.md",
+      "archivo_pdf": "7.pdf"
+    },
+    {
+      "identificador": "LOP:8",
+      "obra": "LOP",
+      "titulo": "Parte 8",
+      "pagina_impresa_inicial": 174,
+      "pagina_impresa_final": 194,
+      "archivo_markdown": "8.md",
+      "archivo_pdf": "8.pdf"
+    },
+    {
+      "identificador": "LOP:9",
+      "obra": "LOP",
+      "titulo": "Parte 9",
+      "pagina_impresa_inicial": 195,
+      "pagina_impresa_final": 222,
+      "archivo_markdown": "9.md",
+      "archivo_pdf": "9.pdf"
+    },
+    {
+      "identificador": "LOP:10",
+      "obra": "LOP",
+      "titulo": "Parte 10",
+      "pagina_impresa_inicial": 223,
+      "pagina_impresa_final": 227,
+      "archivo_markdown": "10.md",
+      "archivo_pdf": "10.pdf"
+    }
+  ]
+}

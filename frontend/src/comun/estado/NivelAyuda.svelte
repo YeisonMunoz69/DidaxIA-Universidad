@@ -1,17 +1,4 @@
-<!--
-El nivel de divulgación alcanzado.
 
-MUESTRA EL NIVEL; NO LO DECIDE NI LO ESCALA. La escala de divulgación es dominio
-y vive en el servidor. Si el cliente decidiera cuándo escalar, dos clientes
-distintos darían ayudas distintas ante el mismo estado, y la garantía dejaría de
-serlo.
-
-Los tres valores del contrato §6: sondeo · regla · desarrollo.
-
-
-Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
-
--->
 <script>
   import BotonAyudaTooltip from '../base/BotonAyudaTooltip.svelte';
   let { nivel } = $props();

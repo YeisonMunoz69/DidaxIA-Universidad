@@ -1,10 +1,3 @@
-"""Contexto factual compartido por el servidor y el laboratorio.
-
-Cada réplica conserva sus propias voces y referencias. Es una selección acotada,
-no una promesa de recordar toda la conversación. Nunca sustituye al CAS ni cambia
-la estrategia, los contadores o el alcance de divulgación.
-"""
-
 import hashlib
 import json
 import re
@@ -17,12 +10,10 @@ MAX_TURNOS = 96
 
 
 def memoria_de_sesion(datos, sesion):
-    """Una memoria acotada del hilo autorizado, con la vida de la sesión."""
     if datos.get("sesion_contexto_factual") != str(sesion):
         datos["sesion_contexto_factual"] = str(sesion)
         datos["contexto_factual"] = {"total": 0, "turnos": []}
     return MemoriaConversacional({str(sesion): datos["contexto_factual"]})
-
 
 def contexto_de_sesion(datos, sesion, mensaje, ejercicio):
     from dominio.modelo.turno import ContextoTurno
@@ -31,9 +22,7 @@ def contexto_de_sesion(datos, sesion, mensaje, ejercicio):
         texto_estudiante=mensaje, identificador_sesion=sesion, ejercicio_activo=ejercicio,
     ))
 
-
 def recordar_contexto_factual(datos, sesion, mensaje, salida, *, habilitado=True):
-    """Conserva las voces emitidas y solo las comprobaciones que ocurrieron."""
     from dataclasses import asdict
 
     if not habilitado:
@@ -45,9 +34,7 @@ def recordar_contexto_factual(datos, sesion, mensaje, salida, *, habilitado=True
     }
     memoria_de_sesion(datos, sesion).registrar(sesion, mensaje, respuesta)
 
-
 def reconstruir_contexto_factual(datos, sesion, pares):
-    """Recupera voces del historial autorizado; no inventa antiguos veredictos."""
     datos.pop("sesion_contexto_factual", None)
     memoria = memoria_de_sesion(datos, sesion)
     from adaptadores.entrantes.http.rutas.turno import recordar_ejercicio
@@ -61,12 +48,10 @@ def reconstruir_contexto_factual(datos, sesion, pares):
             ]}}], "ejercicio_activo": ejercicio.get("ejercicio_activo"),
         })
 
-
 def _palabras(texto):
     return set(re.findall(r"[a-záéíóúñ]{4,}", texto.lower())) - {
         "quiero", "puedes", "tengo", "ejercicio", "resultado", "explica", "ahora",
     }
-
 
 class MemoriaConversacional:
     def __init__(self, sesiones=None):
@@ -133,7 +118,6 @@ class MemoriaConversacional:
         }
         return deepcopy(paquete)
 
-
 class FiltroContextoEntrada(Filtro):
     nombre = "contexto factual experimental de entrada"
     ruta = "caliente"
@@ -152,7 +136,6 @@ class FiltroContextoEntrada(Filtro):
             "antecedentes": [t["numero"] for t in paquete["antecedentes_del_mismo_ejercicio"]],
             "turnos_fuera_de_memoria": paquete["turnos_fuera_de_memoria"],
         }
-
 
 class FiltroContextoPrompt(Filtro):
     nombre = "contexto factual experimental del generador"

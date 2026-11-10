@@ -1,4 +1,3 @@
-"""Informe reproducible de participación y frecuencias, con figuras vectoriales."""
 from datetime import UTC, datetime
 from io import BytesIO
 from xml.sax.saxutils import escape
@@ -46,7 +45,6 @@ def _participacion(curso, presentacion, parrafo):
     historia.extend([tabla, Spacer(1, .5 * cm)])
     return historia
 
-
 def generar_pdf(metricas):
     salida = BytesIO()
     estilos = getSampleStyleSheet()
@@ -70,7 +68,7 @@ def generar_pdf(metricas):
             historia.append(parrafo(f"Promedio: {pregunta['promedio']:.2f}"))
         frecuencias = pregunta['frecuencias']
         if frecuencias:
-            # Etiquetas en tabla, sin recortar texto largo dentro de la gráfica.
+
             for offset in range(0, len(frecuencias), 12):
                 grupo = frecuencias[offset:offset + 12]
                 d = Drawing(440, max(120, len(grupo) * 20 + 50))

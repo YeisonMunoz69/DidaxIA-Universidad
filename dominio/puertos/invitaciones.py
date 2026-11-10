@@ -1,5 +1,3 @@
-"""Contrato de invitaciones previas, independiente del transporte de correo."""
-
 from __future__ import annotations
 
 from datetime import timedelta

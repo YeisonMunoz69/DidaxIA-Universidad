@@ -1,9 +1,7 @@
--- Una matrícula vigente por estudiante; solicitudes y decisiones trazables.
--- No se elige automáticamente entre matrículas preexistentes ni se atribuye
--- una clase a turnos antiguos. Resolver duplicados exige una decisión humana.
 BEGIN;
 
 LOCK TABLE clase_matricula IN SHARE ROW EXCLUSIVE MODE;
+
 DO $$
 BEGIN
     IF EXISTS (
@@ -31,8 +29,10 @@ CREATE TABLE IF NOT EXISTS clase_solicitud (
         OR (estado <> 'pendiente' AND resuelta_en IS NOT NULL AND resuelta_por IS NOT NULL)),
     CHECK (resuelta_en IS NULL OR resuelta_en >= creada_en)
 );
+
 CREATE UNIQUE INDEX IF NOT EXISTS clase_solicitud_pendiente
     ON clase_solicitud (estudiante) WHERE estado = 'pendiente';
+
 CREATE INDEX IF NOT EXISTS clase_solicitud_destino
     ON clase_solicitud (clase_destino, creada_en);
 
@@ -56,13 +56,13 @@ CREATE TABLE IF NOT EXISTS clase_matricula_historial (
     procedencia text NOT NULL CHECK (procedencia IN ('preexistente', 'aprobacion')),
     CHECK (hasta IS NULL OR hasta >= desde)
 );
+
 CREATE UNIQUE INDEX IF NOT EXISTS clase_historial_unico_vigente
     ON clase_matricula_historial(estudiante) WHERE hasta IS NULL;
+
 CREATE UNIQUE INDEX IF NOT EXISTS clase_historial_solicitud
     ON clase_matricula_historial(solicitud) WHERE solicitud IS NOT NULL;
 
--- Conserva el dato conocido de la matrícula existente. No inventa aprobación
--- ni interpreta esta fila como prueba de la clase de una conversación antigua.
 INSERT INTO clase_matricula_historial (estudiante, clase, desde, procedencia)
 SELECT m.identificador, m.clase, m.desde, 'preexistente'
   FROM clase_matricula m

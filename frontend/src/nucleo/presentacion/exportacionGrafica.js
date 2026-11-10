@@ -1,11 +1,6 @@
-/** Operaciones geométricas y editoriales de la exportación de gráficas. */
 
 const NS_SVG = 'http://www.w3.org/2000/svg';
 
-/**
- * Amplía una caja sin recortarla hasta que una unidad de X y una de Y tengan
- * el mismo tamaño físico dentro del rectángulo disponible.
- */
 export function ajustarCajaAProporcion(caja, anchoPixeles, altoPixeles) {
   const [izquierda, arriba, derecha, abajo] = caja;
   const ancho = Math.abs(derecha - izquierda);
@@ -25,10 +20,6 @@ export function ajustarCajaAProporcion(caja, anchoPixeles, altoPixeles) {
   return [izquierda, centroY + medioAlto, derecha, centroY - medioAlto];
 }
 
-/**
- * Da fondo explícito al SVG. Sin este rectángulo el SVG es transparente y un
- * visor puede convertir una gráfica oscura en papel blanco al exportarla.
- */
 export function agregarFondoDeTema(svg, ancho, alto, color) {
   const fondo = document.createElementNS(NS_SVG, 'rect');
   fondo.setAttribute('data-fondo-tema', 'didaxia');
@@ -41,10 +32,6 @@ export function agregarFondoDeTema(svg, ancho, alto, color) {
   return fondo;
 }
 
-/** Reproduce las explicaciones visibles en la esquina superior izquierda del SVG.
- * Usa texto SVG nativo para que PNG, JPG, HTML y la impresión PDF conserven
- * las notas sin depender de foreignObject ni de una fuente externa de KaTeX.
- */
 export function agregarNotasDeAnalisis(svg, ancho, alto, notas, colores = {}) {
   if (!notas?.length) return null;
   const crear = (tipo, atributos = {}, texto = '') => {

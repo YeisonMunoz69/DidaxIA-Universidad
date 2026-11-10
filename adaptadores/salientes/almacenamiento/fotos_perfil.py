@@ -1,11 +1,3 @@
-"""Custodia privada y normalización de fotografías de perfil.
-
-La referencia que llega a PostgreSQL no es una ruta. Los bytes viven fuera del
-árbol del repositorio y sólo este adaptador sabe resolverlos. Antes de guardar,
-Pillow vuelve a codificar la imagen: se descartan EXIF, perfiles incrustados y
-el formato original, y se obtiene un WebP cuadrado de 512 px.
-"""
-
 from __future__ import annotations
 
 import io
@@ -23,11 +15,9 @@ _REFERENCIA = re.compile(r"^foto-[0-9a-f]{32}$")
 
 
 class FotoNoAdmitida(ValueError):
-    """El archivo recibido no es una fotografía segura y procesable."""
-
+    pass
 
 class AlmacenFotosPerfil:
-    """Archivos WebP privados bajo una raíz inyectada por la composición."""
 
     def __init__(self, raiz: str | Path) -> None:
         self._raiz = Path(raiz).resolve() if str(raiz).strip() else None
@@ -90,9 +80,7 @@ class AlmacenFotosPerfil:
             raise FotoNoAdmitida("la referencia de foto no es válida")
         return self._raiz / f"{referencia}.webp"
 
-
 def normalizar(entrada: bytes) -> bytes:
-    """Decodifica una imagen estática y devuelve un WebP cuadrado sin metadata."""
     if not entrada:
         raise FotoNoAdmitida("selecciona una imagen")
     if len(entrada) > LIMITE_ENTRADA_BYTES:

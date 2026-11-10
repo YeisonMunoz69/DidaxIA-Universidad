@@ -1,24 +1,4 @@
-<!--
-La lectura de una obra del corpus · `/obras/LOP` · `EQ-013`.
 
-DOS COSAS EN UNA PANTALLA, Y LA SEGUNDA PUEDE FALTAR
-------------------------------------------------------
-1. **La ficha de la obra**: título, autoría, páginas del archivo y el estado de
-   cada canal de publicación. Se muestra siempre, también —y sobre todo— cuando
-   la obra no está autorizada: es lo que permite ir a buscarla a la biblioteca.
-2. **La transcripción de una parte**, si el catálogo la declara, la obra la
-   autoriza y el archivo está en este servidor. Las tres condiciones se
-   comprueban en el servidor; aquí sólo se explica cuál falló.
-
-LA CORRESPONDENCIA DE PÁGINAS SE DICE, NO SE SUPONE
------------------------------------------------------
-Cuando el desfase de una obra no está medido, esta pantalla **lo declara** en
-vez de ofrecer un salto a una hoja que nadie ha comprobado.
-
-
-Lenguaje declarado en OE3-Implementacion/13-Lenguaje-de-Diseno.md
-
--->
 <script>
   import { onDestroy, tick, untrack } from 'svelte';
   import { cacheDeLectura } from '../../nucleo/lectura/cache.js';
@@ -75,14 +55,9 @@ Lenguaje declarado en OE3-Implementacion/13-Lenguaje-de-Diseno.md
 
   let parteAbierta = $state('');
   let estadoDeParte = $state('vacio');
-  // Los bloques del corpus se reemplazan completos; nunca se editan aquí.
-  // Evita miles de proxies/reactividades por fórmula al cambiar un capítulo.
   let contenido = $state.raw(null);
   let explicacionDeParte = $state('');
   let fragmentoCitado = $state.raw(null);
-  // Tres capítulos como máximo: sus fórmulas ya montadas se reutilizan al
-  // pasar la hoja. La caché de datos/KaTeX por sí sola no evitaba reconstruir
-  // decenas de miles de nodos justo después de la pulsación.
   let capitulosPreparados = $state.raw([]);
   let estadoFragmento = $state('vacio');
   let modoLector = $state(true);
@@ -133,7 +108,6 @@ Lenguaje declarado en OE3-Implementacion/13-Lenguaje-de-Diseno.md
     const c = clave;
     const origen = fragmentoDeOrigen;
     const original = originalPedido;
-    // También cambia al seguir otro enlace profundo dentro de la misma obra.
     void parteFijada;
     if (!c || !esClaveDeObra(c)) {
       estado = 'no-encontrado';
@@ -182,7 +156,6 @@ Lenguaje declarado en OE3-Implementacion/13-Lenguaje-de-Diseno.md
     return () => control.abort();
   });
 
-  /** Mantiene la página anterior mientras una petición todavía no está lista. */
   function abrirParte(nombre) {
     if (!esNombreDeParte(nombre) || !esClaveDeObra(clave)) return Promise.resolve(false);
     const actual = ++solicitudParte;
@@ -237,8 +210,6 @@ Lenguaje declarado en OE3-Implementacion/13-Lenguaje-de-Diseno.md
     function prepararVecino(plazo) {
       turno = null;
       if (cancelada || destruida || obraPedida !== clave) return;
-      // El montaje de un capítulo extenso puede superar un fotograma. Se
-      // hace entre lecturas; durante la ola sólo trabaja la malla de papel.
       if (plazo.timeRemaining() < 1 || document.querySelector('.lector')?.dataset.fase === 'SETTLING') {
         programar(); return;
       }
@@ -272,14 +243,10 @@ Lenguaje declarado en OE3-Implementacion/13-Lenguaje-de-Diseno.md
   function cambiarObra(evento) {
     const nuevaClave = evento.currentTarget.value;
     if (!esClaveDeObra(nuevaClave) || nuevaClave === clave) return;
-    // Navegación interna: conservar el chat en memoria y su destino de retorno.
     const retorno = new URLSearchParams({ volver: volverA });
     navegar(`/obras/${nuevaClave}?${retorno}`);
   }
 
-  // Un enlace profundo conserva su parte. Al entrar desde la biblioteca se
-  // abre la primera disponible: PIS sólo tiene PDFs por partes y, sin esta
-  // selección inicial, el documento existía pero el visor nunca se montaba.
   $effect(() => {
     if (estado !== 'listo' || parteAbierta || preparandoParte || partes.length === 0 || estadoFragmento === 'cargando') return;
     const parteDeCita = localizacion?.obra === clave ? localizacion.parte?.split(':')?.[1] : '';
@@ -288,22 +255,11 @@ Lenguaje declarado en OE3-Implementacion/13-Lenguaje-de-Diseno.md
       ? preferida
       : partes[0].nombre;
     untrack(() => abrirParte(nombre));
-    // PIS llega únicamente por volúmenes divididos. En ese caso la entrada
-    // útil es el documento de la primera parte y no una ficha que obligue a
-    // descubrir manualmente dónde quedó el ejemplar.
     if (!fragmentoDeOrigen && !canal.markdown_continuo?.servible && !canal.pdf_completo?.servible && canal.pdf_dividido?.servible) {
       vistaActiva = 'documento';
     }
   });
 
-  /**
-   * La localización del fragmento de origen, **pedida al servidor**.
-   *
-   * No viaja por la dirección a propósito. Un número de página en la URL sería
-   * un dato que el cliente compone, y la correspondencia impresa–interna es
-   * justo lo que esta fase no puede dejar que nadie invente: la resuelve el
-   * catálogo y aquí sólo se muestra.
-   */
   let localizacion = $state(null);
 
   $effect(() => {
@@ -335,7 +291,6 @@ Lenguaje declarado en OE3-Implementacion/13-Lenguaje-de-Diseno.md
 
   const canal = $derived(obra?.disponibilidad ?? {});
 
-  /** La parte abierta, tal como la declara el catálogo. */
   const parteActual = $derived(partes.find((p) => p.nombre === parteAbierta) ?? null);
   const numeroParte = $derived(partes.findIndex((p) => p.nombre === parteAbierta));
   const partePrevia = $derived(partes[numeroParte-1]);
@@ -361,12 +316,6 @@ Lenguaje declarado en OE3-Implementacion/13-Lenguaje-de-Diseno.md
     }));
   });
 
-  /**
-   * La hoja del PDF dividido a la que abrir.
-   *
-   * Sólo cuando la localización corresponde a **esta** parte: abrir la hoja 47
-   * de otro capítulo porque el número existía sería peor que no saltar.
-   */
   const hojaEnLaParte = $derived(
     localizacion && parteActual && localizacion.parte === parteActual.identificador
       ? localizacion.pagina_interna_en_parte
@@ -573,8 +522,6 @@ Lenguaje declarado en OE3-Implementacion/13-Lenguaje-de-Diseno.md
 <style>
   .transcripcion-vista[hidden] { display: none; }
   @supports (content-visibility: auto) {
-    /* Conserva el texto completo para búsqueda y accesibilidad. El navegador
-       aplaza la disposición de bloques que aún quedan lejos de la lectura. */
     .hoja-transcrita :global(.texto-del-corpus > *) {
       content-visibility: auto;
       contain-intrinsic-size: auto 5rem;

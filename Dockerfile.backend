@@ -1,116 +1,19 @@
-# Dockerfile.backend — Imagen de producción del backend · `PM-B23`
-# ===================================================================
-#
-# CUATRO ETAPAS, Y `runtime` ES LA ÚLTIMA A PROPÓSITO · Fase 2 · sesión 2A
-# ------------------------------------------------------------------------
-#
-#   `build`         instala las dependencias de EJECUCIÓN en `/instalado`.
-#   `build-pruebas` instala, aparte y en `/instalado-pruebas`, SOLO lo que
-#                   añade `requirements-pruebas.txt` (`pytest`, `ruff`).
-#   `base-app`      el sistema y el código que el backend ejecuta. Sin suite.
-#   `migraciones`   `base-app` + catálogo SQL. Para PREPARAR la base interna.
-#   `pruebas`       `base-app` + el ejecutor + `pruebas/`. Para COMPROBAR.
-#   `runtime`       `base-app` tal cual. Para SERVIR. **Etapa por defecto.**
-#
-# ⚠️ **Que `runtime` vaya al final no es orden estético: es la barrera.**
-# `docker build` sin `--target` construye la ÚLTIMA etapa del archivo. Con la
-# etapa de pruebas al final, cualquiera que construyera «la imagen del backend»
-# sin pensarlo se llevaría `pytest` y la suite a producción, que es justo lo
-# que esta sesión retira. `compose.produccion.yaml` además fija
-# `target: runtime` explícitamente — cinturón y tirantes, porque el orden de un
-# archivo se altera sin querer y un `target:` escrito no.
-#
-# QUÉ SE ARREGLA AQUÍ, Y POR QUÉ NO ES COSMÉTICO
-# -----------------------------------------------
-# Hasta el 2026-08-24 la imagen de producción instalaba `pytest` y copiaba
-# `pruebas/`. El bloque `COPY` que lo hacía razonaba —con razón— que Docker es
-# el entorno canónico de QA y que `docker compose ... run --rm backend pytest`
-# recolectaba cero pruebas sin la suite dentro. Lo que no miraba es DÓNDE
-# corría ese comando: dentro del contenedor productivo `AGENTE_BD` apunta a la
-# base con los datos del piloto, y las pruebas de integración hacen `INSERT` y
-# `DELETE`. La auditoría de la Fase 2 · sesión 1 lo marcó como riesgo crítico.
-#
-# La necesidad legítima que aquel bloque cubría NO se pierde: la etapa
-# `pruebas` sigue teniendo la suite y sigue pudiendo hablar con una base por la
-# red interna de Docker. Lo que cambia es CUÁL base — `compose.pruebas.yaml`
-# levanta una efímera, con otro nombre, otro volumen y otras credenciales, y
-# `pruebas/soporte/guarda_bd_pruebas.py` se niega a conectar si el destino no
-# es inequívocamente de pruebas.
-#
-# ⚠️ EL CORPUS NO ENTRA A LA IMAGEN. `contenido/` se monta como volumen en
-# `compose.produccion.yaml` — cambia con cada sesión de Fabián y reconstruir
-# la imagen por cada fragmento nuevo sería exactamente el acoplamiento que
-# `ADR-001` evita en el código. Ver ese archivo.
-#
-# ⚠️ EL MODELO intfloat/multilingual-e5-base (~1,1 GB) TAMPOCO ENTRA A LA
-# IMAGEN. Se decide que viva en un VOLUMEN montado (`cache-modelos`,
-# declarado en `compose.produccion.yaml`) y no en una capa de la imagen:
-#   - Una imagen de 1,1 GB más pesada se sube entera en cada despliegue,
-#     aunque el modelo no haya cambiado — un volumen persiste entre
-#     reconstrucciones y solo se descarga una vez por servidor.
-#   - `HF_HOME` apunta al volumen (abajo), que es la variable que
-#     `sentence-transformers`/`transformers` respetan para su caché.
-#   Sin medir el arranque en el servidor de destino esta decisión puede
-#   revisarse — está anotada como tal en `1.Estado-Actual-Yeison.md`.
-#
-# NINGUNA CLAVE EN ESTA IMAGEN. `PGPASSWORD_AGENTE`, `AGENTE_BD`,
-# `DEEPSEEK_API_KEY` y `AGENTE_LLM` se pasan por variable de entorno en
-# `compose.produccion.yaml`, nunca por `ENV` ni por `ARG` en este archivo.
-
-# -- 1 · Dependencias de EJECUCIÓN --------------------------------------------
-
 FROM python:3.11-slim AS build
 
 WORKDIR /construccion
 
-# `psycopg[binary]` y las ruedas de `sentence-transformers`/`torch` cubren la
-# mayoría de plataformas sin compilar, pero `build-essential` se conserva por
-# si el destino no tiene rueda para alguna dependencia transitiva — es más
-# barato tenerlo en la etapa que se descarta que descubrir su falta en
-# producción.
 RUN apt-get update && apt-get install -y --no-install-recommends build-essential \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
 
-# `sentence-transformers` arrastra `torch`, y `pip install torch` en Linux
-# instala por defecto la rueda con CUDA — varios GB de bibliotecas NVIDIA
-# (`cudnn`, `nccl`, `cusparselt`...) que este servidor nunca va a usar: el
-# dimensionamiento previsto es 4 vCPU · 8 GB · SIN GPU.
-#
-# ⚠️ Un `RUN pip install torch --index-url …cpu` SEPARADO no basta: con
-# `--prefix=/instalado`, el intérprete de esta etapa no ve lo ya instalado
-# ahí, así que el `pip install -r requirements.txt` siguiente vuelve a
-# resolver `torch` desde cero y trae otra vez la variante con CUDA —medido
-# en esta misma sesión—. La solución es UNA sola resolución con los dos
-# índices: `torch` se satisface desde el índice CPU-only (primero), todo lo
-# demás desde PyPI (`--extra-index-url`).
 RUN pip install --no-cache-dir --prefix=/instalado \
     --index-url https://download.pytorch.org/whl/cpu \
     --extra-index-url https://pypi.org/simple \
     -r requirements.txt
 
-# -- 2 · Dependencias de COMPROBACIÓN, en su propio prefijo -------------------
-
-FROM build AS build-pruebas
-
-# `requirements-pruebas.txt` NO repite `-r requirements.txt`, y el prefijo es
-# OTRO. Las dos cosas por el mismo motivo: una segunda resolución completa
-# volvería a traer `torch` —el aviso de la etapa anterior— y aquí solo hacen
-# falta `pytest`, `ruff` y sus dependencias puras de Python.
-#
-# Índice normal: nada de esto vive en el índice CPU-only de PyTorch.
-COPY requirements-pruebas.txt .
-RUN pip install --no-cache-dir --prefix=/instalado-pruebas \
-    -r requirements-pruebas.txt
-
-# -- 3 · El sistema y el código, común a las dos imágenes finales -------------
-
 FROM python:3.11-slim AS base-app
 
-# `libpq5` es la biblioteca cliente que `psycopg[binary]` necesita en tiempo
-# de ejecución; la rueda «binary» la trae empaquetada, así que esto es
-# cinturón y tirantes documentado, no una suposición.
 RUN apt-get update && apt-get install -y --no-install-recommends libpq5 \
     && rm -rf /var/lib/apt/lists/* \
     && useradd --create-home --uid 1000 agente
@@ -119,51 +22,21 @@ COPY --from=build /instalado /usr/local
 
 WORKDIR /app
 
-# Lo que el backend ejecuta. `contenido/` y `frontend/` quedan fuera a
-# propósito — el primero se monta, el segundo lo sirve Caddy desde su propia
-# imagen (`Dockerfile.frontend`).
-#
-# ⚠️ `conftest.py` y `pruebas/` NO SE COPIAN AQUÍ. Estaban en esta etapa hasta
-# el 2026-08-24 y ahora viven solo en la etapa `pruebas`, más abajo. Si vuelven
-# a aparecer aquí, `pruebas/arquitectura/test_imagen_produccion.py` se pone
-# rojo y dice por qué.
 COPY dominio/ dominio/
 COPY adaptadores/ adaptadores/
-COPY pyproject.toml ingesta.py ./
+COPY ingesta.py ./
 
 ENV PYTHONUNBUFFERED=1 \
     PYTHONPATH=/app \
     HF_HOME=/cache-modelos
 
-# `registro_turnos/` se crea AQUÍ, con su dueño, y no solo en el compose.
-# Un volumen nombrado montado sobre una ruta que la imagen no tiene se crea
-# **propiedad de root**, y este contenedor corre como `agente`: el filtro 12
-# (`DD-08`, `PM-B20`) no podría escribir el archivo del turno. Docker copia el
-# dueño del directorio de la imagen al volumen la primera vez que lo monta, así
-# que crearlo aquí es lo que hace que el montaje del compose funcione.
-# `AdaptadorRegistroArchivo` también hace `mkdir`, pero eso no arregla el dueño.
-#
-# ⚠️ `/custodia/autorizaciones` se añadió el 2026-08-27 por exactamente el mismo
-# motivo, y hizo falta ejecutarlo para verlo: con el stack completo levantado,
-# `GET /api/salud` informaba `almacenamiento_privado.configurado: false` —el
-# volumen quedaba `root:root` y `AlmacenamientoEnSistemaDeArchivos` no podía
-# escribir su temporal de comprobación—, así que el despliegue no habría podido
-# aceptar ni una sola autorización de representante.
-#
-# Se crea **vacío**: la custodia no viaja en la imagen, sólo su punto de montaje
-# con el dueño correcto. Sin `chown` la línea no serviría de nada.
 RUN mkdir -p /cache-modelos /app/infraestructura/registro_turnos /custodia/autorizaciones /custodia/fotos-perfil \
     && chown -R agente:agente /app /cache-modelos /custodia
 USER agente
 
 EXPOSE 8000
 
-# Un solo proceso `uvicorn`: `limitador.py` cuenta en memoria del proceso y
-# `RF-ADM-06` dimensiona esto para 40 personas a la vez, no para escalar
-# horizontalmente hoy. Ver el docstring de `limitador.py` si eso cambia.
 CMD ["uvicorn", "adaptadores.entrantes.http.aplicacion:app", "--host", "0.0.0.0", "--port", "8000"]
-
-# -- 4 · La imagen de MIGRACIÓN del despliegue -------------------------------
 
 FROM base-app AS migraciones
 
@@ -173,35 +46,8 @@ COPY infraestructura/migraciones/ infraestructura/migraciones/
 COPY infraestructura/esquema/ infraestructura/esquema/
 COPY infraestructura/operacion/__init__.py infraestructura/operacion/
 COPY infraestructura/operacion/migrar_despliegue.py infraestructura/operacion/
-# ⚠️ La herramienta de publicación del consentimiento, y por qué vive AQUÍ.
-#
-# `C4` la necesita dentro del despliegue: la base de producción **no publica
-# su puerto al anfitrión**, así que publicar una versión sólo puede hacerse
-# desde un contenedor de la misma red. Sin estas dos líneas el procedimiento
-# es imposible — se comprobó ejecutándolo:
-#
-#     ModuleNotFoundError: No module named 'infraestructura.operacion'
-#
-# En esta etapa y no en `runtime`, que es la que sirve el tutor en internet.
-# Esa imagen se define por lo que NO tiene, y una herramienta capaz de
-# escribir versiones de consentimiento no pertenece al proceso expuesto. Ésta
-# es la imagen de operación: se ejecuta a mano, una vez, y no escucha nada.
-#
-# `manifiesto_consentimiento` va con ella porque es de quien lee y valida el
-# paquete; el resto de lo que importa —`dominio/`, `adaptadores/`— ya está en
-# `base-app`.
 COPY infraestructura/operacion/manifiesto_consentimiento.py infraestructura/operacion/
 COPY infraestructura/operacion/publicar_consentimiento.py infraestructura/operacion/
-# `C4-R` · el diagnóstico de estado, que se quedó fuera cuando se añadió.
-#
-# El runbook lo ejecuta ANTES de publicar para distinguir una base vacía de una
-# publicación a medias, de una colisión y de una versión histórica. Sin él esa
-# decisión vuelve a ser «cuento tres filas», que es justo lo que esa revisión
-# corrigió, así que su ausencia bloquea el procedimiento entero.
-#
-# Sólo lee: no escribe nada y ni siquiera pide `AGENTE_PUBLICACION_AUTORIZADA`.
-# Aun así va aquí y **no** en `runtime`, porque es utillaje de operación y esa
-# imagen se define por lo que no lleva.
 COPY infraestructura/operacion/estado_consentimiento.py infraestructura/operacion/
 COPY infraestructura/operacion/reanalizar_factores.py infraestructura/operacion/
 RUN chown -R agente:agente /app/infraestructura
@@ -209,50 +55,4 @@ USER agente
 
 CMD ["python", "-m", "infraestructura.operacion.migrar_despliegue"]
 
-# -- 5 · La imagen de COMPROBACIÓN -------------------------------------------
-#
-# Se construye a mano o desde `compose.pruebas.yaml`:
-#     docker build -f Dockerfile.backend --target pruebas -t agente-calculo-backend-pruebas .
-#
-# NO la construye `compose.produccion.yaml`, que fija `target: runtime`.
-
-FROM base-app AS pruebas
-
-# `root` solo para instalar y copiar; se vuelve a `agente` antes de terminar.
-USER root
-
-COPY --from=build-pruebas /instalado-pruebas /usr/local
-
-# Y ahora sí la suite. Aquí no hay riesgo: esta imagen no la despliega nadie y
-# `compose.pruebas.yaml` la conecta a una base efímera que se crea y se borra
-# con la ejecución. La guarda de `pruebas/soporte/guarda_bd_pruebas.py` rechaza
-# cualquier destino que no sea inequívocamente de pruebas, así que ni siquiera
-# apuntando esta imagen a producción a mano se llegaría a escribir.
-COPY conftest.py ./
-COPY pruebas/ pruebas/
-# El gate del laboratorio ejecuta el catálogo y las migraciones reales. La
-# etapa `migraciones` ya los contenía, pero `pruebas` hereda de `base-app` y no
-# de aquélla: sin estas copias el comando documentado fallaba al recolectar con
-# `ModuleNotFoundError`, antes de comprobar una sola sentencia SQL.
-COPY infraestructura/__init__.py infraestructura/
-COPY infraestructura/migraciones/ infraestructura/migraciones/
-COPY infraestructura/esquema/ infraestructura/esquema/
-
-RUN chown -R agente:agente /app
-USER agente
-
-# Recolecta desde `/app` con el `testpaths = ["pruebas"]` de `pyproject.toml`.
-CMD ["python", "-m", "pytest", "-q"]
-
-# -- 6 · La imagen de PRODUCCIÓN · ÚLTIMA ETAPA, LA POR DEFECTO ---------------
-#
-# Sin `pytest`, sin `ruff`, sin `conftest.py` y sin `/app/pruebas`. Hereda de
-# `base-app` sin añadir nada: lo que la define es lo que NO tiene.
-
 FROM base-app AS runtime
-
-# El servidor usa el contexto compartido HTTP, sin la interfaz de comparación.
-# Las etapas de pruebas conservan el laboratorio para ejecutar su regresión.
-USER root
-RUN rm -rf /app/adaptadores/entrantes/laboratorio
-USER agente

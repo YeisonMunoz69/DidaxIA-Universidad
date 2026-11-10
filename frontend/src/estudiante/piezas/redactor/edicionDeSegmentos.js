@@ -1,32 +1,14 @@
-/**
- * Transformaciones estructurales del redactor mixto.
- *
- * No toca el DOM ni programa `tick()`: devuelve la lista resultante y una
- * intención de foco para que `Redactor.svelte` la aplique cuando Svelte haya
- * montado los nodos nuevos.
- */
 import { aSegmentos, nuevoIdDeSegmento } from '../../../nucleo/formato/segmentos.js';
 
-/** @typedef {import('../../../nucleo/formato/segmentos.js').Segmento} Segmento */
-/** @typedef {{ id: number, posicion: number } | null} FocoPorId */
-/** @typedef {{ indice: number, extremo: 'inicio'|'final' } | null} FocoPorIndice */
 
-/** @param {string} valor @returns {Segmento} */
 export function segmentoDeTexto(valor) {
   return { id: nuevoIdDeSegmento(), tipo: 'texto', valor };
 }
 
-/** @param {string} valor @returns {Segmento} */
 export function segmentoDeFormula(valor) {
   return { id: nuevoIdDeSegmento(), tipo: 'formula', valor };
 }
 
-/**
- * @param {Segmento[]} segmentos
- * @param {number} id
- * @param {string} contenido
- * @returns {{ segmentos: Segmento[], foco: FocoPorIndice }}
- */
 export function actualizarTexto(segmentos, id, contenido) {
   const indice = segmentos.findIndex((segmento) => segmento.id === id);
   if (indice === -1) return { segmentos, foco: null };
@@ -44,10 +26,6 @@ export function actualizarTexto(segmentos, id, contenido) {
     };
   }
 
-  // Dentro de `$…$` la intención ya es matemática. Convertir aquí la forma
-  // ASCII pegada (`a/sqrt(b)`) al mismo LaTeX que produce el tablero evita
-  // que dos expresiones equivalentes tengan dos apariencias dentro de
-  // MathLive. La prosa alrededor permanece carácter a carácter.
   const partes = aSegmentos(contenido, { normalizarFormulas: true });
   const cambioDeTipo = partes.length !== 1 || partes[0]?.tipo !== 'texto';
   if (!cambioDeTipo) return { segmentos: actualizado, foco: null };
@@ -59,11 +37,6 @@ export function actualizarTexto(segmentos, id, contenido) {
   };
 }
 
-/**
- * @param {Segmento[]} segmentos
- * @param {number} id
- * @returns {{ segmentos: Segmento[], foco: FocoPorId }}
- */
 export function eliminarFormula(segmentos, id) {
   const indice = segmentos.findIndex((segmento) => segmento.id === id);
   if (indice === -1) return { segmentos, foco: null };
@@ -109,13 +82,6 @@ export function eliminarFormula(segmentos, id) {
   };
 }
 
-/**
- * @param {Segmento[]} segmentos
- * @param {number} indiceTexto
- * @param {number} posicion
- * @param {string} latex
- * @returns {{ segmentos: Segmento[], foco: FocoPorIndice }}
- */
 export function insertarFormula(segmentos, indiceTexto, posicion, latex) {
   const segmento = segmentos[indiceTexto];
   const textoActual = segmento?.valor ?? '';

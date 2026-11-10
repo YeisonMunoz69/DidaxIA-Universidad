@@ -1,4 +1,4 @@
-<!-- EQ-033 · Resolución institucional de ingresos y cambios de clase. -->
+
 <script>
   import CabeceraDeRuta from '../../docente/piezas/CabeceraDeRuta.svelte';
   import SolicitudesDeMatricula from '../../comun/clases/SolicitudesDeMatricula.svelte';

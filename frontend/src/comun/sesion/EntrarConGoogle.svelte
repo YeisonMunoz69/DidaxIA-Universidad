@@ -1,11 +1,4 @@
-<!--
-Entrar con la cuenta institucional. `DD-18` · `PM-B15` · `PM-X08` · `D-23`.
 
-ES UN CONTROL DE LA CABECERA Y DE INICIO, NO UNA PANTALLA
----------------------------------------------------------
-Renderiza el botón oficial de Google Identity Services con el logotipo oficial
-y autenticación directa en todos los navegadores (Chrome, Brave, Edge, etc.).
--->
 <script>
   import { toast } from '../estado/toasts.svelte.js';
   import { sesion } from '../../nucleo/sesion/sesion.svelte.js';
@@ -28,16 +21,10 @@ y autenticación directa en todos los navegadores (Chrome, Brave, Edge, etc.).
   let pintado = false;
   let anchoHueco = $state(0);
 
-  /** Google no acepta un botón de menos de 200px; por debajo de eso se
-      recorta antes que salirse del margen del contenedor real. */
   const anchoBoton = $derived(Math.max(200, Math.min(210, Math.floor(anchoHueco) || 210)));
 
   $effect(() => {
     if (!hueco || typeof ResizeObserver === 'undefined') return;
-    // `ResizeObserver` no dispara su primer aviso hasta el siguiente cuadro:
-    // sin esta medición síncrona, el primer pintado usaría el valor por
-    // defecto (210) aunque el hueco real fuera más angosto, y el botón de
-    // Google se saldría del margen durante ese primer cuadro.
     anchoHueco = hueco.getBoundingClientRect().width;
     const observador = new ResizeObserver(([entrada]) => {
       if (entrada) anchoHueco = entrada.contentRect.width;
@@ -46,15 +33,6 @@ y autenticación directa en todos los navegadores (Chrome, Brave, Edge, etc.).
     return () => observador.disconnect();
   });
 
-  /*
-   * La carga del guion se mudó a `nucleo/sesion/google.js` en C1.
-   *
-   * La necesitan dos componentes —éste y `ReautenticarConGoogle.svelte`— y
-   * duplicarla habría metido dos veces la misma etiqueta en el documento; la
-   * segunda copia reinicializaría el cliente de Google por debajo del botón que
-   * ya estuviera pintado. Lo que este archivo conserva es lo suyo: el tema, el
-   * ancho medido y el cruce de opacidad al repintar.
-   */
 
   async function iniciarCarga() {
     if (!cliente) return;
@@ -76,10 +54,6 @@ y autenticación directa en todos los navegadores (Chrome, Brave, Edge, etc.).
   });
 
   function explicar(error) {
-    // ⚠️ El texto decía «si no tienes una, puedes seguir usando el tutor sin
-    // cuenta», y desde `EQ-020` eso es falso: no existen sesiones anónimas y
-    // sin cuenta institucional no hay tutor. Ofrecer una salida que no existe
-    // deja a alguien esperando a que algo funcione solo.
     if (clasificar(error) === 'sin-sesion') {
       return 'Esa cuenta no se admite. Entra con tu cuenta institucional del dominio de la universidad.';
     }
@@ -121,8 +95,6 @@ y autenticación directa en todos los navegadores (Chrome, Brave, Edge, etc.).
     (preferencias.tema === 'sistema' && sistemaOscuro)
   );
 
-  /** Evita repintar el botón real de Google si ni el tema ni el ancho
-      cambiaron — cada repintado reemplaza el iframe entero y se nota. */
   let ultimoRenderizado = { el: null, firma: null };
 
   $effect(() => {
@@ -154,9 +126,6 @@ y autenticación directa en todos los navegadores (Chrome, Brave, Edge, etc.).
       hueco.style.opacity = '1';
     };
 
-    // Google reemplaza el iframe entero en cada repintado —no hay forma de
-    // actualizarlo en su sitio—, así que el cruce de opacidad disimula ese
-    // reemplazo. Solo el primer pintado se salta esto: no hay nada que cruzar.
     if (esPrimerPintado) {
       pintar();
     } else {
@@ -166,18 +135,6 @@ y autenticación directa en todos los navegadores (Chrome, Brave, Edge, etc.).
     }
   });
 
-  /*
-   * ⚠️ EL ANUNCIO OFRECÍA UNA SALIDA QUE YA NO EXISTE.
-   *
-   * Ofrecía continuar usando el tutor sin cuenta institucional, y esa frase la
-   * lee un lector de pantalla —vive en un `role="status"`— así que no era un
-   * comentario desactualizado: era la interfaz prometiendo acceso anónimo a
-   * quien más depende de lo que se le anuncia. `EQ-020` retiró esa vía: sólo se
-   * entra con cuenta institucional, y `GET /api/sesion` responde 401.
-   *
-   * Lo único honesto que se puede ofrecer cuando el guion de Google no llega es
-   * reintentar, que es justo lo que hace el botón que se pinta al lado.
-   */
   const anuncio = $derived({
     cargando: 'Conectando con Google…',
     autenticando: 'Verificando tu cuenta con Google…',
@@ -191,18 +148,6 @@ y autenticación directa en todos los navegadores (Chrome, Brave, Edge, etc.).
     'sin-guion': 'Reintentar con Google'
   }[fase] ?? 'Iniciar sesión con Google');
 
-  /*
-   * ⚠️ CERRAR SESIÓN PASA POR DIÁLOGO · `EQ-024` punto 12.
-   *
-   * «Toda acción de impacto medio o alto, incluido cerrar sesión, muestra un
-   * diálogo con consecuencia explícita.» Hasta C1, `onclick={() => sesion.cerrar()}`
-   * la cerraba en el acto: un clic accidental en el pie del carril —donde el
-   * control está pegado a los enlaces de navegación— invalidaba la sesión en el
-   * servidor, y volver exigía pasar otra vez por Google.
-   *
-   * Y la consecuencia hay que decirla, porque no es obvia: `DELETE /api/sesion`
-   * invalida la sesión **en el servidor**, no sólo en este navegador.
-   */
   let cerrando = $state(false);
 
   async function cerrarSesion() {
@@ -212,9 +157,6 @@ y autenticación directa en todos los navegadores (Chrome, Brave, Edge, etc.).
       await sesion.cerrar();
       confirmandoSalida = false;
       toast.alerta('Sesión finalizada correctamente.');
-      // Sin sesión, el árbol del estudiante entero lleva a la entrada
-      // institucional; llevarlo allí evita quedarse en una pantalla que la
-      // guarda va a abandonar en el siguiente cambio.
       navegar('/consentimiento');
     } finally {
       cerrando = false;
@@ -249,7 +191,7 @@ y autenticación directa en todos los navegadores (Chrome, Brave, Edge, etc.).
       </button>
     {/if}
 
-    <!-- Siempre en el árbol para lectores de pantalla. -->
+
     <span class="aviso status-sr" role="status">{anuncio}</span>
 
     {#if fallo}
@@ -375,10 +317,6 @@ y autenticación directa en todos los navegadores (Chrome, Brave, Edge, etc.).
     transition: var(--transition-fast);
   }
 
-  /* El texto varía —«Iniciar sesión», «Reintentar»— y el hueco es angosto
-     a propósito, para no verse distinto del botón oficial de Google que
-     reemplaza. Si no cabe en una línea, se recorta con puntos suspensivos
-     en vez de partirse en dos y descuadrar el icono. */
   .rotulo-propio {
     min-inline-size: 0;
     overflow: hidden;

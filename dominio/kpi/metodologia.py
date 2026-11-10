@@ -1,4 +1,3 @@
-"""Ficha pedagógica común a API, pantalla e informe; sin datos personales."""
 from __future__ import annotations
 
 from dominio.kpi.instrumentos import FUNDAMENTO, PROPUESTAS, VERSION
@@ -16,7 +15,7 @@ FUENTES = {
 
 
 def explicar(definicion) -> dict:
-    from dominio.kpi.dimensiones.hibridos import CODIGOS  # noqa: PLC0415
+    from dominio.kpi.dimensiones.hibridos import CODIGOS
 
     if definicion.codigo in CODIGOS.values():
         return {
@@ -129,7 +128,6 @@ def explicar(definicion) -> dict:
         "fundamento": FUNDAMENTO,
         "prototipo": bool(propuesta) or definicion.madurez.value == "experimental",
     }
-
 
 def _explicar_dialogo(definicion):
     cambio = definicion.codigo.endswith("cambio_ayuda")

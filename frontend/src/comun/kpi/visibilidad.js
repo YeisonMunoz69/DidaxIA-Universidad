@@ -14,8 +14,6 @@ export function tieneValorPublicable(indicador) {
   return indicador?.estado === 'disponible' && Number.isFinite(indicador.valor);
 }
 
-// Los tres fenómenos conservan su tarjeta de cobertura aunque falten
-// oportunidades. Las gráficas siguen exigiendo un porcentaje disponible.
 export function visibleEnTablero(indicador) {
   return tieneValorPublicable(indicador) || (esEvidenciaDeDialogo(indicador)
     && ['sin_datos', 'muestra_insuficiente', 'datos_incompletos'].includes(indicador.estado));
@@ -27,8 +25,6 @@ const PARES_FACTORES = [
   ['conductual.hibrido_reiteracion', 'conductual.reiteracion_tras_correccion', 'reiteracion']
 ];
 
-// Tres factores, dos instrumentos por factor. Destaca el complemento híbrido
-// cuando está presente; conserva el instrumento original como contraste.
 export function factorPrincipal(indicador, conjunto = []) {
   const par = PARES_FACTORES.find(([hibrido, original]) => [hibrido, original].includes(indicador?.codigo));
   if (!par) return '';

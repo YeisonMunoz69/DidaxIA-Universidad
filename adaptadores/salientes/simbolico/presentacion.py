@@ -1,32 +1,3 @@
-"""
-presentacion.py — Expresión de SymPy a JavaScript evaluable (`PM-B26`)
-===========================================================================
-
-Trae `expr_to_js`/`JSPrinter` de `Calculadora de Derivadas/repo-2/backend/
-adapters/outbound/cas/sympy_parser.py`, la única pieza de esa carpeta que
-`PresentationHints` necesitaba y que este repositorio no tenía —
-`06-Guia-de-Reutilizacion.md` no la lista porque nunca formó parte del
-`03-Prototipo-Codigo/` que esa guía audita: es de un proyecto distinto, la
-propia calculadora de derivadas del equipo, consultada ahora porque `PM-B26`
-la necesita y aquí no existía.
-
-Qué se porta y qué no
---------------------------
-Se porta el conversor completo: **una sola responsabilidad** —expresión de
-SymPy a cadena JavaScript, para `new Function('x', 'return ' + js)` en el
-cliente—, sin las otras piezas del archivo origen (`parse_expression`,
-`_normalize`, la whitelist de nombres): este sistema ya tiene su propio
-analizador de entrada, `adaptadores/salientes/simbolico/analizador.py`, y
-traer un segundo lo duplicaría — la misma razón por la que
-`06-Guia-de-Reutilizacion.md` excluyó piezas equivalentes de
-`03-Prototipo-Codigo/`.
-
-`_print_Pow` evalúa numéricamente `base ** exponente` cuando los dos son
-números puros — es una simplificación de presentación, no de cálculo: el
-resultado que el estudiante ve verificado sigue siendo el de
-`adaptadores/salientes/simbolico/pasos.py`, esta función solo dibuja.
-"""
-
 from __future__ import annotations
 
 import sympy as sp
@@ -34,18 +5,10 @@ from sympy.printing.pycode import PythonCodePrinter
 
 
 class _JSPrinter(PythonCodePrinter):
-    """Imprime JavaScript ES2016+ válido para `new Function('x', …)`.
-
-    Hereda de `PythonCodePrinter` porque genera `x**n` (el operador `**` de
-    ES2016) para todo lo que no se sobrescribe aquí; lo que se sobrescribe es
-    lo que Python y JavaScript nombran distinto — `Math.sin` en vez de
-    `math.sin`, sin importar módulo.
-    """
 
     def _print_Mul(self, expr: sp.Expr) -> str:
         texto = super()._print_Mul(expr)
-        # Python acepta -x**2; JavaScript exige -(x**2). Conservar el signo
-        # fuera de toda la multiplicación evita cambiarlo por (-x)**2.
+
         return f"-({texto[1:]})" if texto.startswith("-") else texto
 
     def _print_Pi(self, expr: sp.Expr) -> str:
@@ -170,13 +133,10 @@ class _JSPrinter(PythonCodePrinter):
             return f"(1/Math.sqrt({self._print(base)}))"
         return super()._print_Pow(expr)
 
-
 def _es_numero_puro(sub_expr: sp.Expr) -> bool:
     return sub_expr.is_number and not sub_expr.has(sp.Symbol)
 
-
 def _evaluar_numerico(base: sp.Expr, exponente: sp.Expr) -> str | None:
-    """`base ** exponente` como literal JS, o `None` si no da un real simple."""
     try:
         valor = complex(base**exponente)
     except (TypeError, ValueError, OverflowError):
@@ -186,12 +146,5 @@ def _evaluar_numerico(base: sp.Expr, exponente: sp.Expr) -> str | None:
     real = valor.real
     return str(int(real)) if real == int(real) else repr(real)
 
-
 def expr_to_js(expr: sp.Expr) -> str:
-    """`expr` como cadena JavaScript evaluable con `new Function('x', ...)`.
-
-    No lanza: una expresión que `_JSPrinter` no sepa imprimir es un caso que
-    `pasos.py`/`analizador.py` ya validaron como matemáticamente correcto, así
-    que un fallo aquí es de presentación, no de cálculo.
-    """
     return _JSPrinter().doprint(expr)

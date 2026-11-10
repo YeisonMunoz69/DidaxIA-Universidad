@@ -1,15 +1,3 @@
-"""Contexto curricular y analítica descriptiva del panel docente.
-
-`/api/grupo` calcula el catálogo `kpi.v1` para una clase concreta que pertenezca
-al docente autenticado. Cuenta turnos lógicos, no voces ni bloques, y excluye
-por construcción el contexto `consulta_profesional`. Su atribución se declara
-como ``cohorte_actual_desde_matricula``: la clase histórica del turno todavía
-no está instrumentada y nunca se reconstruye fingiendo certeza.
-
-`/api/contexto-curricular` conserva el contrato mínimo anterior; también queda
-protegido por rol y por la puerta transversal del producto.
-"""
-
 from __future__ import annotations
 
 from datetime import UTC, datetime, timedelta
@@ -35,11 +23,10 @@ from dominio.modelo.oferta_academica import OfertaAcademicaInvalida
 from dominio.puertos.almacen import AlmacenNoConfigurado, AlmacenNoDisponible, EscrituraRechazada
 from dominio.puertos.gobierno import SupresionEnCurso
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from adaptadores.entrantes.http.rutas.puerta_de_supresion import PuertaDeSupresion
     from dominio.puertos.analitica_docente import PuertoAnaliticaDocente
     from dominio.puertos.clases import PuertoClases
-
 
 def _instante(valor: str | None, predeterminado: datetime) -> datetime | None:
     if not valor:
@@ -50,14 +37,12 @@ def _instante(valor: str | None, predeterminado: datetime) -> datetime | None:
         return None
     return instante if instante.tzinfo is not None else instante.replace(tzinfo=UTC)
 
-
 def _pagina_solicitada(peticion: Request) -> int | None:
     try:
         pagina = int(peticion.query_params.get("pagina") or "1")
     except ValueError:
         return None
     return pagina if 1 <= pagina <= 1_000_000 else None
-
 
 def crear_router(
     sesiones: Sesiones,
@@ -79,7 +64,6 @@ def crear_router(
 
     @router.get("/api/grupo/estudiantes")
     def directorio_de_estudiantes(peticion: Request) -> Response:
-        """Diez matrículas de clases propias, sin texto ni analítica."""
         datos, error = _autorizar(peticion)
         if error is not None:
             return error
@@ -136,10 +120,7 @@ def crear_router(
             return mantenimiento("el contexto curricular no está disponible en este momento")
         if vigente is None:
             return JSONResponse({"detalle": "clase no encontrada o ajena"}, status_code=404)
-        # Fase 8 · la actualización curricular es uno de los cinco hechos que
-        # este servidor puede demostrar. Se anota DESPUÉS de que el guardado
-        # haya devuelto el contexto vigente: antes sería anunciar una
-        # actualización que todavía podía fallar.
+
         instrumentador.curricular_actualizado(
             sujeto_de(datos), clase, notacion, bool(unidad)
         )
@@ -172,12 +153,6 @@ def crear_router(
 
     @router.get("/api/grupo/{clase}/estudiantes/{estudiante}")
     def ficha_analitica(clase: str, estudiante: str, peticion: Request) -> Response:
-        """Actividad individual sin texto, acotada a una clase propia.
-
-        El adaptador vuelve a comprobar propiedad y matrícula en la misma
-        transacción que audita la lectura. Así un identificador conocido no
-        permite consultar a una persona de otra clase.
-        """
         datos, error = _autorizar(peticion)
         if error is not None:
             return error
@@ -208,7 +183,6 @@ def crear_router(
 
     @router.get("/api/grupo/{clase}/actividad")
     def actividad_de_clase(clase: str, peticion: Request) -> Response:
-        """Comparación de uso observable; nunca una clasificación de aprendizaje."""
         datos, error = _autorizar(peticion)
         if error is not None:
             return error
@@ -286,7 +260,6 @@ def crear_router(
 
     @router.patch("/api/grupo/{clase}/estudiantes/{estudiante}/perfil")
     async def corregir_perfil(clase: str, estudiante: str, peticion: Request) -> Response:
-        """Corrige sólo facultad, programa y semestre de una clase propia."""
         datos, error = _autorizar(peticion)
         if error is not None:
             return error

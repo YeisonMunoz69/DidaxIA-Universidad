@@ -1,18 +1,3 @@
-# Override para una VPS compartida detrás del proxy HTTPS institucional.
-#
-# Uso (después de que la Universidad asigne DIDAXIA_PUERTO_HTTP):
-#
-#   docker compose -f compose.produccion.yaml -f compose.vps-compartida.yaml up -d --wait --build
-#
-# El proxy institucional termina TLS, conserva el encabezado Host y reenvía
-# `didaxia.pro` y `app.didaxia.pro` al mismo puerto HTTP local. Caddy sigue
-# separando las dos superficies por el Host, pero no intenta emitir certificados
-# ni ocupa 80/443 en el anfitrión. PostgreSQL y el backend permanecen sin ports.
-#
-# Si Gestión de Recursos Tecnológicos NO ofrece proxy inverso, no se usa este
-# archivo: se emplea compose.produccion.yaml con los puertos que la institución
-# permita publicar o redirigir.
-
 services:
   caddy:
     environment:

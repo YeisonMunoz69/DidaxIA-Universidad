@@ -1,16 +1,7 @@
-/**
- * Envoltura de KaTeX con soporte para macros de cálculo y funciones en español.
- *
- * Recibe la expresión y la renderiza de forma accesible y tipográficamente correcta.
- *
- */
 import katex from 'katex';
 import { registrarLimpiezaDeLectura } from '../lectura/cache.js';
 import 'katex/dist/katex.min.css';
 
-/**
- * Macros matemáticas en español y notaciones estándar de cálculo.
- */
 export const MACROS_CALCULO = {
   '\\sen': '\\operatorname{sen}',
   '\\tg': '\\operatorname{tg}',
@@ -35,8 +26,6 @@ export const MACROS_CALCULO = {
   '\\Z': '\\mathbb{Z}'
 };
 
-// RAM acotada: no vuelve a ejecutar KaTeX al regresar a una fórmula conocida.
-// No conserva expresiones al cerrar sesión y no altera el normalizador existente.
 const notaciones = new Map();
 const LIMITE_NOTACIONES = 2048;
 registrarLimpiezaDeLectura(() => notaciones.clear());
@@ -56,19 +45,6 @@ export function renderizar(expresion, { bloque = false, agrandar = false } = {})
   return resultado;
 }
 
-/**
- * Convierte una expresión en marcado, o declara que no pudo.
- *
- * @param {string} expresion  ya normalizada o expresión matemática
- * @param {{bloque?: boolean, agrandar?: boolean}} opciones
- *   `bloque` para su propia línea. `agrandar` fuerza el tamaño de
- *   `\displaystyle` en una fórmula que va EN LÍNEA —`bloque: false`—: sin
- *   él, KaTeX dibuja `\frac`, `\sum`, `\lim`, etc. en el tamaño comprimido
- *   de «texto corrido», que para una fracción significa numerador y
- *   denominador diminutos en vez de uno claramente encima del otro. No
- *   afecta a `bloque: true`, que ya usa ese tamaño por sí solo.
- * @returns {{html: string, error: null} | {html: null, error: string}}
- */
 function renderizarSinCache(expresion, { bloque = false, agrandar = false } = {}) {
   if (typeof expresion !== 'string' || !expresion.trim()) {
     return { html: null, error: 'expresión vacía' };
@@ -88,8 +64,6 @@ function renderizarSinCache(expresion, { bloque = false, agrandar = false } = {}
       error: null
     };
   } catch (e) {
-    // Si falló por funciones sin barra invertida o asteriscos de multiplicación,
-    // intentar una normalización suave
     try {
       const normalizada = limpia
         .replace(/\bsen\b/g, '\\operatorname{sen}')
@@ -116,16 +90,7 @@ function renderizarSinCache(expresion, { bloque = false, agrandar = false } = {}
   }
 }
 
-/**
- * Ajustes tipográficos, no algebraicos: no cambia la expresión ni decide si es
- * correcta. Sólo dice a KaTeX que `cos`, `sin`, `sen`, etc. son nombres de
- * funciones y que `*` es un signo de multiplicación. KaTeX acepta `cos(x)` sin
- * lanzar error, pero lo pinta como tres variables c·o·s; por eso hacerlo sólo
- * en el `catch` era demasiado tarde.
- */
 export function normalizarParaPresentacion(expresion) {
-  // El normalizador del servidor conserva superíndices Unicode como ^(4).
-  // KaTeX interpreta esa forma como exponente «(» y deja «4)» en la base.
   const potencias = expresion.replace(/\^\(([^()]+)\)/g, '^{$1}');
   const limites = potencias.replace(
     /\blim\s+([a-zA-Z])\s*(?:->|→)\s*([^\s()]+)/g,
@@ -138,7 +103,6 @@ export function normalizarParaPresentacion(expresion) {
     .replace(/\*/g, ' \\cdot ');
 }
 
-/** Las respuestas históricas guardaron divisiones dentro de paréntesis. */
 function convertirDivisionesEnGrupos(expresion) {
   let salida = '';
   for (let i = 0; i < expresion.length;) {
@@ -163,15 +127,6 @@ function convertirDivisionesEnGrupos(expresion) {
   return convertirDivisionAscii(salida);
 }
 
-/**
- * Traduce la barra de una división escrita en forma corriente a una fracción
- * tipográfica. Se limita deliberadamente al nivel exterior: una barra dentro
- * de paréntesis o llaves puede pertenecer a otro subproblema y no se toca sin
- * un analizador algebraico. Los límites del numerador y denominador son los
- * operadores aditivos del mismo nivel, de modo que
- * `x'/sqrt(x+x^2) + 2*x^3` se lee como
- * `\\frac{x'}{\\sqrt{x+x^2}} + 2\\cdot x^3`.
- */
 function convertirDivisionAscii(expresion) {
   let profundidad = 0;
   let barra = -1;
@@ -225,11 +180,6 @@ function convertirDivisionAscii(expresion) {
   return `${expresion.slice(0, inicio)}\\frac{${numerador}}{${denominador}}${expresion.slice(fin)}`;
 }
 
-/**
- * Convierte `sqrt(contenido)` a `\\sqrt{contenido}` respetando paréntesis
- * anidados. No usa una expresión regular para capturar el contenido: cerraría
- * en el primer `)` y rompería casos como `sqrt(x*(x+1))`.
- */
 function convertirRaicesAscii(expresion) {
   let salida = '';
   for (let i = 0; i < expresion.length;) {
@@ -258,17 +208,8 @@ function convertirRaicesAscii(expresion) {
   return salida;
 }
 
-/**
- * La marca con la que el estudiante o tutor dice «esto es notación»: `$…$`, `$$...$$`, `\(...\)`, `\[...\]`.
- */
 const MARCA_DE_NOTACION = /\$\$[\s\S]+?\$\$|\\\[[\s\S]+?\\\]|\\\(.+?\\\)|(\$[^$\n]+\$)/g;
 
-/**
- * Parte lo que hay escrito en trozos marcados como notación y trozos que no.
- *
- * @param {string} texto
- * @returns {{marcado: boolean, valor: string}[]}
- */
 export function segmentarNotacion(texto) {
   const fuente = String(texto ?? '');
   const salida = [];
@@ -286,19 +227,6 @@ export function segmentarNotacion(texto) {
   return salida;
 }
 
-/**
- * Parte un texto en trozos: prosa, énfasis, código y notación.
- *
- * Soporta delimitadores KaTeX/LaTeX estándar:
- * - `$$...$$` y `\[...\]` (fórmulas en bloque)
- * - `$...$` y `\(...\)` (fórmulas en línea)
- * - `**...**` (énfasis)
- * - `*...*` (matiz)
- * - `` `...` `` (código o fórmulas dentro de backticks)
- *
- * @param {string} texto
- * @returns {{tipo: 'texto'|'enfasis'|'matiz'|'codigo'|'formula', valor: string}[]}
- */
 export function trozos(texto) {
   const fuente = String(texto ?? '');
   const marca =
@@ -322,7 +250,6 @@ export function trozos(texto) {
       salida.push({ tipo: 'enfasis', valor: m[5] });
     } else if (m[6] !== undefined) {
       const val = m[6];
-      // Si dentro de los backticks hay notación matemática evidente (frac, sqrt, etc.), se interpreta como fórmula
       if (/\\(frac|sqrt|cdot|int|sum|lim|partial|sin|cos|tan|sen|ln|log|alpha|beta|theta|pi|infty)|[=^_]/.test(val) && !val.includes('git') && !val.includes('npm')) {
         salida.push({ tipo: 'formula', valor: val });
       } else {

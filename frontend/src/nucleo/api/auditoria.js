@@ -1,4 +1,3 @@
-/** Historial institucional inmutable, paginado y filtrado por el servidor. */
 import { pedir, pedirArchivo } from './cliente.js';
 
 export async function listar({

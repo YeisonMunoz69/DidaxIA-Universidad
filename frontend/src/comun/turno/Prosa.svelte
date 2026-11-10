@@ -1,9 +1,4 @@
-<!--
-Texto del turno (del estudiante o del tutor).
 
-Soporta fórmulas inline $...$ o $$...$$ renderizadas con KaTeX mediante `trozos()`,
-con subrayado/resalte sutil tanto en los turnos del estudiante como en los del asistente.
--->
 <script>
   import { getContext } from 'svelte';
   import { copiaDeFormula, CONTEXTO_COPIA_FORMULAS } from './copiaDeFormula.js';
@@ -49,16 +44,11 @@ con subrayado/resalte sutil tanto en los turnos del estudiante como en los del a
 
 <style>
   p {
-    /* `tipografia.css` limita toda prosa a 62ch. En artículos y formularios
-       es una medida de lectura útil; dentro de una respuesta ancha dejaba el
-       tercio derecho vacío aunque la burbuja sí ocupara su superficie. El
-       turno ya fija un máximo de lectura propio y aquí la prosa debe usarlo. */
     inline-size: 100%;
     max-inline-size: none;
     margin: 0;
   }
 
-  /* Burbuja del asistente */
   .formula-en-prosa {
     display: inline-block;
     vertical-align: middle;
@@ -83,7 +73,6 @@ con subrayado/resalte sutil tanto en los turnos del estudiante como en los del a
     color: var(--accent-main);
   }
 
-  /* En modo oscuro, el estudiante conserva el estilo translúcido con texto heredado */
   :global(body.dark-theme) :global(.estudiante) .formula-en-prosa {
     background: var(--accent-glow);
     border-color: var(--accent-main);

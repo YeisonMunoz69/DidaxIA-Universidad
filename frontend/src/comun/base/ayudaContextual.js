@@ -2,7 +2,6 @@ import { mount, unmount } from 'svelte';
 import GloboAyuda from './GloboAyuda.svelte';
 let cerrarActual;
 let siguienteId = 0;
-/** Presentación común para ayudas y etiquetas de controles, sin cambiar su acción. */
 export function ayudaContextual(nodo, opciones = {}) {
   let parametros = opciones;
   let titulo = nodo.getAttribute('title') || '';
@@ -17,7 +16,7 @@ export function ayudaContextual(nodo, opciones = {}) {
   function recogerTitulo() {
     if (nodo.hasAttribute('title')) {
       titulo = nodo.getAttribute('title') || '';
-      nodo.removeAttribute('title'); // Evita duplicar la ayuda con el tooltip del navegador.
+      nodo.removeAttribute('title');
     }
   }
   recogerTitulo();

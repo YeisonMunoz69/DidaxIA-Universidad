@@ -1,16 +1,3 @@
-"""Dimensión conductual del catálogo kpi.v1.5.
-
-Ocho constructos originales siguen sin fuente y tienen puntuadores
-prospectivos. Dos originales tienen formulaciones observables más estrechas:
-lenguaje de tensión y conversaciones sin retorno observable en siete días.
-
-Se añade continuidad conversacional observable como código independiente,
-calculable sobre historial educativo con seguimiento completo de 24 horas.
-No sustituye persistencia frente al error, abandono ni un diagnóstico.
-La ficha individual añade tres indicadores del anteproyecto y mantiene
-indicios léxicos complementarios separados.
-"""
-
 from __future__ import annotations
 
 from dataclasses import replace
@@ -26,15 +13,11 @@ from dominio.kpi.contratos import (
 from dominio.kpi.definiciones import MUESTRA_MINIMA_DISTRIBUCION, POBLACION_ELEGIBLE
 from dominio.modelo.indicios_observables import VERSION as VERSION_INDICIOS
 
-#: Lo que le falta a los diez, escrito una vez. Si un día falta otra cosa para
-#: uno de ellos, esa entrada dejará de citar esta constante — y eso será visible
-#: en el diff, que es justo lo que se quiere.
+
 FALTA_INSTRUMENTO = (
     "un instrumento aprobado por el equipo: constructo, ítems, escala, regla de "
-    "puntuación, mínimo de observaciones y versión. La decisión «Valores y "
-    "calibración del modelo afectivo/conductual» sigue abierta en DECISIONES.md, "
-    "y perfil_afectivo persiste hoy versiones sin calibrar producidas por una "
-    "detección léxica parcial"
+    "puntuación, mínimo de observaciones y versión. La calibración está pendiente. "
+    "El perfil afectivo registra señales de una detección parcial por palabras y expresiones."
 )
 
 _LIMITE_NO_CLINICO = (
@@ -50,12 +33,6 @@ _LIMITE_AUTOINFORME = (
 
 
 def _pendiente(codigo: str, nombre: str, constructo: str) -> DefinicionKPI:
-    """Una entrada conductual sin instrumento, con su constructo declarado.
-
-    Una fábrica y no diez bloques repetidos: los diez comparten exactamente lo
-    mismo salvo el nombre y el constructo, y escribir diez copias habría dejado
-    que una se quedara vieja al cambiar la redacción de `FALTA_INSTRUMENTO`.
-    """
     return DefinicionKPI(
         codigo=codigo,
         nombre=nombre,
@@ -79,7 +56,6 @@ def _pendiente(codigo: str, nombre: str, constructo: str) -> DefinicionKPI:
             falta=FALTA_INSTRUMENTO,
         ),
     )
-
 
 ANSIEDAD_MATEMATICA = _pendiente(
     "conductual.ansiedad_matematica", "Ansiedad matemática", "ansiedad matemática"
@@ -172,7 +148,7 @@ CATALOGO = (
     CAMBIO_LONGITUDINAL_COHORTE,
 )
 
-# Código nuevo: no sustituye persistencia, evitación ni abandono psicológico.
+
 CONTINUACION_OBSERVABLE = DefinicionKPI(
     codigo="conductual.continuacion_observable",
     nombre="Continuación conversacional observable",

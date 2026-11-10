@@ -1,14 +1,4 @@
-/**
- * Agrupar la lista de conversaciones por fecha, para el carril.
- *
- * Funciones puras, sacadas de `Aplicacion.svelte` el 2026-08-22 al partir el
- * armazón en piezas —ver `comun/armazon/CarrilHistorial.svelte`, su único
- * consumidor—. Sin estado y sin Svelte de por medio: se pueden probar solas.
- *
- */
 
-/** «Hoy», «Ayer», o la hora/fecha —según qué tan lejos esté—, para una fila
-    del carril. Cadena vacía si no hay marca o no se puede leer. */
 export function formatearMomentoItem(iso) {
   if (!iso) return '';
   try {
@@ -30,8 +20,6 @@ export function formatearMomentoItem(iso) {
   }
 }
 
-/** La lista de conversaciones, partida en «Hoy» · «Ayer» · «Últimos 7 días»
-    · «Anteriores». Solo entran los grupos que tienen algo. */
 export function agruparPorFecha(lista) {
   if (!Array.isArray(lista) || lista.length === 0) return [];
   const grupos = [

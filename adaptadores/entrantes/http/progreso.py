@@ -1,5 +1,3 @@
-"""Emisión NDJSON del trabajo real, conservando el resultado de los reintentos."""
-
 import asyncio
 import json
 import logging
@@ -21,7 +19,7 @@ class EmisionDelTurno:
         self.recordar = recordar
         self.liberar = liberar
         self.tarea = asyncio.create_task(self._resolver())
-        # Desconectar el navegador no cancela un turno ni permite contarlo otra vez.
+
         _EN_CURSO.add(self.tarea)
         self.tarea.add_done_callback(_EN_CURSO.discard)
 
@@ -44,7 +42,7 @@ class EmisionDelTurno:
             for linea in completadas:
                 if not hubo_progreso or "fase" not in json.loads(linea):
                     self._emitir(linea)
-        except Exception as exc:  # noqa: BLE001 — no se expone una excepción interna al estudiante
+        except Exception as exc:
             _REGISTRO.error("Fallo interno en la emisión del turno: %s", type(exc).__name__)
             ultima = next((json.loads(linea).get("fase", "") for linea in reversed(self.lineas)
                            if "fase" in json.loads(linea)), "")

@@ -1,42 +1,13 @@
-<!--
-Una evidencia en la cola · C2B.
 
-Un botón, no un enlace: seleccionar no cambia la dirección. Es deliberado —ver
-`ColaDeEvidencias.svelte`— porque el identificador de una autorización de un
-menor no tiene por qué quedarse en el historial del navegador ni en una
-dirección que alguien copie y pegue en un chat.
-
-IDENTIDAD ACADÉMICA Y REFERENCIA TÉCNICA NO SE CONFUNDEN
----------------------------------------------------------
-La fila muestra el nombre del estudiante y su clase porque quien revisa necesita
-saber de quién y de qué curso procede la solicitud. `sujeto` sigue siendo el
-identificador estable de Google: se conserva aparte como referencia técnica,
-en letra pequeña y recortada; nunca se presenta como si fuera un nombre.
-
-VARIOS INTENTOS DEL MISMO ESTUDIANTE
---------------------------------------
-Una carga nueva no borra la anterior, así que la cola puede traer tres filas de
-la misma persona. Se rotula en vez de agruparse: agrupar obligaría a romper el
-orden por fecha —que es lo que hace justa la cola, quien lleva más esperando va
-primero— y a inventar un encabezado por persona que no aporta nada cuando sólo
-hay una.
-
-
-
--->
 <script>
   import { ayudaContextual } from '../../comun/base/ayudaContextual.js';
   import Icono from '../../comun/base/Icono.svelte';
   import { fechaLegible } from '../../nucleo/formato/fechas.js';
 
   let {
-    /** El documento que devuelve `GET /api/representante/evidencias`. */
     evidencia,
-    /** Si es la que está abierta en el detalle. */
     seleccionada = false,
-    /** Cuántas filas de esta misma persona hay cargadas. 1 = ninguna más. */
     hermanos = 1,
-    /** Se llama con el identificador. */
     alSeleccionar
   } = $props();
 
@@ -46,8 +17,6 @@ hay una.
     rechazada: 'Rechazada'
   };
 
-  /** Los últimos caracteres del sujeto. Basta para distinguir dos personas en
-      una lista y no invita a leerlo como un identificador que se dicta. */
   const referencia = $derived(String(evidencia?.sujeto ?? '').slice(-8));
 
   const nombreDelEstudiante = $derived(

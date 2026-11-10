@@ -1,9 +1,3 @@
-"""Normalización conservadora de escritura matemática recibida del teclado o chat.
-
-No interpreta la expresión ni cambia el mensaje guardado. Sólo prepara una copia
-para los detectores y para la frontera simbólica, que sigue validando su entrada.
-"""
-
 from __future__ import annotations
 
 import re
@@ -30,7 +24,6 @@ _NUMEROS_PATRON = "|".join(sorted(map(re.escape, NUMEROS_ESCRITOS), key=len, rev
 
 
 def numero_verbal_al_inicio(texto: str) -> str:
-    """Convierte un número español acotado sin inferir frases ambiguas."""
     compuesto = re.match(rf"(?:(menos|negativo)\s+)?({_DECENAS})\s+y\s+({_UNIDADES})\b", texto, re.I)
     if compuesto:
         cantidad = NUMEROS_ESCRITOS[compuesto.group(2).lower()] + NUMEROS_ESCRITOS[compuesto.group(3).lower()]
@@ -40,13 +33,7 @@ def numero_verbal_al_inicio(texto: str) -> str:
         return ("-" if simple.group(1) else "") + str(NUMEROS_ESCRITOS[simple.group(2).lower()])
     return ""
 
-
 def normalizar_escritura_matematica(texto: str) -> str:
-    """Convierte letras matemáticas estilizadas sin perder los exponentes.
-
-    NFKC solo convertiría ``x⁴`` en ``x4``. Proteger primero el superíndice
-    conserva la operación, también en ``(x+1)²`` y ``sen(x)²``.
-    """
     con_potencias = _GRUPO_SUPERINDICE.sub(
         lambda m: m.group().translate(_SUPERINDICES) if m.group() in ("⁺", "⁻") else "^(" + m.group().translate(_SUPERINDICES) + ")", texto
     )
@@ -61,14 +48,7 @@ def normalizar_escritura_matematica(texto: str) -> str:
         .replace("√", "sqrt")
     )
 
-
 def normalizar_frase_matematica(expresion: str) -> str:
-    """Traduce un vocabulario matemático oral acotado a notación corriente.
-
-    Una frase ambigua, como «seno de equis al cuadrado» sin paréntesis, se
-    conserva para pedir precisión; no se elige entre seno de un cuadrado y
-    cuadrado del seno. La frontera simbólica valida el resultado traducido.
-    """
     s = normalizar_escritura_matematica(expresion).strip()
     s = re.sub(r"\b(?:equis)\b", "x", s, flags=re.I)
     s = re.sub(rf"\b({_DECENAS})\s+y\s+({_UNIDADES})\b",
@@ -87,8 +67,6 @@ def normalizar_frase_matematica(expresion: str) -> str:
     ):
         s = re.sub(patron, simbolo, s, flags=re.I)
 
-    # Sólo funciones con argumento delimitado o atómico. Una composición
-    # verbal sin paréntesis no posee una lectura matemática única.
     if re.search(r"\b(?:seno|coseno|tangente|raíz cuadrada)\s+de\s+x\s*\^", s, re.I):
         return s
     for palabra, funcion in (("seno", "sen"), ("coseno", "cos"),
@@ -97,9 +75,7 @@ def normalizar_frase_matematica(expresion: str) -> str:
                    lambda m, nombre=funcion: f"{nombre}({m.group(1).strip('()')})", s, flags=re.I)
     return re.sub(r"\s*([+\-*/^])\s*", r"\1", s).strip()
 
-
 def quitar_delimitadores_matematicos(texto: str) -> str:
-    """Retira sólo envolturas completas de escritura, sin reparar fórmulas."""
     s = texto.strip()
     for inicio, fin in (("$$", "$$"), ("$", "$"), (r"\(", r"\)"), (r"\[", r"\]")):
         if s.startswith(inicio) and s.endswith(fin) and len(s) >= len(inicio) + len(fin):

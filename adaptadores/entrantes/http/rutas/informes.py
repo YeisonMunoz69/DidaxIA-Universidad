@@ -1,5 +1,3 @@
-"""Vista previa y descarga auditadas de informes institucionales KPI."""
-
 from __future__ import annotations
 
 import re
@@ -23,23 +21,18 @@ from dominio.puertos.almacen import AlmacenNoConfigurado, AlmacenNoDisponible, E
 class Calculo(Protocol):
     def calcular(self, consulta: ConsultaKPI) -> dict: ...
 
-
 class Auditor(Protocol):
     def registrar(self, datos: dict, documento: bytes) -> None: ...
 
-
 def _segmento(valor: object) -> str:
-    """Segmento de nombre descargable, sin controles ni separadores de ruta."""
     limpio = re.sub(r"[^a-zA-Z0-9._-]+", "-", str(valor or "").strip())
     return limpio.strip(".-_")[:90] or "sin-codigo"
-
 
 def _instante(valor: object, predeterminado: datetime) -> datetime:
     if not valor:
         return predeterminado
     instante = datetime.fromisoformat(str(valor).replace("Z", "+00:00"))
     return instante if instante.tzinfo else instante.replace(tzinfo=ZoneInfo(ZONA_HORARIA))
-
 
 def _consulta(cuerpo: dict, actor: str) -> tuple[ConsultaKPI, str, str]:
     ahora = datetime.now(UTC)
@@ -76,7 +69,6 @@ def _consulta(cuerpo: dict, actor: str) -> tuple[ConsultaKPI, str, str]:
         codigos=(codigo,) if tipo == "indicador" else codigos,
     )
     return consulta, tipo, codigo
-
 
 def crear_router(
     sesiones: Sesiones,

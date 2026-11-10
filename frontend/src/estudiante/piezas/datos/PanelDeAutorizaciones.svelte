@@ -1,30 +1,4 @@
-<!--
-Qué has autorizado, y cómo retirarlo · `EQ-016` / `EQ-022`.
 
-Es el «lugar comprensible» desde el que se revoca: al lado de lo que el sistema
-guarda sobre uno, no escondido dentro del trámite de onboarding, que es una
-pantalla por la que sólo se pasa al principio.
-
-⚠️ REVOCAR NO BORRA, Y ESO SE DICE EN EL DIÁLOGO
---------------------------------------------------
-`EQ-022`: *«revocar bloquea inmediatamente el tutor y todo tratamiento opcional
-futuro, sin eliminar automáticamente el historial»*. Confundir las dos cosas es
-el error caro de esta pantalla: quien quiere que se borren sus datos y sólo
-revoca se queda creyendo que lo consiguió. Por eso el diálogo dice qué hace y
-qué no, y señala el trámite de eliminación como lo que sí borra.
-
-EL CLIENTE NO ELIGE QUÉ VERSIÓN REVOCA
-----------------------------------------
-`POST .../revocar` no recibe nada: ni versión, ni decisión, ni comprobante. El
-servidor resuelve la concesión efectivamente otorgada —aunque su documento haya
-vencido o haya sido desplazado— y el repositorio la vuelve a exigir dentro de la
-transacción. Son dos rutas independientes porque `EQ-016` declara las tres
-dimensiones separadas: un menor puede retirar su asentimiento sin tocar el
-consentimiento del titular.
-
-
-
--->
 <script>
   import Boton from '../../../comun/base/Boton.svelte';
   import Icono from '../../../comun/base/Icono.svelte';
@@ -35,13 +9,10 @@ consentimiento del titular.
   import { navegar } from '../../../enrutado/navegar.js';
 
   let {
-    /** El estado vigente completo de `GET /api/onboarding/estado`. */
     estado,
-    /** Se llama tras una revocación, para que la pantalla recargue todo. */
     alCambiar
   } = $props();
 
-  /** Cómo se lee cada estado de acceso, para el resumen de arriba. */
   const ACCESO = {
     habilitado: { texto: 'Puedes usar el tutor', tono: 'listo' },
     onboarding_pendiente: { texto: 'Falta completar tu registro', tono: 'espera' },
@@ -60,13 +31,11 @@ consentimiento del titular.
     typeof estado?.perfil?.edad === 'number' && estado.perfil.edad < 18
   );
 
-  /** Se puede revocar lo que está efectivamente otorgado. Nada más. */
   const puedeRevocarTitular = $derived(estado?.consentimiento?.estado === 'otorgado');
   const puedeRevocarAsentimiento = $derived(
     esMenor && estado?.asentimiento?.estado === 'otorgado'
   );
 
-  /** `''`, `titular` o `asentimiento`: qué confirmación está abierta. */
   let revocando = $state('');
   let enviando = $state(false);
   let motivo = $state('');
@@ -88,9 +57,6 @@ consentimiento del titular.
   };
 
   async function confirmar() {
-    // Dos pulsaciones seguidas serían dos eventos de revocación; el segundo
-    // recibiría un 409 —ya no hay concesión que retirar— pero el botón no debe
-    // permitir llegar ahí.
     if (enviando || !revocando) return;
     const cual = revocando;
     enviando = true;

@@ -1,5 +1,3 @@
-"""Formulario de incidencias y bandeja privada del investigador."""
-
 from __future__ import annotations
 
 import base64
@@ -30,7 +28,7 @@ from dominio.puertos.almacen import (
 )
 from dominio.puertos.gobierno import SupresionEnCurso
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from adaptadores.entrantes.http.rutas.puerta_de_supresion import PuertaDeSupresion
     from dominio.puertos.reportes import PuertoReportes, Reporte
 
@@ -67,10 +65,8 @@ def _json(reporte: Reporte, *, institucional: bool = False) -> dict:
         salida["reportante"] = reporte.reportante
     return salida
 
-
 def _error(detalle: str, codigo: int = 400) -> JSONResponse:
     return JSONResponse({"detalle": detalle}, status_code=codigo)
-
 
 def _captura(valor: object) -> bytes | None:
     if valor in (None, {}):
@@ -92,7 +88,6 @@ def _captura(valor: object) -> bytes | None:
     except CapturaNoAdmitida as error:
         raise ValueError(str(error)) from None
 
-
 def _datos_del_reporte(cuerpo: dict) -> tuple[str, str, str, str, str, bytes | None]:
     categoria = str(cuerpo.get("categoria") or "").strip()
     titulo = str(cuerpo.get("titulo") or "").strip()
@@ -110,7 +105,6 @@ def _datos_del_reporte(cuerpo: dict) -> tuple[str, str, str, str, str, bytes | N
     if len(ruta) > 240 or not _RUTA.fullmatch(ruta):
         raise ValueError("la ruta de la pantalla no es admisible")
     return categoria, titulo, descripcion, pasos, ruta, _captura(cuerpo.get("captura"))
-
 
 def crear_router(
     sesiones: Sesiones,
@@ -138,8 +132,7 @@ def crear_router(
         congelada = puerta.negativa(sujeto_de(datos))
         if congelada is not None:
             return congelada
-        # El archivo binario máximo produce ~7 MB en Base64. Rechazar el
-        # Content-Length desmedido antes de materializar el JSON en memoria.
+
         longitud = peticion.headers.get("content-length", "")
         if longitud.isdecimal() and int(longitud) > 8 * 1024 * 1024:
             return _error("el reporte supera el límite de carga", 413)

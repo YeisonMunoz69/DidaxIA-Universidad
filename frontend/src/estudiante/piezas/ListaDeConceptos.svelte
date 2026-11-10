@@ -1,4 +1,4 @@
-<!-- Estados y selección del listado visible del banco de conceptos. -->
+
 <script>
   import CargadorCubo from '../../comun/base/CargadorCubo.svelte';
 

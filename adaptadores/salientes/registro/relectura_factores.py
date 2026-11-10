@@ -1,5 +1,3 @@
-"""Motor común de relectura para CLI y panel; una lectura por turno y versión."""
-
 import hashlib
 import json
 from collections import defaultdict
@@ -24,7 +22,6 @@ from dominio.modelo.fusion_conductual import lectura_guardada
 def autorizar_operador(cur, actor):
     exigir_investigador_administrador(cur, actor)
     exigir_persona_activa(cur, actor)
-
 
 def entrada_historica(hilo, posicion):
     actual = hilo[posicion]
@@ -51,9 +48,7 @@ def entrada_historica(hilo, posicion):
         ][-6:],
     )
 
-
 def ejecutar(cadena, **opciones):
-    """Una relectura a la vez; evita llamadas duplicadas de dos operadores."""
     with conectar(cadena) as cnx, cnx.cursor() as cur:
         cur.execute("SELECT pg_try_advisory_lock(hashtext(%s))", ("didaxia.factores." + VERSION,))
         if not cur.fetchone()[0]:
@@ -64,8 +59,7 @@ def ejecutar(cadena, **opciones):
         finally:
             cur.execute("SELECT pg_advisory_unlock(hashtext(%s))", ("didaxia.factores." + VERSION,))
 
-
-def _ejecutar(  # noqa: C901, PLR0913, PLR0912, PLR0915 — flujo acotado con puertas de autorización
+def _ejecutar(
     cadena,
     *,
     actor,
@@ -162,8 +156,7 @@ def _ejecutar(  # noqa: C901, PLR0913, PLR0912, PLR0915 — flujo acotado con pu
             if not lectura_guardada(lectura, r["mensaje"]):
                 if resultado["llamadas"] >= maximo_llamadas:
                     continue
-                # Una relectura fuera del chat puede esperar más que el tutor
-                # interactivo. El plazo total sigue acotado y no hay reintentos.
+
                 try:
                     interprete = interprete or InterpretacionDeepSeek(
                         factores_conductuales=True, solo_factores=True, tiempo_maximo_s=60
@@ -186,7 +179,7 @@ def _ejecutar(  # noqa: C901, PLR0913, PLR0912, PLR0915 — flujo acotado con pu
                         observaciones=[o.como_dict() for o in respuesta.factores],
                         error=respuesta.error_factores,
                     )
-                except Exception as exc:  # noqa: BLE001 — sólo códigos locales, sin texto del proveedor
+                except Exception as exc:
                     resultado["fallos"] += 1
                     resultado["motivo_fallo"] = (
                         exc.codigo if isinstance(exc, FalloInterpretacion)
@@ -227,7 +220,7 @@ def _ejecutar(  # noqa: C901, PLR0913, PLR0912, PLR0915 — flujo acotado con pu
                 autorizar_operador(cur, actor)
                 if not habilitado(cur, r["estudiante"]):
                     continue
-                # La FK confirma existencia; bloquear historial evita carrera con supresión.
+
                 cur.execute(
                     "SELECT id FROM historial_turno WHERE id=%s FOR KEY SHARE", (r["historial"],)
                 )

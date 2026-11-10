@@ -1,38 +1,4 @@
-<!--
-DD-12 · Las clases del docente.
 
-Con su código y su lista de estudiantes.
-
-SIN TAREAS, CALIFICACIONES, ENTREGAS, CALENDARIO NI MENSAJERIA. La frontera
-está escrita en DD-12 y no se interpreta con generosidad: cualquier añadido
-exige modificar la decisión, no ampliarla por conveniencia.
-
-LA LISTA DE INTEGRANTES NO ES UN PANEL DE SEGUIMIENTO. Muestra quién está
-matriculado y nada más — ni progreso, ni indicios, ni última conexión. Lo que
-el sistema infiere de una persona vive en su ficha, que es otra ruta y tiene su
-propia advertencia. Mezclarlo aquí convertiría una lista administrativa en un
-tablero de vigilancia sin que nadie lo decidiera.
-
-Dos paneles, no dos secciones apiladas · 2026-08-22
------------------------------------------------------
-Hasta esta fecha, el formulario de creación vivía siempre visible junto a la
-lista, y el detalle de la clase seleccionada aparecía DEBAJO de las dos, a
-todo el ancho — confirmado con el usuario como el problema real: quería el
-detalle AL LADO de la lista, no abajo, y «Crear clase» como una acción, no
-como una tarjeta que ocupa sitio aunque no se esté usando.
-
-Ahora «Crear clase» es un botón en la cabecera que abre `Dialogo.svelte`
-—reutilizado tal cual, el mismo componente que `Ajustes.svelte` ya usa—, y
-el cuerpo es dos paneles con scroll cada uno por su cuenta
-(`overflow-y: auto`), sin que la página entera intente desplazarse: mismo
-patrón que `estudiante/rutas/Conversacion.svelte` ya usa para «armazón, no
-flujo de documento».
-
-
-Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
-Origen de esta pieza: OE3-Implementacion/09-Aportes-de-la-Consulta-Docente.md
-
--->
 <script>
   import CargadorCubo from '../../comun/base/CargadorCubo.svelte';
   import { ayudaContextual } from '../../comun/base/ayudaContextual.js';
@@ -91,17 +57,11 @@ Origen de esta pieza: OE3-Implementacion/09-Aportes-de-la-Consulta-Docente.md
       clases = nuevasClases ?? [];
       solicitudes = nuevasSolicitudes ?? [];
 
-      // El sondeo no debe dejar el panel abierto con una copia antigua de la
-      // clase. Se conserva la selección —que fue explícita— y se actualizan
-      // sus contadores y código desde la respuesta más reciente.
       if (abierta) {
         abierta = clases.find((clase) => clase.id === abierta.id) ?? null;
       }
     }
     catch (e) {
-      // Una actualización en segundo plano no borra datos que ya se estaban
-      // leyendo. El siguiente foco o ciclo volverá a intentarlo; el primer
-      // montaje y las acciones explícitas sí muestran el fallo.
       if (!silencioso) fallo = describir(e);
     }
     finally { if (!silencioso) cargandoClases = false; }
@@ -131,9 +91,6 @@ Origen de esta pieza: OE3-Implementacion/09-Aportes-de-la-Consulta-Docente.md
   async function crear() {
     if (!nombreNuevo.trim()) return;
     try {
-      // `api.crear()` devuelve la clase con su código — se abre de una vez
-      // en el panel derecho en vez de dejarlo vacío hasta un segundo clic
-      // en la lista, que es justo el paso siguiente natural tras crearla.
       const nueva = await api.crear(nombreNuevo);
       nombreNuevo = '';
       creando = false;
@@ -193,13 +150,6 @@ Origen de esta pieza: OE3-Implementacion/09-Aportes-de-la-Consulta-Docente.md
   onMount(() => {
     cargar();
 
-    // Las solicitudes llegan desde otra sesión y no existe un evento local
-    // que pueda anunciarlas. Se consulta con una cadencia deliberadamente
-    // tranquila y también al volver a la pestaña: así la docente recibe la
-    // señal sin recargar y sin convertir la pantalla en sondeo agresivo.
-    // La bandeja abierta consulta sólo solicitudes cada cinco segundos y
-    // comparte su resultado; no duplica aquí la misma consulta ni se sondea
-    // una pestaña del navegador oculta.
     const actualizar = () => {
       if (document.visibilityState !== 'visible' || seccion === 'solicitudes') return;
       void cargar({ silencioso: true });
@@ -218,18 +168,6 @@ Origen de esta pieza: OE3-Implementacion/09-Aportes-de-la-Consulta-Docente.md
     };
   });
 
-  /**
-   * A la ficha de un matriculado, con su clase · Fase 7.
-   *
-   * Los DOS identificadores viajan en la consulta, y no sólo el del estudiante:
-   * la autorización del servidor es «esta clase es tuya **y** esta persona está
-   * en ella», así que una ficha sin clase no se podría pedir. Además es lo que
-   * permite que recargar la página conserve el destino y que Atrás funcione,
-   * porque queda en la dirección y no en el estado de este componente.
-   *
-   * Ni el nombre ni el correo entran en la dirección: `EQ-020` no los usa como
-   * clave y una URL con el nombre de alguien acaba en un registro de servidor.
-   */
   function abrirFicha(integrante) {
     if (!abierta?.id || !integrante?.identificador) return;
     const consulta = new URLSearchParams({
@@ -300,13 +238,7 @@ Origen de esta pieza: OE3-Implementacion/09-Aportes-de-la-Consulta-Docente.md
 <section class="clases">
   <CabeceraDeRuta titulo="Mis clases" icono="clases" insignia="Comunidad Académica" notaGrande>
     {#snippet accion()}
-      <!-- `<span>` envolvente y no `class` en `<Boton>`: comprobado en el
-           navegador el 2026-08-22 que `Boton.svelte` pasa `class` por
-           `...resto` DESPUÉS de su propio `class="boton {variante}"`, así
-           que un `class` aquí lo REEMPLAZA entero en vez de sumarse —el
-           botón se quedaba sin ningún estilo de `Boton.svelte`—. El
-           selector de abajo apunta al `<svg>` por descendencia en vez de
-           necesitar tocar la clase del botón. -->
+
       <span class="disparador-crear">
         <Boton onclick={() => (creando = true)}>
           <Icono nombre="nueva" medida={14} />
@@ -430,18 +362,10 @@ Origen de esta pieza: OE3-Implementacion/09-Aportes-de-la-Consulta-Docente.md
           </div>
           {#if integrantes.length}
             <ul class="lista-matriculados">
-              <!-- La API vigente entrega `identificador`, pero los hilos
-                   creados antes de esa ampliacion del contrato no lo traen.
-                   Una lista sin clave conserva ambas filas y evita que dos
-                   `undefined` aborten todo el render con each_key_duplicate. -->
+
               {#each integrantes as integrante}
                 <li class="fila-estudiante">
-                  <!-- Un `<button>` de verdad y no un `<div>` con `onclick`:
-                       llega por tabulación, responde a Intro y Espacio, y el
-                       lector de pantalla lo anuncia como acción. Sin
-                       `identificador` —hilos anteriores a esa ampliación del
-                       contrato— la fila se pinta igual pero no ofrece la
-                       ficha, porque el servidor no podría resolverla. -->
+
                   <button type="button" class="tarjeta-estudiante"
                           disabled={!integrante.identificador}
                           onclick={() => abrirFicha(integrante)}>
@@ -495,9 +419,7 @@ Origen de esta pieza: OE3-Implementacion/09-Aportes-de-la-Consulta-Docente.md
           </div>
         {/if}
       {:else if clases.length}
-        <!-- Ninguna clase autoseleccionada a propósito, desde 2026-08-22:
-             antes `cargar()` abría la primera de la lista sola, y se pidió
-             que el panel empezara vacío hasta un clic explícito. -->
+
         <div class="estado-vacio">
           <EstadoVacio icono="clase" titulo="Selecciona una clase"
                        texto="Elige una de la lista para ver su código y sus estudiantes matriculados."
@@ -515,19 +437,7 @@ Origen de esta pieza: OE3-Implementacion/09-Aportes-de-la-Consulta-Docente.md
 </section>
 
 <Dialogo bind:abierto={creando} tipo="confirmar" titulo="¿Crear una clase?">
-  <!--
-    `Dialogo.svelte` pinta `children` y `acciones` en dos contenedores
-    HERMANOS, no anidados —`.cuerpo` y `.acciones`—, así que el botón real
-    de «Crear clase» no puede ser descendiente de este `<form>`. En vez de
-    un botón oculto para que Intro dispare el envío —lo que se intentó
-    primero, y chocaba con la regla de accesibilidad de
-    `estilos/base.css` que impone 24×24 mínimo a todo botón, así que
-    «ocultarlo» a 1px dejaba un cuadro clipeado visible, encontrado en el
-    navegador el 2026-08-22—, se usa el atributo `form` de HTML: asocia el
-    botón de `acciones` con ESTE formulario por id, sin necesitar ningún
-    elemento de más. Intro en el campo y clic en el botón pasan por el
-    MISMO evento `submit`.
-  -->
+
   <form id="form-crear-clase" onsubmit={(e) => { e.preventDefault(); crear(); }}>
     <p class="pista-formulario">
       Le da un nombre a un grupo de estudiantes y genera un código para
@@ -601,13 +511,6 @@ Origen de esta pieza: OE3-Implementacion/09-Aportes-de-la-Consulta-Docente.md
     to { opacity: 1; transform: translateY(0); }
   }
 
-  /* `display: contents`: el `<span>` no debe alterar el `flex` de la fila
-     de cabecera que `CabeceraDeRuta.svelte` ya arma —el `<Boton>` de dentro
-     sigue actuando como si fuera hijo directo de esa fila, a efectos de
-     layout—. Solo existe para poder seleccionar su `<svg>` sin tocar la
-     `class` de `Boton.svelte`, que `...resto` reemplazaría entera en vez de
-     sumarla. Mismo giro que `comun/armazon/CarrilHistorial.svelte::.nueva`
-     al pasar el mouse. */
   .disparador-crear { display: contents; }
   .administrar-clase { display: flex; justify-content: flex-end; margin-block: .35rem .65rem; }
   .administrar-clase button { min-block-size: 2.4rem; padding: .45rem .75rem; border: 1px solid var(--trazo-suave); border-radius: var(--radius-sm); background: var(--surface-paper); color: var(--ink-secondary); font: inherit; font-weight: 700; cursor: pointer; }
@@ -621,10 +524,6 @@ Origen de esta pieza: OE3-Implementacion/09-Aportes-de-la-Consulta-Docente.md
     transform: rotate(90deg) scale(1.15);
   }
 
-  /* El área de trabajo: dos paneles con scroll propio, y la página misma
-     no se desplaza — `.clases` ya recibe `flex: 1` de `<main>` con
-     `overflow: hidden`, y este es el único hijo que se lleva el resto de
-     la altura. */
   .paneles {
     flex: 1;
     min-block-size: 0;
@@ -719,8 +618,6 @@ Origen de esta pieza: OE3-Implementacion/09-Aportes-de-la-Consulta-Docente.md
     inline-size: 100%;
     padding: 0.65em 0.9em;
     background: var(--surface-paper);
-    /* Cada fila es un BOTÓN —`font: inherit`, `text-align: start`— y no una
-       tarjeta: su borde delimita un control y `1.4.11` le pide 3.0. */
     border: 1px solid var(--trazo-suave);
     border-radius: var(--radius-sm);
     color: var(--ink-primary);
@@ -803,17 +700,9 @@ Origen de esta pieza: OE3-Implementacion/09-Aportes-de-la-Consulta-Docente.md
   .encabezado-matriculados p { margin: .2rem 0 0; color: var(--ink-tertiary); font-size: var(--texto-xs); }
   .lista-matriculados { display: grid; gap: .65rem; margin: 0; padding: 0; list-style: none; }
   .fila-estudiante { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: .5rem; }
-  /* Desde la Fase 7 la tarjeta es un `<button>`: se le quita el aspecto de
-     control nativo y se le devuelve el de tarjeta, sin cambiar su composición.
-     `text-align: start` y `font: inherit` son los dos que el navegador impone
-     y que, sin retirarlos, centrarían el nombre y lo pintarían con la fuente
-     del sistema. */
   .tarjeta-estudiante { inline-size: 100%; display: grid; grid-template-columns: 48px minmax(0, 1fr) auto auto; align-items: center; gap: .85rem; min-block-size: 68px; padding: .7rem .85rem; border: 1px solid var(--trazo-suave); border-radius: var(--radius-sm); background: var(--surface-paper); box-shadow: var(--shadow-soft); font: inherit; text-align: start; cursor: pointer; transition: var(--transition-fast); }
   .tarjeta-estudiante:hover:not(:disabled) { border-color: var(--accent-main); background: var(--accent-surface); }
   .tarjeta-estudiante:focus-visible { outline: 2px solid var(--accent-main); outline-offset: 2px; }
-  /* Una matrícula sin identificador —hilos anteriores a esa ampliación del
-     contrato— se sigue viendo, pero no promete una ficha que el servidor no
-     podría resolver. */
   .tarjeta-estudiante:disabled { cursor: default; }
   .ir-a-ficha { display: inline-flex; color: var(--ink-tertiary); transition: var(--transition-fast); }
   .tarjeta-estudiante:hover .ir-a-ficha { color: var(--accent-main); transform: translateX(2px); }
@@ -838,11 +727,6 @@ Origen de esta pieza: OE3-Implementacion/09-Aportes-de-la-Consulta-Docente.md
     line-height: 1.45;
   }
 
-  /* El contenido llamativo —círculo de icono con rebote, tarjeta de acento
-     punteada— se extrajo a `docente/piezas/EstadoVacio.svelte` el
-     2026-08-22, junto con los mismos estados de `ColaDeSupervision.svelte`
-     y `FichaDeEstudiante.svelte` (con otro tono cada uno). Este wrapper
-     solo centra `<EstadoVacio>` dentro del panel disponible. */
   .estado-vacio {
     flex: 1;
     min-block-size: 0;
@@ -852,10 +736,6 @@ Origen de esta pieza: OE3-Implementacion/09-Aportes-de-la-Consulta-Docente.md
     padding: var(--espacio-xl) var(--espacio-lg);
   }
 
-  /* Por debajo de `--corte-tableta` (48rem) los dos paneles no caben lado a
-     lado: se apilan y el hueco entero desplaza junto, en vez de que cada
-     panel scrollee por separado — dos barras de scroll finitas en una
-     pantalla de teléfono son más difíciles de usar que una sola. */
   @media (max-width: 48rem) {
     .clases { overflow-y: auto; }
     .paneles { flex-direction: column; overflow: visible; }
@@ -865,14 +745,9 @@ Origen de esta pieza: OE3-Implementacion/09-Aportes-de-la-Consulta-Docente.md
     .fila-estudiante { grid-template-columns: 1fr; }
     .retirar-estudiante { justify-self: end; }
     .estado-matricula { grid-column: 2; justify-self: start; }
-    /* La tarjeta entera es el área táctil en teléfono; la flecha sólo
-       repetiría lo que el toque ya hace y ocuparía una columna que no sobra. */
     .ir-a-ficha { display: none; }
   }
 
-  /* §14 · quien pidió menos movimiento no recibe el desplazamiento de la
-     flecha ni el atenuado de la tarjeta. El cambio de color se conserva:
-     es la señal de que el control responde, no una animación. */
   @media (prefers-reduced-motion: reduce) {
     .tarjeta-estudiante,
     .ir-a-ficha { transition: none; }

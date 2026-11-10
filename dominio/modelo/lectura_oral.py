@@ -1,8 +1,3 @@
-"""Gramática acotada de expresiones dictadas; no calcula ni completa lo omitido.
-
-Funciones sin paréntesis consumen un monomio. Las composiciones con alcance
-ambiguo requieren delimitadores explícitos. Toda la entrada debe consumirse.
-"""
 import re
 import unicodedata
 
@@ -11,7 +6,6 @@ from dominio.modelo.notacion_entrada import NUMEROS_ESCRITOS, normalizar_escritu
 
 class LecturaIncierta(ValueError):
     pass
-
 
 def _tokens(texto):
     s = normalizar_escritura_matematica(texto).lower()
@@ -32,13 +26,12 @@ def _tokens(texto):
         (r'\bmas\b', '+'), (r'\bmenos\b', '-'),
     ):
         s = re.sub(patron, cambio, s)
-    # En una potencia dictada, el exponente puede ser un monomio completo.
+
     s = re.sub(r'\^\s*([-+]?\s*\d*\s*[xteu])\b', r'^(\1)', s)
     tokens = re.findall(r'logbase\d+|sqrt|sin|cos|tan|atan|exp|ln|log|\d+(?:\.\d+)?|[xteu]|[()+*/^,-]', s)
     if ''.join(tokens) != re.sub(r'\s+', '', s):
         raise LecturaIncierta('La expresión contiene palabras cuyo alcance no está delimitado.')
     return tokens
-
 
 class _Expresion:
     def __init__(self, tokens):
@@ -85,7 +78,7 @@ class _Expresion:
         if re.fullmatch(r'\d+(?:\.\d+)?|[xteu]', t):
             return t
         if t in ('sqrt', 'sin', 'cos', 'tan', 'atan', 'exp', 'ln', 'log') or t.startswith('logbase'):
-            # Con paréntesis, todo el grupo; sin ellos, un monomio (p. ej. sin 5x).
+
             argumento = self.atomo(profundidad + 1) if self.actual() == '(' else self.monomio(profundidad + 1)
             return f'log({argumento},{t[7:]})' if t.startswith('logbase') else f'{t}({argumento})'
         raise LecturaIncierta('Falta un argumento o hay un operador inesperado.')
@@ -100,7 +93,6 @@ class _Expresion:
             r = f'({r}^{self.expresion(30, profundidad + 1)})'
         return r
 
-
 def expresion_oral(texto, *, composicion_contextual=False):
     if not composicion_contextual and re.search(r'\b(?:seno|coseno|tangente)\s+de\s+(?:seno|coseno|tangente)\b', texto, re.I):
         raise LecturaIncierta('La composición de funciones necesita paréntesis para fijar el alcance.')
@@ -113,9 +105,7 @@ def expresion_oral(texto, *, composicion_contextual=False):
         raise LecturaIncierta('Sobran símbolos o falta una agrupación.')
     return resultado
 
-
 def leer_tarea_oral(mensaje):
-    """(notación, aclaración). El mensaje original se conserva en el historial."""
     oral = re.search(r'\bal\s+(?:cuadrado|cubo)\b|\bra[ií]z\b|\b(?:seno|coseno|tangente|arcotangente|logaritmo)\b|\be\s+(?:elevado|a\s+la)|\belevado\s+a|\bpor\s+la\s+(?:derecha|izquierda)\b|\bsobre\b|\bmas\b|\bmenos\b', mensaje, re.I)
     if not oral:
         return '', ''
@@ -123,7 +113,6 @@ def leer_tarea_oral(mensaje):
         return _tarea_oral(mensaje), ''
     except LecturaIncierta:
         return '', 'Para asegurar qué expresión quieres trabajar, escríbela con notación matemática y paréntesis. Así evitamos cambiar el alcance de una raíz, potencia o división. ¿Cómo quedaría tu expresión?'
-
 
 def _tarea_oral(mensaje):
     derivada = re.search(r'\b(?:(primera|segunda|tercera)\s+)?derivada\s+de\s+(.+)', mensaje, re.I)

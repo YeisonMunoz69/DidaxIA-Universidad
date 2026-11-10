@@ -1,36 +1,4 @@
-<!--
-Rechazar con motivo · `EQ-021` / C2B.
 
-`EQ-021` pide un **motivo comprensible de rechazo**, y este diálogo es donde se
-escribe. Sin él no se envía nada.
-
-EL MOTIVO ES PARA EL ESTUDIANTE, NO PARA EL EXPEDIENTE
---------------------------------------------------------
-Y eso decide cómo se pide. Quien lee ese texto es alguien a quien acaban de
-rechazarle la autorización de su representante legal y necesita saber **qué
-corregir**: «ilegible» le sirve, «no cumple» no. La ayuda del campo lo dice en
-esos términos en vez de pedir «justificación».
-
-LA VALIDACIÓN ES ACCESIBLE, NO SÓLO VISIBLE
----------------------------------------------
-El mensaje viaja por `error` de `Campo.svelte`, que lo ata al control con
-`aria-errormessage` y marca `aria-invalid`. Un texto rojo suelto debajo del
-campo no lo anuncia ningún lector de pantalla, y quien navega por teclado se
-queda sin saber por qué no pasa nada al pulsar.
-
-Se valida **al enviar** y no a cada tecla: marcar en rojo un campo que todavía
-se está escribiendo es hostil, y aquí no hay ningún formato que adivinar.
-
-`trim()` EN LOS TRES SITIOS, Y NINGUNO SOBRA
-----------------------------------------------
-Aquí, porque un motivo de espacios no es un motivo y quien lo escribió merece
-enterarse antes de enviarlo. En `api/evidencias.js`, porque la regla no puede
-vivir sólo en un formulario que otro componente podría no usar. En el servidor y
-en el CHECK de la tabla, porque el frontend es cortesía.
-
-
-
--->
 <script>
   import Dialogo from '../../comun/base/Dialogo.svelte';
   import Boton from '../../comun/base/Boton.svelte';
@@ -40,7 +8,6 @@ en el CHECK de la tabla, porque el frontend es cortesía.
     abierto = $bindable(false),
     intento = 0,
     enviando = false,
-    /** Se llama con el motivo ya recortado. */
     alConfirmar,
     alCancelar
   } = $props();
@@ -48,15 +15,6 @@ en el CHECK de la tabla, porque el frontend es cortesía.
   let motivo = $state('');
   let error = $state('');
 
-  /**
-   * El campo se limpia al abrir, no al cerrar.
-   *
-   * Al cerrar sería lo intuitivo y sería peor: si el envío falla y el diálogo
-   * se cierra, quien escribió tres líneas las pierde. Limpiando al abrir, lo
-   * anterior sigue ahí mientras el diálogo siga siendo el mismo, y el siguiente
-   * rechazo empieza en blanco —que es lo que hay que garantizar, para que un
-   * motivo escrito sobre una evidencia no se envíe sobre otra—.
-   */
   $effect(() => {
     if (abierto) {
       motivo = '';

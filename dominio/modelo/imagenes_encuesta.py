@@ -1,4 +1,3 @@
-"""Evidencia raster incrustada y privada: mismos permisos que la encuesta."""
 import base64
 import binascii
 import io
@@ -11,7 +10,7 @@ MAX_BYTES = 1_500_000
 MAX_TOTAL = 8_000_000
 
 
-def validar_imagenes_encuesta(contenido, *, publicable=False):  # noqa: C901 -- formato, dimensiones y presupuesto global
+def validar_imagenes_encuesta(contenido, *, publicable=False):
     from dominio.modelo.recursos import RecursoInvalido, texto
 
     total = 0

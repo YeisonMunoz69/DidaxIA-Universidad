@@ -1,40 +1,3 @@
-/**
- * DD-14 · Lo que elige el estudiante.
- *
- * Guarda dos cosas: si quiere ver la representación gráfica, y en qué notación
- * quiere leer las derivadas que el sistema le escribe (`D-21`, `PM-B32`).
- *
- * ⚠️ **Y las dos no se comportan igual, que es lo que hay que saber antes de
- * añadir una tercera.** La gráfica **no viaja al servidor**: no es dato
- * personal ni de dominio, así que el servidor sigue emitiendo el bloque
- * siempre y el cliente decide si lo pinta. La notación **sí viaja**, porque
- * quien escribe la fórmula es el motor simbólico y traducirla aquí crearía una
- * segunda autoridad sobre la notación — el mismo motivo por el que el cliente
- * no normaliza la entrada. Ver `nucleo/formato/notaciones.js`.
- *
- * Que una preferencia viaje **no la convierte en dato personal**: es una
- * preferencia de presentación que el servidor usa para escribir la respuesta
- * de ese turno y no guarda en ningún sitio.
- *
- * EL VALOR POR DEFECTO ES VISIBLE. Quien no toque nada ve la gráfica; ocultarla
- * es un acto deliberado. Al revés se perdería una ayuda que la mayoría aprovecha.
- *
- * Esta es la única carpeta donde el estudiante decide algo sobre el sistema. En
- * todo lo demás el sistema decide sobre él sin decírselo. Vive aparte de sesion/
- * por eso, no por organización.
- *
- * POR QUÉ `localStorage` AQUÍ Y EN NINGÚN OTRO SITIO
- * ---------------------------------------------------
- * Porque esto es exactamente lo que el almacenamiento del navegador es: una
- * preferencia de presentación, sin valor para nadie más, que debe sobrevivir a
- * recargar la página. La sesión no se guarda ahí —va en cookie del servidor— y
- * el modelo del estudiante tampoco, porque no llega. Si algún día aparece aquí
- * una segunda clave que no sea una preferencia de pantalla, es que se cruzó una
- * línea.
- *
- * Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
- * Origen de esta pieza: OE3-Implementacion/09-Aportes-de-la-Consulta-Docente.md
- */
 
 import { LIENZO_INICIAL } from './lienzo.js';
 import { admitida } from '../formato/notaciones.js';
@@ -56,30 +19,17 @@ const INTENSIDAD_FONDO_PREDETERMINADA = LIENZO_INICIAL.intensidadFondoConversaci
 const OPACIDAD_PREGUNTA_PREDETERMINADA = LIENZO_INICIAL.opacidadPregunta;
 const OPACIDAD_RESPUESTA_PREDETERMINADA = LIENZO_INICIAL.opacidadRespuesta;
 
-/** Los tres valores del tema. `sistema` sigue lo que diga el navegador. */
 const ESCALAS = ['normal', 'comoda', 'grande'];
 
-/** Lee la preferencia guardada. Ante cualquier duda, VISIBLE. */
 function leerGuardada() {
   try {
     const v = globalThis.localStorage?.getItem(CLAVE);
     return v === null || v === undefined ? true : v === 'si';
   } catch {
-    // Navegación privada, almacenamiento bloqueado por la institución, o
-    // simplemente no hay `localStorage` en el entorno de pruebas. Ninguna de
-    // las tres es motivo para esconderle la gráfica a nadie.
     return true;
   }
 }
 
-/**
- * La notación guardada, o **cadena vacía si no hay ninguna**.
- *
- * Vacía y no el defecto: es la diferencia entre «no ha elegido» y «eligió el
- * operador», y solo la primera deja que el servidor decida. Una guardada que
- * ya no esté en el catálogo —porque `D-21` se enmendó— se trata como si no
- * hubiera: se descarta en silencio y el estudiante vuelve a elegir.
- */
 function leerNotacion() {
   try {
     const v = globalThis.localStorage?.getItem(CLAVE_NOTACION);
@@ -89,32 +39,7 @@ function leerNotacion() {
   }
 }
 
-/**
- * El tema guardado, o `sistema`.
- *
- * ⚠️ ES LA TERCERA CLAVE, Y LA CABECERA AVISA DE ESO. La regla que fija es que
- * aquí solo cabe una preferencia de PANTALLA, sin valor para nadie más. El tema
- * lo es: no viaja al servidor, no dice nada del estudiante, y lo único que
- * decide es de qué color se pinta la hoja.
- *
- * POR DEFECTO `sistema` Y NO `claro`. Quien configuró su equipo en oscuro suele
- * haberlo hecho por una razón —fotofobia, migraña, trabajar de noche— y abrirle
- * una pantalla blanca es desoír algo que ya dijo. Seguir al navegador es
- * respetarlo sin preguntar.
- */
 
-/**
- * ¿Está desplegada una de las dos columnas del marco?
- *
- * Son preferencias de PANTALLA, con todas las letras: no viajan al servidor,
- * no dicen nada del estudiante, y lo único que deciden es cuánto sitio ocupa
- * la conversación. Es lo que el mockup llama «modo zen» —plegar las dos deja
- * el hilo solo— y lo que un estudiante que trabaja en un portátil de 13" va a
- * querer la primera vez que le estorbe una columna.
- *
- * En pantallas de PC y tableta empiezan plegadas. Una elección guardada manda
- * sobre el valor inicial: abrirlas deliberadamente sobrevive a la recarga.
- */
 function leerVisible(clave) {
   try {
     const v = globalThis.localStorage?.getItem(clave);
@@ -124,18 +49,6 @@ function leerVisible(clave) {
   }
 }
 
-/**
- * En PC y tableta ambas columnas empiezan plegadas. En móvil la apertura
- * transitoria continúa gobernada por sus hojas y no por esta preferencia.
- *
- * Se mide UNA VEZ al arrancar, no en vivo: si el estudiante ya tomó una
- * decisión —guardada en `localStorage`— esa decisión manda en cualquier
- * ancho, porque «por defecto» describe lo que pasa ANTES del acto
- * deliberado, no una regla que reaparezca cada vez que se cambia el ancho
- * de la ventana. `48.0625rem` y no `48rem`: por debajo de `48rem` es
- * móvil —`--corte-tableta`—, y el límite tiene que ser exclusivo para no
- * solaparse con esa banda.
- */
 function enPantallaAmplia() {
   try {
     return globalThis.matchMedia
@@ -145,7 +58,6 @@ function enPantallaAmplia() {
   }
 }
 
-/** Las dos columnas comparten el valor inicial y conservan elecciones propias. */
 function leerPanelVisible() {
   return leerVisible(CLAVE_PANEL);
 }
@@ -168,8 +80,6 @@ function leerAnimaciones() {
   }
 }
 
-/** El ambiente del estado vacío siempre se ve; esta preferencia sólo decide
-    si continúa detrás de una conversación ya iniciada. Por defecto, sí. */
 function leerFondoConversacion() {
   try {
     const valor = globalThis.localStorage?.getItem(CLAVE_FONDO_CONVERSACION);
@@ -179,11 +89,6 @@ function leerFondoConversacion() {
   }
 }
 
-/** Porcentaje del ambiente que permanece detrás de una charla iniciada.
-
-    Cero es una elección válida: mantiene habilitada la preferencia, pero deja
-    el fondo completamente transparente. Una conversación nueva no consulta
-    este valor; su portada matemática siempre se presenta al 100 %. */
 function leerIntensidadFondo() {
   try {
     const cruda = globalThis.localStorage?.getItem(CLAVE_INTENSIDAD_FONDO);
@@ -231,11 +136,10 @@ export function crearPreferencias() {
     OPACIDAD_RESPUESTA_PREDETERMINADA
   ));
 
-  /** Guarda sin dejar que un almacenamiento bloqueado tumbe la preferencia. */
   function recordar(clave, valor) {
     try {
       globalThis.localStorage?.setItem(clave, valor ? 'si' : 'no');
-    } catch { /* no poder recordarla no impide respetarla en esta sesión */ }
+    } catch {  }
   }
 
   return {
@@ -263,23 +167,20 @@ export function crearPreferencias() {
       recordar(CLAVE_PANEL, panelVisible);
     },
 
-    /** `sistema` · `claro` · `oscuro`. */
     get tema() { return tema; },
 
-    /** Uno fuera de los tres no cambia nada, igual que la notación. */
     elegirTema(valor) {
       if (!TEMAS.includes(valor)) return;
       tema = valor;
       guardarTema(valor);
     },
 
-    /** `normal` · `comoda` · `grande`. */
     elegirEscala(valor) {
       if (!ESCALAS.includes(valor)) return;
       escalaTexto = valor;
       try {
         globalThis.localStorage?.setItem(CLAVE_ESCALA, valor);
-      } catch { /* no recordarlo no impide respetarlo hoy */ }
+      } catch {  }
     },
 
     alternarAnimaciones(valor = !animaciones) {
@@ -301,7 +202,7 @@ export function crearPreferencias() {
           CLAVE_INTENSIDAD_FONDO,
           String(intensidadFondoConversacion)
         );
-      } catch { /* la preferencia sigue aplicándose durante esta sesión */ }
+      } catch {  }
     },
 
     elegirOpacidadPregunta(valor) {
@@ -310,7 +211,7 @@ export function crearPreferencias() {
       opacidadPregunta = Math.min(100, Math.max(0, Math.round(numero)));
       try {
         globalThis.localStorage?.setItem(CLAVE_OPACIDAD_PREGUNTA, String(opacidadPregunta));
-      } catch { /* la elección sigue activa durante esta sesión */ }
+      } catch {  }
     },
 
     elegirOpacidadRespuesta(valor) {
@@ -319,42 +220,26 @@ export function crearPreferencias() {
       opacidadRespuesta = Math.min(100, Math.max(0, Math.round(numero)));
       try {
         globalThis.localStorage?.setItem(CLAVE_OPACIDAD_RESPUESTA, String(opacidadRespuesta));
-      } catch { /* la elección sigue activa durante esta sesión */ }
+      } catch {  }
     },
 
-    /** Cambia la preferencia y la conserva. Si no se puede conservar, da igual. */
     alternarGrafica(valor = !graficaVisible) {
       graficaVisible = Boolean(valor);
       try {
         globalThis.localStorage?.setItem(CLAVE, graficaVisible ? 'si' : 'no');
-      } catch { /* no poder recordarla no impide respetarla en esta sesión */ }
+      } catch {  }
     },
 
-    /** La elegida, o vacío si no ha elegido. Lo que se manda al servidor. */
     get notacion() { return notacion; },
 
-    /**
-     * Elige la notación · `PM-B32`.
-     *
-     * Una que no esté en el catálogo **no se guarda y no cambia nada**: es la
-     * misma barrera que `fases/catalogo.js` pone a lo que llega del servidor,
-     * aplicada aquí a lo que sale.
-     *
-     * `''` SÍ pasa, y es a propósito: es «sin elegir todavía» —el mismo
-     * valor con el que arranca esta preferencia, ver `leerNotacion()`—, no
-     * una notación inválida. `restablecer()` la usa para volver a ese
-     * estado; sin este caso aparte, `admitida('')` la rechazaba igual que
-     * a un id inventado y restablecer no volvía a soltar la elegida.
-     */
     elegirNotacion(valor) {
       if (valor !== '' && !admitida(valor)) return;
       notacion = valor;
       try {
         globalThis.localStorage?.setItem(CLAVE_NOTACION, valor);
-      } catch { /* igual que arriba: no recordarla no impide respetarla hoy */ }
+      } catch {  }
     },
 
-    /** Restablece todas las preferencias a sus valores predeterminados. */
     restablecer() {
       this.elegirColores(COLOR_INICIAL);
       this.elegirTema('sistema');
@@ -372,5 +257,4 @@ export function crearPreferencias() {
   };
 }
 
-/** La instancia que usa la aplicación. Una sola, como el estado de sesión. */
 export const preferencias = crearPreferencias();

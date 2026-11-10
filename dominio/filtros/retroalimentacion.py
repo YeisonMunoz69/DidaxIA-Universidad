@@ -1,5 +1,3 @@
-"""Retroalimentación optativa de propuestas que el CAS pudo refutar."""
-
 import re
 from dataclasses import replace
 
@@ -22,7 +20,6 @@ def _orientacion_derivada(pre, expresion):
     if "potencia" in regla:
         return "La regla de la potencia con exponente constante usa ese exponente como factor y lo reduce en una unidad. Si también el exponente depende de la variable, necesitas derivación logarítmica."
     return "Revisa qué regla de derivación corresponde a la estructura de la función."
-
 
 class FiltroRetroalimentacion(Filtro):
     nombre = "preparación de retroalimentación comprobada"

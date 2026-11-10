@@ -1,4 +1,4 @@
-<!-- Catálogo y cuaderno de estudio. Búsqueda y marcas de lectura sólo en RAM. -->
+
 <script>
   import { onDestroy } from 'svelte';
   import Degradacion from '../../comun/estado/Degradacion.svelte';

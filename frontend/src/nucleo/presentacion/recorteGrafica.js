@@ -1,4 +1,3 @@
-/** Recorta segmentos ya muestreados en píxeles; no altera la función ni su dominio. */
 export function recortarTrazado(puntos, ancho, alto) {
   const caja = [-2 * ancho, -2 * alto, 3 * ancho, 3 * alto];
   let anterior = null;
@@ -25,7 +24,6 @@ export function recortarTrazado(puntos, ancho, alto) {
 }
 
 function recortarSegmento(a, b, caja) {
-  // Normalizar evita desbordar al restar coordenadas próximas a ±1e308.
   const escala = Math.max(1, ...a.map(Math.abs), ...b.map(Math.abs), ...caja.map(Math.abs));
   const p = a.map(v => v / escala);
   const q = b.map(v => v / escala);
@@ -51,11 +49,7 @@ function recortarSegmento(a, b, caja) {
   return [interpolar(entrada, bordeEntrada), interpolar(salida, bordeSalida)];
 }
 
-/** Usa el ciclo público de actualización de cada curva, sin modificar JSXGraph. */
 export function protegerTrazadoSVG(curva) {
-  // Las asíntotas pueden producir millones de píxeles fuera del plano.
-  // Recortar antes de pintar evita perder el resto del SVG en el navegador.
-  // Se conservan los puntos de JSXGraph para su muestreo y detección de saltos.
   const actualizar = curva.updateRenderer;
   curva.updateRenderer = function () {
     const necesitaActualizar = this.needsUpdate;

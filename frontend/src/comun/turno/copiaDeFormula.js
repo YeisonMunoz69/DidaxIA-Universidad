@@ -2,16 +2,11 @@ import { toast } from '../estado/toasts.svelte.js';
 
 export const CONTEXTO_COPIA_FORMULAS = 'didaxia.copiar-formulas-del-chat';
 
-/** Copia el LaTeX original, nunca el texto duplicado del HTML/MathML de KaTeX.
- * Sólo se habilita dentro de un Turno; obras, fichas y teclas siguen siendo texto.
- */
 export function copiaDeFormula(nodo, opciones) {
   let datos = opciones;
   let inicio = null, arrastrando = false;
-  // Una fórmula dentro de «Abrir gráfica» conserva la acción del botón;
-  // no se crea un segundo control interactivo anidado dentro de él.
   const habilitada = () => datos.habilitada && !nodo.closest('button,a');
-  if (!habilitada()) return {}; // Las obras largas no necesitan escuchar cada gesto.
+  if (!habilitada()) return {};
   function atributos() {
     if (!habilitada()) return;
     nodo.setAttribute('role', 'button');
@@ -29,8 +24,6 @@ export function copiaDeFormula(nodo, opciones) {
     const seleccion = window.getSelection();
     if (seleccion && !seleccion.isCollapsed && nodo.contains(seleccion.anchorNode)) return;
     try {
-      // Los delimitadores permiten pegarla en el redactor como una fórmula,
-      // conservando exactamente el LaTeX recibido dentro de ellos.
       await navigator.clipboard.writeText(`$${datos.expresion}$`);
       toast.exito('Fórmula copiada');
     } catch {

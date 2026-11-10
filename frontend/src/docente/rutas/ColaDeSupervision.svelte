@@ -1,33 +1,4 @@
-<!--
-Lo pendiente de revisión.
 
-Con aprobar, editar o rechazar por elemento. RU-12. Diseñada para revisión
-POR MUESTREO Y POR EXCEPCION, no para revisar todo: con treinta o sesenta
-estudiantes revisar cada respuesta es insostenible, y el sistema no lo
-pide.
-
-QUÉ HACE ESTA PANTALLA PARA QUE «POR MUESTREO» SEA POSIBLE
------------------------------------------------------------
-Tres cosas, y ninguna es un adorno: filtra, dice cuántos quedan, y **no ofrece
-aprobar en bloque**. La ausencia del botón de aprobar todo es la decisión más
-importante de esta ruta — con él la revisión se vuelve un trámite de un clic y
-deja de ser revisión, que es justo lo que `RU-12` compra.
-
-LA CANTIDAD SE DICE, NO SE ESCONDE. Un docente que no sabe si le quedan seis o
-seiscientos no puede decidir cómo muestrear.
-
-DECISIÓN RATIFICADA: REVISIÓN AUTOMÁTICA POR EXCEPCIÓN
-------------------------------------------------------
-No existe un «modo supervisión» global ni un interruptor que detenga las
-respuestas antes de entregarlas. Los turnos degradados o marcados llegan a
-esta cola automáticamente; el docente revisa sólo los casos que lo necesitan
-y cualquier corrección se agrega después como una aclaración identificada,
-sin reescribir la respuesta original. Así se conserva el historial y se evita
-convertir la revisión pedagógica en una aprobación obligatoria de cada turno.
-
-
-
--->
 <script>
   import CargadorCubo from '../../comun/base/CargadorCubo.svelte';
   import TarjetaDeRevision from '../piezas/TarjetaDeRevision.svelte';
@@ -49,20 +20,8 @@ convertir la revisión pedagógica en una aprobación obligatoria de cada turno.
   let cargando = $state(false);
   let fallo = $state(null);
 
-  /**
-   * Páginas de verdad, no un tope que crece · reescrito el 2026-08-22.
-   *
-   * La primera versión acumulaba con «Cargar más» —un `tope` cada vez
-   * mayor, sin `desde`—, y a pedido explícito («el mecanismo en sí» se
-   * sentía raro, y el texto del botón confuso) se cambió por paginación
-   * fija: `TAMANO_PAGINA` elementos por página, con `desde` —nuevo en
-   * `api.listar()`, `rutas/supervision.py` y los dos almacenes de
-   * `ColaDeRevision`— diciendo cuántos saltarse. La lista nunca crece más
-   * allá de una página, así que el scroll vertical no vuelve a acumularse
-   * con dieciocho pendientes reales.
-   */
   const TAMANO_PAGINA = 6;
-  let pagina = $state(0);   // 0-indexado
+  let pagina = $state(0);
 
   const totalPaginas = $derived(Math.max(1, Math.ceil(total / TAMANO_PAGINA)));
 
@@ -88,33 +47,16 @@ convertir la revisión pedagógica en una aprobación obligatoria de cada turno.
       });
       elementos = r?.elementos ?? [];
       total = r?.total ?? elementos.length;
-      // Si la última fila de la última página desapareció en otra sesión,
-      // vuelve a una página que exista antes del próximo ciclo.
       const ultima = Math.max(0, Math.ceil(total / TAMANO_PAGINA) - 1);
       if (pagina > ultima) {
         pagina = ultima;
         await cargar();
       }
     } catch {
-      /* El sondeo auxiliar no tapa una cola que ya se puede leer. */
     }
   }
 
-  // Al cambiar los filtros se vuelve a pedir, y la página vuelve a la
-  // primera: una página 3 acumulada con un filtro nuevo podría pedir
-  // «desde» más allá de lo que ese filtro tiene.
-  //
-  // `untrack(cargar)` Y NO `cargar()` A SECAS: `cargar()` lee `pagina`
-  // antes de su primer `await` —para armar `desde`—, y esa lectura
-  // síncrona dentro de un `$effect` lo vuelve una dependencia MÁS de este
-  // efecto, aunque nunca se lea con un `void pagina` explícito. Sin
-  // `untrack`, `irAPagina()` de más abajo escribía `pagina` para cambiar
-  // de página, ese cambio volvía a disparar ESTE efecto, y su primera
-  // línea —`pagina = 0`— deshacía el cambio antes de que la petición
-  // llegara a completarse. Mismo bug, mismo arreglo, que la versión
-  // anterior de esta pantalla con `tope` — ver el historial de commits.
   $effect(() => {
-    // Se leen para que el efecto dependa de ellos.
     void filtros.urgencia; void filtros.clase; void filtros.tipo;
     pagina = 0;
     untrack(cargar);
@@ -131,9 +73,6 @@ convertir la revisión pedagógica en una aprobación obligatoria de cada turno.
   });
 
   onMount(() => {
-    // Las excepciones nacen en otras sesiones. Una consulta corta mientras la
-    // pestaña está visible y otra al recuperar el foco evitan la recarga manual
-    // sin mantener conexiones abiertas ni consultar en segundo plano.
     const alVolver = () => {
       if (globalThis.document?.visibilityState !== 'hidden') actualizarSilenciosamente();
     };
@@ -147,7 +86,6 @@ convertir la revisión pedagógica en una aprobación obligatoria de cada turno.
     };
   });
 
-  /** Tras actuar sobre un elemento, se quita de la lista sin recargar entera. */
   function quitar(id) {
     elementos = elementos.filter((e) => e.id !== id);
     total = Math.max(0, total - 1);
@@ -222,17 +160,6 @@ convertir la revisión pedagógica en una aprobación obligatoria de cada turno.
 </PantallaDesplazable>
 
 <style>
-  /*
-    El envoltorio de scroll —antes `.cola-desplazable`/`.cola` en este mismo
-    archivo— se extrajo a `docente/piezas/PantallaDesplazable.svelte` el
-    2026-08-22: era una de cuatro copias casi idénticas del mismo arreglo
-    (el bug real que resuelve, y la razón de las dos capas separadas, está
-    documentado allá). La lista de `TarjetaDeRevision` sigue en una sola
-    columna a propósito —ver el docstring del módulo—: son tarjetas de
-    altura variable con acciones que pueden crecer al editar, y el mosaico
-    de dos columnas que se probó primero se veía descuadrado con datos
-    reales de altura muy distinta.
-  */
   .badge-cuenta {
     padding: 4px 12px;
     background: var(--surface-panel);
@@ -248,8 +175,6 @@ convertir la revisión pedagógica en una aprobación obligatoria de cada turno.
   .ayuda-supervision p { margin: .6rem 0 0; padding: .75rem .9rem; border: 1px solid var(--trazo-suave); border-radius: var(--radius-sm); background: var(--surface-panel); }
 
 
-  /* Una columna de tarjetas horizontales — ver el comentario más arriba
-     sobre por qué se abandonó el mosaico de dos columnas. */
   .lista {
     display: flex;
     flex-direction: column;
@@ -259,14 +184,6 @@ convertir la revisión pedagógica en una aprobación obligatoria de cada turno.
     list-style: none;
   }
 
-  /* `max-inline-size: none`: `estilos/tipografia.css` trae
-     `:where(p, li) { max-inline-size: var(--ancho-lectura) }` global —el
-     mismo mecanismo ya documentado en `MisClases.svelte::.frontera`, solo
-     que esta vez cae sobre `<li>` y no sobre un `<p>`—. Sin esto, cada
-     tarjeta quedaba capada a ~534px de ancho de lectura aunque `.lista`
-     tuviera 1208px disponibles: la franja de acciones y el cuerpo se
-     apretaban dentro de esa columna angosta en vez de usar el ancho real
-     de la pantalla. Confirmado con `getBoundingClientRect` el 2026-08-22. */
   .lista > li { max-inline-size: none; }
 
   .paginacion {

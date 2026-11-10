@@ -1,4 +1,3 @@
-"""Vocabulario cerrado de apariencia, independiente del modelo educativo."""
 PALETAS = frozenset(["ambar", "zafiro", "electrico", "esmeralda", "jade", "amatista", "indigo", "rubi", "coral", "ocre", "terracota", "turquesa", "orquidea", "caramelo", "grafito", "vinotinto", "salvia", "lino", "oliva", "lavanda", "noche", "oceano", "bosque", "ciruela", "cobre", "cereza"])
 COLORES = frozenset(
     parte + modo for modo in ("Claro", "Oscuro")
@@ -26,6 +25,5 @@ def validar_cambios(cambios):
             raise ValueError("porcentaje no admisible")
     return dict(cambios)
 
-
 class RevisionDesactualizada(ValueError):
-    """Otra escritura cambió la preferencia; se debe recuperar antes de guardar."""
+    pass

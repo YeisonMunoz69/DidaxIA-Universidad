@@ -1,4 +1,4 @@
-<!-- Índice lateral del banco: conteo, búsqueda, listado y privacidad. -->
+
 <script>
   import Icono from '../../comun/base/Icono.svelte';
   import BuscadorDeConceptos from './BuscadorDeConceptos.svelte';

@@ -1,30 +1,6 @@
-<!--
-La declaración de sistema automatizado.
 
-En el primer mensaje y en la identidad visible. RP-20 y RP-17.
-
-POR QUÉ EL TEXTO VIVE AQUÍ Y NO VIAJA EN EL TURNO
---------------------------------------------------
-`08-Contrato-del-Turno.md` §10: si viajara, un turno cualquiera podría
-alterarlo. La declaración de que esto es un sistema automatizado es
-precisamente lo que no puede depender de lo que el sistema genere.
-
-LA REDACCIÓN NO ES LIBRE. `RP-20` es inusualmente específico: el aviso emplea
-formulaciones del tipo «indicios» y nunca del tipo «tienes ansiedad
-matemática». Aquí no se nombra ningún estado del estudiante, y ésa es la línea
-que no se cruza al reescribirlo.
-
-NO DICE «HOLA, SOY TU TUTOR». Presentarse como una persona es lo contrario de
-declararse automatizado, y el mockup previo lo hacía. Dice qué es y qué no
-puede hacer, que es lo que permite calibrar cuánto confiar.
-
-
-Contrato en OE3-Implementacion/08-Contrato-del-Turno.md
-
--->
 <script>
   let {
-    /** `completa` en el primer mensaje; `breve` en la cabecera. */
     forma = 'completa'
   } = $props();
 </script>

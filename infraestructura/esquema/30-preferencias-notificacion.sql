@@ -1,6 +1,3 @@
--- Preferencias individuales para avisos opcionales por correo.
--- Una fila ausente significa desactivado; la bandeja interna no depende de esta tabla.
-
 CREATE TABLE IF NOT EXISTS preferencia_notificacion (
     sujeto_google      text NOT NULL REFERENCES persona(sujeto_google) ON DELETE CASCADE,
     categoria          text NOT NULL CHECK (categoria IN ('solicitudes_matricula')),
@@ -12,8 +9,3 @@ CREATE TABLE IF NOT EXISTS preferencia_notificacion (
 CREATE INDEX IF NOT EXISTS preferencia_notificacion_correo_activo
     ON preferencia_notificacion (categoria, sujeto_google)
     WHERE correo_habilitado;
-
-COMMENT ON TABLE preferencia_notificacion IS
-    'Suscripciones individuales a avisos opcionales; una ausencia equivale a false.';
-COMMENT ON COLUMN preferencia_notificacion.correo_habilitado IS
-    'Controla sólo el correo; el evento y su bandeja interna siempre se conservan.';

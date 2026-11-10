@@ -1,4 +1,3 @@
-"""Preferencias propias con revisión para evitar sobrescrituras entre dispositivos."""
 from psycopg.types.json import Jsonb
 
 from adaptadores.salientes.registro.base_postgres import RepositorioPostgres, exigir_persona_activa

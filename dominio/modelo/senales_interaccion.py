@@ -1,8 +1,3 @@
-"""Banco propio de observables del diálogo, sin atribuir estados internos.
-
-Un voto por mensaje y categoría. El texto se analiza localmente; sólo códigos
-y conteos salen al contrato KPI. No cambia la política ni el perfil del tutor.
-"""
 from __future__ import annotations
 
 import re
@@ -27,8 +22,8 @@ _FORMATOS = {
     "grafica": r"(?:^\W*|\b(?:por\s+favor|puedes|podrias|quiero|necesito)\s+(?:que\s+)?(?:me\s+)?)(?:grafica(?:r)?|graficame|dibuja(?:r)?)\b|\b(?:dame|muestrame|quiero\s+ver)\s+(?:(?:la|una)\s+grafica|.{0,60}\by\s+(?:la|una)\s+grafica)\b",
     "resumen": r"\b(?:resume|resumelo|resumen|sintetiza\w*|mas\s+cort[oa]|en\s+forma\s+corta)\b",
 }
-# Candidatas locales: estas reglas reconocen AFIRMACIONES, no preguntas ni
-# resultados aislados. No se mezclan con M16/M21/M22/M23 ni con sondeos E1–E4.
+
+
 _CONCEPTOS = {
     "LIM-01": ("Atribuye inexistencia del límite a 0/0", r"0\s*/\s*0.{0,70}(?:limite\s+no\s+existe|no\s+existe\s+el\s+limite|no\s+hay\s+limite)"),
     "LIM-02": ("Equipara función no definida con límite inexistente", r"(?:funcion|f\s*\([^)]{1,20}\)).{0,25}no\s+(?:esta\s+)?definid[oa].{0,60}(?:limite\s+no\s+existe|no\s+existe\s+el\s+limite)"),
@@ -45,14 +40,12 @@ def _plano(texto: str) -> str:
                     if unicodedata.category(c) != "Mn")
     return re.sub(r"\s+", " ", plano).strip()
 
-
 def _coincide(texto: str, patron: str) -> bool:
     for m in re.finditer(patron, texto):
         prefijo = re.split(r"[.,;!?]", texto[:m.start()])[-1]
         if _NEGACION.search(prefijo) is None:
             return True
     return False
-
 
 def observar(texto: str) -> dict:
     if not isinstance(texto, str) or not texto.strip():
@@ -66,7 +59,7 @@ def observar(texto: str) -> dict:
         senales = sorted(set(senales) | {"ayuda"})
     if "FAH" in extraer(texto):
         senales.append("reticencia")
-    # No decide por una hipótesis, una pregunta o una explicación refutada.
+
     duda = re.search(r"[?¿]|\b(?:sera|supongamos|alguien\s+dijo|no\s+(?:significa|implica)|es\s+falso|no\s+es\s+cierto|aunque|pero)\b", plano)
     conceptos = [] if duda else [codigo for codigo, (_, regla) in _CONCEPTOS.items()
                                 if _coincide(plano, regla)]

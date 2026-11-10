@@ -1,4 +1,3 @@
-// Avisos breves de interfaz. Ningún contenido sensible del mensaje se guarda aquí.
 let avisos = $state([]);
 let siguienteId = 0;
 

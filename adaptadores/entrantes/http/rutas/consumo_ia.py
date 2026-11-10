@@ -1,5 +1,3 @@
-"""Consulta y exportaciones del consumo institucional de IA."""
-
 from __future__ import annotations
 
 import csv
@@ -26,7 +24,6 @@ class ConsumoIA(Protocol):
         self, actor: str, desde: datetime, hasta: datetime, formato: str, documento: bytes
     ) -> None: ...
 
-
 def _periodo(peticion: Request) -> tuple[datetime, datetime]:
     hoy = datetime.now(ZONA).date()
     desde_crudo = peticion.query_params.get("desde") or (hoy - timedelta(days=29)).isoformat()
@@ -45,7 +42,6 @@ def _periodo(peticion: Request) -> tuple[datetime, datetime]:
         datetime.combine(hasta_fecha, datetime.min.time(), ZONA),
     )
 
-
 SECCIONES = frozenset({"totales", "modelos", "diaria", "horarios", "metodologia"})
 
 
@@ -55,7 +51,6 @@ def _secciones(peticion: Request) -> frozenset[str]:
     if not seleccion or not seleccion <= SECCIONES:
         raise ValueError("selección de secciones no válida")
     return seleccion
-
 
 def _csv(datos: dict, secciones: frozenset[str] = SECCIONES) -> bytes:
     salida = StringIO(newline="")
@@ -99,7 +94,6 @@ def _csv(datos: dict, secciones: frozenset[str] = SECCIONES) -> bytes:
     escritor.writerow(["advertencia", "estimación reproducible; no es cargo real de facturación"])
     escritor.writerow(["regla_supresion", datos["regla_supresion"]])
     return ("\ufeff" + salida.getvalue()).encode("utf-8")
-
 
 def crear_router(sesiones: Sesiones, consumo: ConsumoIA, puerta: PuertaDeSupresion) -> APIRouter:
     router = APIRouter()
