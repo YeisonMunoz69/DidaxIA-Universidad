@@ -1,0 +1,308 @@
+/* Normalización y comportamiento por defecto.
+
+   Caja de bordes, foco visible, prefers-reduced-motion y el estilo por
+   defecto de los elementos nativos que DD-05 obliga a usar.
+
+   DD-05 compromete WCAG 2.2 nivel AA, no 2.1. La versión 2.2 añadió
+   criterios que la anterior no tenía, y tres se resuelven aquí de una vez
+   para toda la aplicación en lugar de componente por componente:
+
+     2.4.11 Foco no oscurecido  ·  scroll-margin en los elementos enfocables
+     2.4.13 Apariencia del foco ·  contorno de 2px con separación
+     2.5.8  Tamaño del objetivo ·  mínimo 24x24 en todo lo pulsable
+
+
+   */
+
+@import './tokens.css';
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+/* ── El armazón ───────────────────────────────────────────────────────────
+
+   LA APLICACIÓN OCUPA LA PANTALLA Y LO QUE SE DESPLAZA VA DENTRO. Hasta el
+   2026-08-16 no era así: `main` llevaba `min-block-size: 100vh` y la cabecera
+   medía 102 px, de modo que en un teléfono de 812 px el documento arrancaba
+   en 914 px — **se desplazaba antes de tener contenido**, y con la cabecera,
+   la identidad y el aviso permanente por delante, el hilo de la conversación
+   quedaba fuera de la pantalla. Es lo que la ficha `E-02` recogió como «ni
+   siquiera deja ver el chat».
+
+   Los dos mockups ya lo hacían bien —`body { height: 100dvh; overflow:
+   hidden }` con el área de chat desplazándose por dentro— y el frontend no lo
+   había portado. Esto lo porta.
+
+   `dvh` Y NO `vh`: en un teléfono la barra de direcciones se recoge al
+   desplazar, y `100vh` mide la pantalla SIN recoger. Con `vh` el redactor
+   queda debajo del borde justo mientras se escribe, que es cuando importa.
+
+   `min-block-size: 0` en el que crece no es adorno: un hijo de flexbox se
+   niega a encoger por debajo de su contenido salvo que se le diga, y sin eso
+   el área desplazable crece en vez de desplazarse — el defecto vuelve con
+   otra cara. */
+
+html, body { block-size: 100%; }
+
+body {
+  margin: 0;
+  background: var(--surface-canvas);
+  color: var(--ink-primary);
+}
+
+/* «Modo zen», del mockup: las dos columnas del carril plegadas a la vez —
+   `Aplicacion.svelte` pone la clase—. `--surface-zen` es casi negro en los
+   dos temas a propósito, ver `tokens.css`. Como `#aplicacion` cubre el
+   viewport entero (arriba), este fondo casi nunca se ve directamente;
+   existe para el instante entre que el navegador pinta el `<body>` y el
+   armazón termina de ocuparlo. */
+body.zen-mode { background: var(--surface-zen); }
+
+#aplicacion {
+  display: flex;
+  flex-direction: column;
+  block-size: var(--alto-visible, 100dvh);
+  position: relative;
+  inset-block-start: var(--desplazamiento-visible, 0px);
+}
+
+/* ── La superficie de cuaderno ────────────────────────────────────────────
+
+   La cuadrícula del papel. Va SOLO donde se trabaja —el hilo, el redactor,
+   la ficha de un concepto— y nunca de fondo global ni bajo la navegación:
+   una trama detrás de un menú es ruido, detrás de una derivada es papel.
+
+   Se genera con dos degradados y no con una imagen, para que aguante el
+   zoom al 200 % que WCAG 1.4.4 exige y para que no cueste una petición. */
+
+.superficie-cuaderno {
+  background-color: var(--surface-paper);
+  background-image:
+    linear-gradient(var(--grid-dot) var(--grid-dot-size), transparent var(--grid-dot-size)),
+    linear-gradient(90deg, var(--grid-dot) var(--grid-dot-size), transparent var(--grid-dot-size));
+  background-size: var(--grid-dot-gap) var(--grid-dot-gap);
+}
+
+/* ── Foco ─────────────────────────────────────────────────────────────
+   Se estiliza el foco VISIBLE, no todo foco: así el puntero no deja
+   contornos y el teclado sí los recibe siempre. Nunca `outline: none`
+   sin sustituto, que es la forma más común de romper la navegación por
+   teclado sin darse cuenta. */
+
+:focus-visible {
+  outline: 2px solid var(--accent-main);
+  outline-offset: 2px;
+  border-radius: var(--radius-xs);
+}
+
+/* WCAG 2.2 · 2.4.11 — que el elemento enfocado no quede tapado por una
+   barra fija al llegar a él desplazándose. */
+:where(a, button, input, select, textarea, summary, [tabindex]) {
+  scroll-margin-block: 5rem;
+}
+
+/* WCAG 2.2 · 2.5.8 — objetivo mínimo de 24x24 px. Se aplica al elemento
+   nativo para no tener que recordarlo en cada componente. */
+:where(button, [role='button'], summary, input[type='checkbox'],
+       input[type='radio']) {
+  min-block-size: 24px;
+  min-inline-size: 24px;
+}
+
+/* ── Elementos nativos ─────────────────────────────────────────────── */
+
+:where(button, input, select, textarea) {
+  font: inherit;
+  color: inherit;
+}
+
+/* Un nombre de archivo largo no puede imponer su ancho intrínseco al panel ni
+   alterar la geometría del área desplazable al volver del selector nativo. */
+:where(input[type='file']) {
+  min-inline-size: 0;
+  max-inline-size: 100%;
+}
+
+button { cursor: pointer; }
+
+:where(a) {
+  color: var(--accent-main);
+  text-underline-offset: 0.2em;
+}
+
+/* El subrayado no se retira: el color por sí solo no distingue un enlace
+   para quien no percibe ese contraste cromático. */
+:where(a):hover { color: var(--accent-hover); }
+
+:where(img, svg, canvas) { max-inline-size: 100%; height: auto; }
+
+:where(dialog)::backdrop { background: var(--velo-modal); }
+
+/* ── Scrollbars finos del mockup ─────────────────────────────────────── */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--trazo) transparent;
+}
+
+body.dark-theme * {
+  scrollbar-color: var(--trazo-suave) transparent;
+}
+
+::-webkit-scrollbar {
+  inline-size: 6px;
+  block-size: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--ink-ghost);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-main);
+}
+
+body.dark-theme ::-webkit-scrollbar-thumb {
+  background: var(--trazo-suave);
+}
+
+body.dark-theme ::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-main);
+}
+
+/* ── Tooltips ────────────────────────────────────────────────────────── */
+[data-tooltip] {
+  position: relative;
+}
+
+[data-tooltip]:hover::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: -32px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--ink-primary);
+  color: var(--surface-paper);
+  padding: 4px 10px;
+  border-radius: var(--radius-xs);
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+  z-index: 100;
+  pointer-events: none;
+  animation: tooltipIn 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+  box-shadow: var(--shadow-soft);
+}
+
+[data-tooltip]:disabled:hover::after,
+[data-tooltip][disabled]:hover::after {
+  display: none;
+}
+
+[data-tooltip-pos="arriba"]:hover::after {
+  bottom: auto;
+  top: -34px;
+  animation: tooltipInArriba 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes tooltipIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+@keyframes tooltipInArriba {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* ── Utilidad: visible solo para lector de pantalla ────────────────────
+   No se usa `display: none` ni `visibility: hidden`, que retiran el
+   contenido también del lector. */
+
+.solo-lectura-asistida {
+  position: absolute;
+  inset: 0 auto auto 0;
+  inline-size: 1px;
+  block-size: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Y con el dedo, 24 px no alcanza aunque el criterio se cumpla.
+   `05` §10: en escritorio el mínimo se cumple casi solo; «en móvil, con el
+   pulgar, es donde de verdad se nota». El 44 no es una cifra elegida aquí:
+   es la del propio mockup del proyecto —`movil.html`, `.btn-send` de 44x44—,
+   que es la fuente que `06` §3 manda usar para la interacción.
+
+   La condición es el PUNTERO y no el ancho de la ventana: quien usa un
+   teléfono necesita el objetivo grande aunque gire la pantalla, y quien
+   tiene ratón no lo necesita aunque estreche la ventana. Con `max-width` se
+   habría acertado por casualidad en el caso común y fallado en los dos
+   raros. */
+
+@media (pointer: coarse) {
+  :where(button, [role='button'], summary, input[type='checkbox'],
+         input[type='radio']) {
+    min-block-size: 44px;
+    min-inline-size: 44px;
+  }
+
+  /* Y los campos, que la lista de arriba NO incluye —tampoco la de 24 px, y
+     ahí es correcto: un `<input>` de texto se dimensiona por su contenido y
+     casi siempre pasa de sobra—. Con el dedo no basta: medidos el 2026-08-14,
+     los tres `<select>` de la cola de supervisión salían de **31 px**. Aquí
+     solo el alto: forzarles un ancho mínimo cuadrado no significa nada en un
+     campo que ocupa toda la línea. */
+  :where(select, textarea, input:not([type='checkbox']):not([type='radio'])) {
+    min-block-size: 44px;
+  }
+}
+
+/* La geometría de la onda se calcula en `animaciones/gsap.js`. Aquí se
+   desactiva el fundido nativo para que sólo se vea el recorte radial. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-old(root) {
+  z-index: 1;
+}
+
+::view-transition-new(root) {
+  z-index: 9999;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+  }
+}
+
+/* Los menús comparten presentación; el control nativo conserva su contrato. */
+.menu-desplegable-marco{position:relative;display:block;min-inline-size:0;inline-size:100%;isolation:isolate}
+select.menu-desplegable-nativo{position:relative;z-index:1;opacity:0;inline-size:100%;min-block-size:44px;cursor:pointer}
+.menu-desplegable-marco:focus-within{outline:2px solid var(--help-color);outline-offset:2px;border-radius:var(--radius-sm)}

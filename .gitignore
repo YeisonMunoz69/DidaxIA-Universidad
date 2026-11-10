@@ -1,0 +1,23 @@
+# Configuración y datos del operador
+.env
+.env.*
+!.env.ejemplo
+*.key
+*.pem
+credenciales*.json
+secretos*.json
+*.dump
+*.dump.*
+*.log
+
+# Archivos generados
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.venv*/
+venv/
+node_modules/
+dist/
+.vite/
+.vscode/

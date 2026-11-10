@@ -1,0 +1,197 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 650" width="100%" height="100%">
+  <defs>
+    <!-- Filtros o gradientes si se requieren -->
+  </defs>
+
+  <!-- PALETA DE PINTOR -->
+  <g id="paleta">
+    <!-- Contorno exterior negro grueso (base) y cuerpo de la paleta -->
+    <!-- Forma orgánica redondeada con la hendidura para el pulgar a la derecha -->
+    <path d="M 270 148
+             C 170 142 65 210 65 330
+             C 65 460 160 550 280 550
+             C 380 550 435 480 395 440
+             C 355 400 330 365 330 330
+             C 330 295 385 240 415 285
+             C 435 315 445 280 435 240
+             C 415 165 350 152 270 148 Z"
+          fill="#edf6fc"
+          stroke="#111116"
+          stroke-width="16"
+          stroke-linecap="round"
+          stroke-linejoin="round" />
+
+    <!-- Sombra celeste inferior en el borde de la paleta -->
+    <path d="M 100 440
+             C 140 515 210 542 280 542
+             C 365 542 418 485 390 445
+             C 368 418 340 375 338 345
+             C 340 365 365 410 385 432
+             C 405 455 365 528 275 528
+             C 195 528 125 490 92 415
+             Z"
+          fill="#cbe3f5" opacity="0.85" />
+
+    <!-- Reflejo blanco brillante superior izquierdo en la paleta -->
+    <path d="M 95 315
+             C 95 245 130 190 190 168"
+          fill="none"
+          stroke="#ffffff"
+          stroke-width="8"
+          stroke-linecap="round" />
+    <circle cx="100" cy="335" r="4.5" fill="#ffffff" />
+
+    <!-- Puntos / Manchas de pintura -->
+    <!-- 1. Amarillo / Mostaza (superior) -->
+    <g transform="translate(235, 205)">
+      <ellipse cx="0" cy="0" rx="34" ry="32" fill="#f7ab3b" stroke="#111116" stroke-width="13" />
+      <!-- Brillo -->
+      <path d="M -16 -12 C -12 -22 5 -24 16 -16" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round" />
+      <circle cx="16" cy="-10" r="2.5" fill="#ffffff" />
+    </g>
+
+    <!-- 2. Naranja / Rojo claro (segundo) -->
+    <g transform="translate(155, 240)">
+      <circle cx="0" cy="0" r="33" fill="#eb5838" stroke="#111116" stroke-width="13" />
+      <path d="M -16 -12 C -12 -22 5 -24 15 -16" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round" />
+      <circle cx="16" cy="-9" r="2.5" fill="#ffffff" />
+    </g>
+
+    <!-- 3. Rosa / Magenta (tercero) -->
+    <g transform="translate(125, 335)">
+      <circle cx="0" cy="0" r="34" fill="#f26eb4" stroke="#111116" stroke-width="13" />
+      <path d="M -17 -13 C -13 -23 5 -25 16 -17" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round" />
+      <circle cx="17" cy="-10" r="2.5" fill="#ffffff" />
+    </g>
+
+    <!-- 4. Azul (cuarto) -->
+    <g transform="translate(168, 420)">
+      <circle cx="0" cy="0" r="33" fill="#2d72d9" stroke="#111116" stroke-width="13" />
+      <path d="M -16 -12 C -12 -22 5 -24 15 -16" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round" />
+      <circle cx="15" cy="-9" r="2.5" fill="#ffffff" />
+    </g>
+
+    <!-- 5. Verde menta (quinto) -->
+    <g transform="translate(255, 448)">
+      <circle cx="0" cy="0" r="33" fill="#58ba7d" stroke="#111116" stroke-width="13" />
+      <path d="M -16 -12 C -12 -22 5 -24 15 -16" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round" />
+      <circle cx="15" cy="-9" r="2.5" fill="#ffffff" />
+    </g>
+
+    <!-- 6. Violeta / Lila suave (pequeño, sexto) -->
+    <g transform="translate(328, 442)">
+      <circle cx="0" cy="0" r="21" fill="#be93dc" stroke="#111116" stroke-width="11" />
+      <path d="M -10 -8 C -7 -14 3 -15 10 -10" fill="none" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round" />
+    </g>
+  </g>
+
+  <!-- PINCEL -->
+  <g id="pincel">
+    <!-- 1. MANGO DE MADERA -->
+    <!-- Cuerpo del mango estilizado -->
+    <path d="M 314 246
+             L 368 418
+             C 386 476 405 528 414 542
+             C 422 554 416 564 402 558
+             C 388 552 370 514 346 432
+             L 294 256 Z"
+          fill="#9e5628"
+          stroke="#111116"
+          stroke-width="13"
+          stroke-linejoin="round"
+          stroke-linecap="round" />
+
+    <!-- Tono medio / volumen de madera -->
+    <path d="M 312 250
+             L 362 414
+             C 378 466 396 515 404 535
+             C 400 538 388 522 370 460
+             L 322 256 Z"
+          fill="#ba6e37" />
+
+    <!-- Línea de brillo suave en el mango -->
+    <path d="M 334 278 L 366 414"
+          stroke="#e29b61"
+          stroke-width="4.5"
+          stroke-linecap="round" />
+
+    <!-- 2. FÉRULA METÁLICA (Virola azul) -->
+    <g id="ferula">
+      <!-- Base metálica rectangular rotada -->
+      <path d="M 283 176
+               L 326 195
+               L 307 242
+               L 264 223 Z"
+            fill="#2f628b"
+            stroke="#111116"
+            stroke-width="13"
+            stroke-linejoin="round" />
+
+      <!-- Reflejo interior claro -->
+      <path d="M 294 181
+               L 314 190
+               L 297 232
+               L 277 223 Z"
+            fill="#579ec7" />
+
+      <!-- Ranura divisoria metálica con relieve -->
+      <path d="M 273 203 L 316 222"
+            stroke="#111116"
+            stroke-width="9"
+            stroke-linecap="round" />
+      <path d="M 276 204 L 313 221"
+            stroke="#7cbde4"
+            stroke-width="3"
+            stroke-linecap="round" />
+    </g>
+
+    <!-- 3. CERDAS Y PUNTA DE PINTURA -->
+    <g id="cerdas">
+      <!-- Silueta principal en forma de gota continua -->
+      <path d="M 283 175
+               C 270 156 256 122 268 76
+               C 272 60 282 58 290 70
+               C 305 92 322 135 326 194 Z"
+            fill="#7b3f1d"
+            stroke="#111116"
+            stroke-width="13"
+            stroke-linejoin="round"
+            stroke-linecap="round" />
+
+      <!-- Cuerpo medio de cerdas (volumen) -->
+      <path d="M 284 172
+               C 274 153 268 126 276 86
+               C 285 104 305 142 316 186 Z"
+            fill="#9b562a" />
+
+      <!-- Textura sutil del pelo -->
+      <path d="M 280 162 C 275 140 274 118 280 98"
+            stroke="#5c2c11"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            fill="none" />
+      <path d="M 292 168 C 291 146 294 125 299 110"
+            stroke="#5c2c11"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            fill="none" />
+
+      <!-- Mancha de pintura en la punta (Rojo primario) -->
+      <path d="M 271 100
+               C 265 85 269 72 274 65
+               C 280 57 286 64 290 72
+               C 294 82 291 94 286 102
+               C 280 108 274 106 271 100 Z"
+            fill="#e23a36"
+            stroke="#111116"
+            stroke-width="4"
+            stroke-linejoin="round" />
+
+      <!-- Reflejo / matiz secundario en la punta (Azul) -->
+      <path d="M 278 61
+               C 281 57 286 60 288 67
+               C 285 71 280 69 278 61 Z"
+            fill="#2c72dd" />
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,50 @@
+{
+  "_comentario": "Dependencias al minimo: Svelte, KaTeX, JSXGraph y MathLive (ver _justificacion_mathlive). Cada anadido posterior necesita justificacion escrita, porque DD-05 decidio HTML nativo antes que bibliotecas de componentes. Estructura en OE3-Implementacion/07-Estructura-del-Frontend.md",
+  "_justificacion_mathlive": "PM-F25 fase 6: MathLive edita formulas renderizadas; KaTeX solo las pinta. El menu interno permanece apagado porque mezcla cadenas sin traducir y acciones de resolver que no corresponden a un tutor. El piloto de septiembre de 2026 mostro que el modo manual sin teclas propias bloqueaba la escritura matematica en telefonos. El redactor ahora ofrece un panel unico con numeros y simbolos para movil, manteniendo MathLive como editor de formulas sin abrir su segundo teclado automaticamente.",
+  "name": "agente-calculo-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "_comentario_dev_publico": "D1A · las dos superficies en local. `dev` levanta la APLICACION en localhost:5173 —comportamiento por defecto, igual que antes—; `dev-publico` levanta la PORTADA en localhost:5174. Se pueden tener las dos a la vez para comprobar un enlace de una a otra sin desplegar. El modo `publico` es lo unico que cambia la superficie en localhost: sin el, `superficieDe()` elige la aplicacion. Ver el bloque `MODO_PUBLICO` de vite.config.js.",
+    "dev-publico": "vite --mode publico",
+    "construir": "vite build",
+    "previsualizar": "vite preview",
+    "comprobar": "svelte-check --tsconfig ./jsconfig.json",
+    "prueba": "vitest run",
+    "_comentario_navegador": "Fase 5 · el encargo exige no aceptar solo jsdom: «Ejecuta navegador real y conserva capturas deterministas de escritorio y movil». D-4 de LINEA-BASE-TUTOR-C4R.md registraba justamente esa deuda —el diseno responsive solo se comprobaba en jsdom, que no calcula diseno— y esta fase la cierra para sus pantallas. Se instala `playwright` (Apache-2.0) y NO `@playwright/test`: aquel trae su propio ejecutor de pruebas, que duplicaria a vitest sin aportar nada; este es solo el controlador del navegador y se maneja desde un guion de Node. Version fijada a 1.62.1 para que corresponda con el Chromium ya instalado en el equipo (chromium-1234). NO descarga navegadores en CI: el guion se salta la comprobacion y lo dice si no encuentra ninguno.",
+    "prueba-navegador": "node pruebas/navegador/lector-de-fuentes.mjs",
+    "prueba-navegador-lector": "node pruebas/navegador/lector-editorial.mjs",
+    "prueba-navegador-chat": "node pruebas/navegador/teclado-y-formulas.mjs",
+    "prueba-navegador-chat-contenedor": "node pruebas/navegador/teclado-y-formulas.mjs --contenedor",
+    "prueba-navegador-contingencia": "node pruebas/navegador/contingencia-ballena.mjs",
+    "prueba-navegador-redactor": "node pruebas/navegador/redactor-superficie.mjs",
+    "prueba-navegador-pdf": "node pruebas/navegador/modos-profesionales.mjs --solo-exportaciones-pdf",
+    "prueba-navegador-ux": "node pruebas/navegador/revision-ux-docente-tema.mjs",
+    "_comentario_navegador_modos": "Fase 7 · EQ-031. El selector de espacio es el elemento nuevo con mas riesgo de romper la cabecera en anchos intermedios, y jsdom no calcula diseno: este guion recorre 2 roles x 4 anchos x 2 temas en Chromium real y comprueba desbordamiento, area tactil de 44px, el aviso de consulta profesional y que el ambiente matematico siga apareciendo en una charla nueva.",
+    "prueba-navegador-modos": "node pruebas/navegador/modos-profesionales.mjs",
+    "prueba-navegador-cargadores": "node pruebas/navegador/modos-profesionales.mjs --cargadores",
+    "prueba-navegador-consumo": "node pruebas/navegador/modos-profesionales.mjs --solo-consumo-ia",
+    "prueba-navegador-portada": "node pruebas/navegador/portada-adaptativa.mjs",
+    "prueba-navegador-recursos": "node pruebas/navegador/recursos-ux.mjs",
+    "prueba-navegador-recursos-movil": "node pruebas/navegador/recursos-movil.mjs"
+  },
+  "dependencies": {
+    "gsap": "^3.15.0",
+    "jsxgraph": "^1.10.1",
+    "katex": "^0.16.11",
+    "mathlive": "^0.110.0"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^5.0.3",
+    "@testing-library/svelte": "^5.2.6",
+    "jsdom": "^25.0.1",
+    "playwright": "^1.62.1",
+    "svelte": "^5.19.0",
+    "svelte-check": "^4.7.6",
+    "typescript": "^6.0.3",
+    "vite": "^6.0.7",
+    "vitest": "^4.1.11"
+  }
+}

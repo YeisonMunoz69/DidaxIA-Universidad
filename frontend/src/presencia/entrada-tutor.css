@@ -1,0 +1,37 @@
+/* Borde de cuaderno y relieve en movimiento, inspirados en Notebook Button [Rustic]. */
+a.entrada-tutor {
+  position: relative;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--espacio-xs);
+  min-block-size: 44px;
+  padding-inline: .8em;
+  border: 1px solid currentColor;
+  border-radius: 10px 7px 11px 8px / 7px 11px 8px 10px;
+  background: var(--accent-main);
+  color: var(--accent-on-main);
+  text-decoration: none;
+  box-shadow: 2px 3px 0 color-mix(in srgb, var(--accent-main) 55%, transparent);
+  animation: vaiven-de-cuaderno 2.8s ease-in-out infinite;
+}
+
+a.entrada-tutor:hover {
+  background: var(--accent-hover);
+  color: var(--accent-on-main);
+  text-decoration: none;
+}
+
+a.entrada-tutor:focus-visible {
+  outline: 2px solid var(--help-color);
+  outline-offset: 3px;
+}
+
+@keyframes vaiven-de-cuaderno {
+  0%, 100% { transform: translateY(0) rotate(-1deg); }
+  50% { transform: translateY(-2px) rotate(1deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  a.entrada-tutor { animation: none; }
+}

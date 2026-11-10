@@ -1,0 +1,48 @@
+{
+  "tipo": "encuesta",
+  "titulo": "Preguntas de la sesión",
+  "descripcion": "Recoge dudas y temas para la próxima clase.",
+  "contenido": {
+    "paginas": [
+      {
+        "titulo": "Preguntas de la sesión",
+        "descripcion": "",
+        "preguntas": [
+          {
+            "id": "correo",
+            "titulo": "Correo institucional",
+            "tipo": "correo",
+            "obligatoria": true,
+            "ayuda": ""
+          },
+          {
+            "id": "tema",
+            "titulo": "Tema de la pregunta",
+            "tipo": "texto",
+            "obligatoria": true,
+            "ayuda": ""
+          },
+          {
+            "id": "duda",
+            "titulo": "¿Cuál es tu pregunta?",
+            "tipo": "parrafo",
+            "obligatoria": true,
+            "ayuda": ""
+          },
+          {
+            "id": "prioridad",
+            "titulo": "¿Cuándo necesitas revisarla?",
+            "tipo": "desplegable",
+            "obligatoria": true,
+            "ayuda": "",
+            "opciones": [
+              "En la próxima clase",
+              "Durante esta semana",
+              "Cuando sea posible"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

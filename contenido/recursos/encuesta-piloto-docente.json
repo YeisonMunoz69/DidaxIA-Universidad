@@ -1,0 +1,128 @@
+{
+  "tipo": "encuesta",
+  "titulo": "DidaxIA · Valoración docente",
+  "descripcion": "Completa una valoración al terminar la sesión, después de realizar el recorrido en las clases que gestiones. Responde por tu experiencia de hoy. La cuenta y la fecha de envío quedan registradas automáticamente. No es una escala validada ni se suma una puntuación total. El resultado de las tareas, tiempos, ayuda e incidencias lo registra el observador en su ficha por clase. Cuenta, clase de publicación y fecha de envío se registran automáticamente. Comprueba que la clase corresponda a esta actividad. Publicar únicamente para docentes.",
+  "contenido": {
+    "audiencia_sugerida": "docentes",
+    "paginas": [
+      {
+        "titulo": "Al revisar un indicador",
+        "descripcion": "",
+        "preguntas": [
+          {
+            "id": "D01",
+            "titulo": "Clase e indicador que pudo consultar",
+            "tipo": "texto",
+            "obligatoria": false,
+            "ayuda": "Sólo las clases que realmente gestionaste. No incluyas datos personales de estudiantes."
+          },
+          {
+            "id": "D02",
+            "titulo": "Qué cuenta ese indicador",
+            "tipo": "parrafo",
+            "obligatoria": false,
+            "ayuda": ""
+          },
+          {
+            "id": "D03",
+            "titulo": "Si no mostró porcentaje, qué motivo indicó",
+            "tipo": "parrafo",
+            "obligatoria": false,
+            "ayuda": "Déjalo vacío si el indicador sí mostró un porcentaje."
+          }
+        ]
+      },
+      {
+        "titulo": "Valoración del docente al terminar",
+        "descripcion": "",
+        "preguntas": [
+          {
+            "id": "V-1",
+            "titulo": "V.1 · Pude identificar la clase y gestionar sus solicitudes.",
+            "tipo": "desplegable",
+            "obligatoria": true,
+            "ayuda": "1 = totalmente en desacuerdo; 2 = en desacuerdo; 3 = ni de acuerdo ni en desacuerdo; 4 = de acuerdo; 5 = totalmente de acuerdo. NA = no lo probé o no aplica; PNR = prefiero no responder.",
+            "opciones": [
+              "1",
+              "2",
+              "3",
+              "4",
+              "5",
+              "NA",
+              "PNR"
+            ]
+          },
+          {
+            "id": "V-2",
+            "titulo": "V.2 · Me resultó claro cómo localizar el periodo y el estudiante.",
+            "tipo": "desplegable",
+            "obligatoria": true,
+            "ayuda": "1 = totalmente en desacuerdo; 2 = en desacuerdo; 3 = ni de acuerdo ni en desacuerdo; 4 = de acuerdo; 5 = totalmente de acuerdo. NA = no lo probé o no aplica; PNR = prefiero no responder.",
+            "opciones": [
+              "1",
+              "2",
+              "3",
+              "4",
+              "5",
+              "NA",
+              "PNR"
+            ]
+          },
+          {
+            "id": "V-3",
+            "titulo": "V.3 · Entendí qué información muestran las métricas y cuándo faltan datos.",
+            "tipo": "desplegable",
+            "obligatoria": true,
+            "ayuda": "1 = totalmente en desacuerdo; 2 = en desacuerdo; 3 = ni de acuerdo ni en desacuerdo; 4 = de acuerdo; 5 = totalmente de acuerdo. NA = no lo probé o no aplica; PNR = prefiero no responder.",
+            "opciones": [
+              "1",
+              "2",
+              "3",
+              "4",
+              "5",
+              "NA",
+              "PNR"
+            ]
+          },
+          {
+            "id": "V-4",
+            "titulo": "V.4 · La información consultada me ayudaría a acompañar la actividad.",
+            "tipo": "desplegable",
+            "obligatoria": true,
+            "ayuda": "1 = totalmente en desacuerdo; 2 = en desacuerdo; 3 = ni de acuerdo ni en desacuerdo; 4 = de acuerdo; 5 = totalmente de acuerdo. NA = no lo probé o no aplica; PNR = prefiero no responder.",
+            "opciones": [
+              "1",
+              "2",
+              "3",
+              "4",
+              "5",
+              "NA",
+              "PNR"
+            ]
+          },
+          {
+            "id": "V05",
+            "titulo": "Información que necesita y no encontró (opcional)",
+            "tipo": "parrafo",
+            "obligatoria": false,
+            "ayuda": "No incluyas nombres, correos ni otros datos personales de estudiantes."
+          },
+          {
+            "id": "D04",
+            "titulo": "D04 · ¿Qué acción tomaría para acompañar al grupo y qué dato consultado la justificaría?",
+            "tipo": "parrafo",
+            "obligatoria": false,
+            "ayuda": "Puede indicar que la información aún no permite decidir. Describa el indicador o estado, sin identificar estudiantes."
+          },
+          {
+            "id": "D05",
+            "titulo": "D05 · ¿Encontró un dato confuso, incorrecto o insuficiente? ¿Dónde y por qué?",
+            "tipo": "parrafo",
+            "obligatoria": false,
+            "ayuda": "Describa la clase o pantalla y qué esperaba encontrar. No incluya nombres ni correos de estudiantes."
+          }
+        ]
+      }
+    ]
+  }
+}

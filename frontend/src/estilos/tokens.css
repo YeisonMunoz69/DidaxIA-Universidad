@@ -1,0 +1,508 @@
+/* La paleta.
+
+   Junto con el catálogo cerrado de nucleo/preferencias/colores.js, centraliza los valores de color.
+   Antes de la personalización era el único lugar donde aparecía un valor de color
+   literal. Si un componente necesita un color que no existe, se añade el
+   token, no el literal: así la comprobación de WCAG 2.2 AA ve toda la paleta
+   desde un solo archivo y no se puede esquivar por descuido.
+
+   SIETE TOKENS SE OSCURECIERON respecto del mockup original, para alcanzar
+   WCAG 2.2 AA que DD-05 compromete. Se conservó el matiz: son los mismos
+   colores, un escalón más profundos. No los aclare sin volver a medir.
+
+   ⛔ EL COLOR DE ESTE ARCHIVO NO ES UNA DECISIÓN DE MAQUETACIÓN
+   ---------------------------------------------------------------
+   El acento sale de la identidad de la institución, o de lo más parecido que
+   se pudo alcanzar sin bajar de AA. Y el resto de la paleta se eligió con él
+   delante.
+
+   El 2026-08-16, al escribir el lenguaje de cuaderno de
+   `13-Lenguaje-de-Diseno.md`, se sustituyó la paleta entera por una cálida
+   —papel crema, tintas cálidas, acento terracota— con el argumento de que
+   «conservaba la línea institucional». No la conservaba: la sustituía.
+   **Se revirtió el mismo día, a petición de Fabián, y se revirtió entera.**
+
+   La regla que queda escrita de ahí: **el lenguaje de diseño gobierna la
+   FORMA —trazo, radios, sombras, movimiento, espaciado, armazón— y no el
+   COLOR.** Quien esté maquetando puede cambiar lo primero; lo segundo no le
+   corresponde.
+
+   ⚠️ EL NÚMERO ANOTADO AL LADO DE CADA COLOR ES SOBRE `--surface-paper`, y no
+   es decorativo: `pruebas/accesibilidad/contraste.prueba.js` LO VUELVE A
+   MEDIR y falla si el comentario miente. Si cambia un color, cambie el
+   número.
+
+
+   Forma declarada en OE3-Implementacion/13-Lenguaje-de-Diseno.md
+   */
+
+:root {
+  --encuesta-pendiente:#a18415;
+  --encuesta-pendiente-ink:#806300;
+  --encuesta-pendiente-bg:#fffbed;
+  --encuesta-completa-bg:#edf8f1;
+  /* Personalización autorizada el 2026-10-03. Conserva ámbar como defecto;
+     el catálogo en nucleo/preferencias/colores.js sólo altera apariencia. */
+  --accent-on-main: var(--surface-paper);
+  --decorative-contrast: var(--semantic-info);
+  --decorative-contrast-glow: var(--semantic-info-bg);
+  color-scheme: light;
+
+  /* ── Tintas ───────────────────────────────────────────────────────────
+     El contraste anotado es sobre --surface-paper. */
+
+  --ink-primary:    #0C1222;   /* 18.66 · texto principal              */
+  --ink-secondary:  #4A5568;   /*  7.53 · texto secundario             */
+  --ink-tertiary:   #5A6B80;   /*  5.46 · texto de apoyo               */
+  --ink-ghost:      #CBD5E0;   /*  1.49 · SOLO decoración, nunca texto */
+
+  /* ── Trazo ────────────────────────────────────────────────────────────
+     El borde de todo lo que parece dibujado. Es un token nuevo del
+     2026-08-16 y tiene que serlo: hasta entonces los bordes usaban
+     `--ink-ghost`, que está declarado decoración y por eso el comprobador
+     LO EXIME del mínimo de contraste. Un borde que es lo único que delimita
+     un control NO es decoración —`WCAG 2.2 · 1.4.11` pide 3.0 para él—, y
+     confundirlos era la puerta por la que un campo podía quedar sin borde
+     visible sin que el comprobador dijese nada.
+
+     `--ink-ghost` se queda para separadores y tramas, que sí son adorno.
+
+     La regla de reparto es corta:
+       · delimita algo que se PULSA o se ESCRIBE  → `--trazo`, y se mide
+       · separa REGIONES —el canto de un turno—   → `--trazo-suave`
+       · es ADORNO —una línea entre filas—        → `--ink-ghost` */
+
+  --trazo:       #767F8C;   /* 4.05 · borde de control, alcanza 1.4.11 */
+
+  /* Sin número porque NO alcanza el 3.0 y no debe alcanzarlo: separa
+     regiones, y ahí `1.4.11` no aplica. */
+  --trazo-suave: #B6BECB;
+
+  /* ── Acento ───────────────────────────────────────────────────────────
+     Uno solo, orientado a los colores institucionales.
+
+     ⛔ ESTOS SEIS VALORES NO SE ELIGEN POR CRITERIO ESTÉTICO. Son los de la
+     identidad de la institución, o lo más parecido que se pudo alcanzar sin
+     bajar de AA: `--accent-main` es el ámbar institucional un escalón más
+     profundo, y esa profundización es la única licencia que se tomó, por
+     accesibilidad y no por gusto.
+
+     🔓 No hay manual de identidad a mano del que citar los valores exactos.
+     Mientras no lo haya, esto es la mejor aproximación disponible y se dice
+     así, en vez de fingir una fuente que nadie puede consultar. */
+
+  --accent-main:          #A84D08;   /* 5.63 · sirve para texto */
+  --accent-hover:         #92400E;   /* 7.09                    */
+  --accent-light:         #D97706;   /* 3.19 · SOLO gráfico     */
+  --accent-surface:       #FEF3C7;
+  --accent-surface-hover: #FDE68A;
+  --accent-glow:          rgba(217, 119, 6, 0.16);
+  --accent-gradient:      linear-gradient(135deg, var(--accent-main) 0%, var(--accent-light) 100%);
+
+  /* ── Superficies ──────────────────────────────────────────────────── */
+
+  --surface-canvas:   #EDEEF2;
+  --surface-panel:    #F5F6F9;
+  --surface-paper:    #FFFFFF;
+  --surface-elevated: #FFFFFF;
+  /* Miniaturas de tema: representan claro y oscuro incluso cuando la
+     interfaz que las contiene usa el tema contrario. */
+  --muestra-claro-fondo: #FFFFFF;
+  --muestra-claro-trazo: #767F8C;
+  --muestra-oscuro-fondo: #181D27;
+  --muestra-oscuro-trazo: #6E7788;
+  --surface-blur:     rgba(255, 255, 255, 0.82);
+  --surface-glass:         rgba(255, 255, 255, 0.48);
+  --surface-liquid-glass:  linear-gradient(145deg, rgba(255, 255, 255, 0.60) 0%, rgba(255, 255, 255, 0.28) 50%, rgba(240, 245, 252, 0.45) 100%);
+  --trazo-liquid-glass:    rgba(255, 255, 255, 0.65);
+  --sombra-liquid-glass:   0 20px 48px rgba(12, 20, 32, 0.10),
+                           inset 0 1px 1px 0 rgba(255, 255, 255, 0.80),
+                           inset 0 -1px 1px 0 rgba(255, 255, 255, 0.25);
+  --color-linkedin:        #0A66C2;
+  /* Azul original del símbolo suministrado para consumo de IA. Es marca
+     gráfica, no texto ni control, y se conserva igual en ambos temas. */
+  --brand-consumo-ia:      #4D6BFE;
+  --brand-auditoria:       #5342EB;
+  --brand-evidencias:      #534bf3;
+  --brand-perfil:          #2a1ed3;
+  --brand-icono-tinta:     #1E1E1E;
+  --brand-icono-fondo:     #FFFFFF;
+
+  /* Interruptor cielo día/noche · sólo ilustración, nunca texto. Estos
+     colores describen el pequeño paisaje del control en ambos temas; no se
+     sustituyen bajo `.dark-theme` porque los dos estados deben coexistir. */
+  --theme-day-border:      #31557A;
+  --theme-day-start:       #7FC7EE;
+  --theme-day-end:         #BCE8FA;
+  --theme-day-shine:       rgba(255, 255, 255, 0.55);
+  --theme-sun:             #FFD15A;
+  --theme-sun-shine:       rgba(255, 255, 255, 0.65);
+  --theme-sun-shadow:      rgba(73, 51, 5, 0.28);
+  --theme-crater:          rgba(44, 66, 108, 0.24);
+  --theme-cloud:           rgba(255, 255, 255, 0.82);
+  --theme-star:            #FFFFFF;
+  --theme-night-border:    #687EB8;
+  --theme-night-start:     #111A34;
+  --theme-night-end:       #283965;
+  --theme-night-shine:     rgba(255, 255, 255, 0.12);
+  --theme-moon:            #E9EFFF;
+  --theme-moon-depth:      rgba(65, 81, 126, 0.22);
+  --theme-night-shadow:    rgba(0, 0, 0, 0.35);
+
+  /* Ilustración del televisor 404. Colores de señal, nunca texto de interfaz. */
+  --crt-outline:           #101C22;
+  --crt-screen:            #101C22;
+  --crt-grid:              #245846;
+  --crt-phosphor:          #75F8AD;
+  --crt-radar:             #4C99CC;
+  --crt-calibration-1:     #DDDFE3;
+  --crt-calibration-2:     #EADB42;
+  --crt-calibration-3:     #4CC9C1;
+  --crt-calibration-4:     #70C367;
+  --crt-calibration-5:     #BB5FD0;
+  --crt-calibration-6:     #E76F67;
+  --crt-calibration-7:     #5A7AC6;
+  --crt-calibration-dark:  #101014;
+  --crt-calibration-mid:   #34383F;
+  --crt-calibration-light: #D8D6CC;
+
+  /* ── Lectura editorial ───────────────────────────────────────────────
+     Materiales del lector y de las cubiertas. Viven aquí para conservar
+     una misma temperatura de papel en todas las rutas y para que el tema
+     oscuro pueda sustituirla sin literales aislados en componentes. */
+  --book-paper:             #FFF9ED;
+  --book-desk-tint:         #EADFCA;
+  --book-cover-ink:         #FFF8EB;
+  --book-cover-start:       #8E3F08;
+  --book-cover-end:         #542305;
+  --book-paper-grain:       rgba(90, 62, 30, 0.018);
+  --book-page-glint:        rgba(255, 255, 255, 0.35);
+  --book-turn-shadow:       rgba(23, 18, 12, 0.3);
+  --book-turn-shadow-soft:  rgba(23, 18, 12, 0.13);
+  --book-cover-glint:       rgba(255, 255, 255, 0.22);
+  --book-cover-shadow:      rgba(66, 42, 19, 0.24);
+  --book-cover-depth:       rgba(48, 20, 5, 0.22);
+  --book-cover-detail:      rgba(255, 248, 235, 0.38);
+  --book-cover-thread:      rgba(255, 255, 255, 0.18);
+
+  /* El fondo del `<body>` en «modo zen» —las dos columnas plegadas—. Casi
+     negro en los dos temas a propósito: es la única superficie de todo el
+     árbol que no sigue al tema claro/oscuro, porque su trabajo es ser el
+     marco más neutro posible alrededor del papel donde se lee, no encajar
+     con el resto de la paleta. El tema oscuro la redefine un poco más
+     abajo, más oscura todavía. Sin texto encima —el armazón cubre el
+     viewport entero—, así que no lleva número de contraste anotado. */
+  --surface-zen: #030508;
+
+  /* ── Paleta de apoyo ──────────────────────────────────────────────────
+     Los tonos base sirven para texto. Las variantes -light son SOLO trazo
+     y relleno: no alcanzan 4.5 y no deben usarse con `color:`. */
+
+  --color-emerald:       #047857;   /* 5.48 */
+  --color-emerald-light: #34D399;   /* solo gráfico */
+  --color-emerald-bg:    #D1FAE5;
+  --color-emerald-glow:  rgba(4, 120, 87, 0.15);
+
+  --color-rose:          #BE123C;   /* 6.29 */
+  --color-rose-light:    #FB7185;   /* solo gráfico */
+  --color-rose-bg:       #FFE4E6;
+  --color-rose-glow:     rgba(190, 18, 60, 0.12);
+
+  --color-sky:           #0369A1;   /* 5.93 */
+  --color-sky-light:     #38BDF8;   /* solo gráfico */
+  --color-sky-bg:        #E0F2FE;
+
+  --color-violet:        #7C3AED;   /* 5.70 */
+  --color-violet-light:  #A78BFA;   /* solo gráfico */
+  --color-violet-bg:     #EDE9FE;
+
+  --color-cyan:          #0E7490;   /* 5.36 */
+  --color-cyan-light:    #22D3EE;   /* solo gráfico */
+  --color-cyan-bg:       #CFFAFE;
+
+  --color-amber-chart:   #F59E0B;   /* SOLO trazo de gráfica */
+  --color-lime:          #65A30D;   /* solo gráfico */
+  --color-orange:        #EA580C;   /* solo gráfico */
+
+  /* ── Semánticos ───────────────────────────────────────────────────────
+     No se usan NUNCA como único portador de información: siempre van
+     acompañados de forma o texto, porque el color solo no cumple WCAG. */
+
+  --semantic-success:    var(--color-emerald);
+  --semantic-success-bg: var(--color-emerald-bg);
+  --semantic-error:      var(--color-rose);
+  --semantic-error-bg:   var(--color-rose-bg);
+  /* Acciones de cuenta: rojo independiente del énfasis elegido. */
+  --cuenta-peligro: #b42318;
+  --cuenta-peligro-hover: #912018;
+  --cuenta-peligro-bg: #fee4e2;
+  --cuenta-peligro-solido: #b42318;
+  --cuenta-peligro-tinta: #ffffff;
+  --cuenta-peligro-particula: #b42318;
+  --help-color:          #0060f6;
+  --email-purple:        #8b3d75; /* énfasis del correo sobre papel, contraste AA */
+  --semantic-info:       var(--color-sky);
+  --semantic-info-bg:    var(--color-sky-bg);
+  --semantic-warning:    #9C4707;   /* 6.33 */
+  --semantic-warning-bg: #FEF3C7;
+
+  /* ── Trama de fondo ───────────────────────────────────────────────────
+     La cuadrícula del papel. El lenguaje la pide entre el 8 % y el 15 % de
+     opacidad y de 24 a 32 px, y que se genere por CSS y no por imagen para
+     que aguante el zoom al 200 % de `WCAG 1.4.4`. La aplica
+     `.superficie-cuaderno`, en base.css. */
+
+  --grid-dot:      rgba(12, 18, 34, 0.08);
+  --grid-dot-size: 1.2px;
+  --grid-dot-gap:  28px;
+
+  /* ── Velo del diálogo modal ─────────────────────────────────────────
+     Token y no literal en base.css: el comprobador exige que TODA la
+     paleta pase por este archivo, y lo detectó. */
+
+  --velo-modal: rgba(12, 18, 34, 0.45);
+
+  /* ══ DE AQUÍ ABAJO EMPIEZA LA FORMA, QUE SÍ GOBIERNA EL LENGUAJE ══════
+     Radios, sombras y movimiento salen de `13-Lenguaje-de-Diseno.md`. Nada
+     de esto es identidad institucional. */
+
+  /* ── Radios ───────────────────────────────────────────────────────────
+     Moderados. El lenguaje pide radio moderado y nunca excesivamente
+     redondeado: una caja trazada a mano no tiene esquinas de pastilla. */
+
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 22px;
+  --radius-pill: 999px; /* Solo para controles segmentados y etiquetas. */
+
+  /* Y el que hace que una caja parezca dibujada y no calculada: las cuatro
+     esquinas distintas.
+
+     La diferencia entre esquinas es de 2 a 3 px y no más. Pasado ahí deja de
+     leerse como un trazo a mano y empieza a leerse como un error de CSS, que
+     es justo lo que el lenguaje llama «parecer inacabado». */
+  --radius-trazado: 10px 7px 9px 8px;
+
+  /* ── Sombras ──────────────────────────────────────────────────────────
+     Muy suaves, y ninguna elevación exagerada. La de flotar bajó de 20/50
+     a 8/20: lo que estaba antes era una tarjeta de aplicación móvil, no una
+     hoja apoyada en otra. */
+
+  --shadow-soft:       0 2px 8px rgba(12, 18, 34, 0.04),
+                       0 0 0 1px rgba(12, 18, 34, 0.04);
+  --shadow-float:      0 8px 20px rgba(12, 18, 34, 0.09),
+                       0 0 0 1px rgba(12, 18, 34, 0.04);
+  --shadow-up:         0 -3px 12px rgba(12, 18, 34, 0.05);
+  --shadow-card-hover: 0 4px 12px rgba(12, 18, 34, 0.08),
+                       0 0 0 1px rgba(12, 18, 34, 0.05);
+
+  /* Conserva el nombre y ya no resplandece —el lenguaje prohíbe el glow—:
+     es el reborde de la hoja seleccionada. */
+  --shadow-glow:       0 0 0 3px var(--accent-glow);
+
+  /* ── Transiciones ─────────────────────────────────────────────────────
+     El lenguaje fija 150-250 ms y prohíbe los rebotes. La curva con
+     sobreimpulso —`cubic-bezier(0.34, 1.56, 0.64, 1)`, el 1.56 pasa de 1 y
+     por eso rebotaba— se retiró; el nombre `spring` se queda porque hay
+     componentes que lo piden, pero ya no salta.
+     base.css las anula bajo prefers-reduced-motion. */
+
+  --transition:        all 0.2s  cubic-bezier(0.22, 1, 0.36, 1);
+  --transition-fast:   all 0.15s cubic-bezier(0.22, 1, 0.36, 1);
+  --transition-spring: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* ── Bandas responsive ────────────────────────────────────────────────
+     `D-31` · `C-03`: tres bandas —móvil / tableta / escritorio—, no dos.
+     Hasta el 2026-08-20 el corte era `60rem` escrito a mano en seis hojas
+     de estilos más dos cadenas de `matchMedia` en JS, y así es como se
+     llega a tener ocho bandas ligeramente distintas en vez de una.
+
+     ⚠️ `@media` NO ACEPTA `var()` EN SU CONDICIÓN. Comprobado en el
+     navegador el 2026-08-20: `@media (max-width: var(--corte))` no
+     compila la regla —queda como si la condición nunca se cumpliera—, no
+     es una limitación de este proyecto sino de la especificación de CSS.
+     Por eso estos dos números siguen repitiéndose como literales dentro
+     de cada `@media`: lo que los mantiene como fuente única no es que el
+     navegador los sustituya, es que cada aparición se comprueba contra
+     este archivo en `pruebas/estilos/bandas-responsive.prueba.js`, que
+     falla si algún literal se desvía de aquí. Donde SÍ hace falta el
+     valor en una condición —los `matchMedia()` de `Aplicacion.svelte`—
+     pasa exactamente lo mismo: cadena literal, comentada, vigilada. */
+  --corte-tableta:    48rem;   /* < 48rem es móvil */
+  --corte-escritorio: 75rem;   /* ≥ 75rem es escritorio; 48–75rem, tableta */
+}
+
+/* ── TEMA OSCURO ────────────────────────────────────────────────────────
+
+   Redeclara solo los tokens que cambian; el resto los hereda del claro.
+   MEDIDO Y CORREGIDO igual que el claro: --ink-tertiary estaba en 1.94
+   usado como texto y se subió a #7A8AA3 (4.82). El comprobador mide los
+   DOS temas; la primera versión solo medía el claro y por eso no lo vio.
+
+   AQUÍ NO SE ANOTA NINGÚN NÚMERO, y es deliberado: la convención del archivo
+   es que el número se mide contra el `--surface-paper` del tema CLARO, y la
+   prueba que los verifica solo lee `:root`. Un número escrito en este bloque
+   no lo comprobaría nadie. Quien quiera las cifras del tema oscuro corre el
+   comprobador, que las imprime todas. */
+
+body.dark-theme {
+  --encuesta-pendiente:#e9c655;
+  --encuesta-pendiente-ink:#f3d77c;
+  --encuesta-pendiente-bg:#302b1d;
+  --encuesta-completa-bg:#1d3029;
+  color-scheme: dark;
+
+  --surface-canvas:        #07090E;
+  --surface-panel:         #0F1319;
+  --surface-paper:         #181D27;
+  --surface-blur:          rgba(24, 29, 39, 0.82);
+  --surface-glass:         rgba(24, 29, 39, 0.55);
+  --surface-liquid-glass:  linear-gradient(145deg, rgba(28, 35, 48, 0.65) 0%, rgba(16, 20, 28, 0.40) 50%, rgba(22, 28, 40, 0.52) 100%);
+  --trazo-liquid-glass:    rgba(255, 255, 255, 0.16);
+  --sombra-liquid-glass:   0 24px 56px rgba(0, 0, 0, 0.45),
+                           inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.20),
+                           inset 0 -1px 1px 0 rgba(0, 0, 0, 0.40);
+  --surface-elevated:      #1E2433;
+  --book-paper:            #151922;
+  --book-desk-tint:        #111722;
+  --surface-zen:           #000000;
+  --ink-primary:           #F1F3F7;
+  --ink-secondary:         #94A3B8;
+  --ink-tertiary:          #7A8AA3;
+  --ink-ghost:             #2A3447;
+
+  /* EL TRAZO OSCURO VA POR ENCIMA DEL PAPEL OSCURO, NO POR DEBAJO. Un lápiz
+     no escribe más oscuro sobre papel oscuro: el primer intento reutilizó el
+     gris del tema claro y daba 2.74 sobre el papel, o sea un borde que
+     técnicamente existe y no se ve. */
+  --trazo:                 #6E7788;
+  --trazo-suave:           #3E4757;
+
+  --accent-main:           #FBBF24;
+  --accent-hover:          #FDE68A;
+  --accent-light:          #F59E0B;
+  --accent-surface:        rgba(251, 191, 36, 0.1);
+  --accent-surface-hover:  rgba(251, 191, 36, 0.18);
+  --accent-glow:           rgba(251, 191, 36, 0.12);
+  --accent-gradient:       linear-gradient(135deg, var(--accent-main) 0%, var(--accent-light) 100%);
+  --color-emerald:         #34D399;
+  --color-emerald-light:   #6EE7B7;
+  --color-emerald-bg:      rgba(52, 211, 153, 0.1);
+  --color-emerald-glow:    rgba(52, 211, 153, 0.12);
+  --color-rose:            #FB7185;
+  --color-rose-light:      #FDA4AF;
+  --color-rose-bg:         rgba(251, 113, 133, 0.1);
+  --color-rose-glow:       rgba(251, 113, 133, 0.1);
+  --color-sky:             #38BDF8;
+  --color-sky-light:       #7DD3FC;
+  --color-sky-bg:          rgba(56, 189, 248, 0.1);
+  --color-violet:          #A78BFA;
+  --color-violet-light:    #C4B5FD;
+  --color-violet-bg:       rgba(167, 139, 250, 0.1);
+  --color-cyan:            #22D3EE;
+  --color-cyan-light:      #67E8F9;
+  --color-cyan-bg:         rgba(34, 211, 238, 0.1);
+  --color-amber-chart:     #FBBF24;
+  --color-lime:            #84CC16;
+  --color-orange:          #FB923C;
+
+  --semantic-success:      var(--color-emerald);
+  --semantic-success-bg:   var(--color-emerald-bg);
+  --semantic-error:        var(--color-rose);
+  --semantic-error-bg:     var(--color-rose-bg);
+  --cuenta-peligro: #ff9b94;
+  --cuenta-peligro-hover: #ffb4ad;
+  --cuenta-peligro-bg: #4b2023;
+  --cuenta-peligro-solido: #b42318;
+  --cuenta-peligro-tinta: #ffffff;
+  --cuenta-peligro-particula: #ff9b94;
+  --help-color:            #8bb7ff; /* contraste sobre superficies oscuras */
+  --email-purple:          #d9a2c8;
+  --semantic-info:         var(--color-sky);
+  --semantic-info-bg:      var(--color-sky-bg);
+  --semantic-warning:      #FBBF24;
+  --semantic-warning-bg:   rgba(251, 191, 36, 0.1);
+  --grid-dot:              rgba(241, 243, 247, 0.05);
+  --velo-modal:            rgba(0, 0, 0, 0.65);
+
+  --shadow-soft:           0 2px 8px rgba(0, 0, 0, 0.2),
+                           0 0 0 1px rgba(255, 255, 255, 0.04);
+  --shadow-float:          0 8px 20px rgba(0, 0, 0, 0.45),
+                           0 0 0 1px rgba(255, 255, 255, 0.04);
+  --shadow-up:             0 -3px 12px rgba(0, 0, 0, 0.3);
+  --shadow-card-hover:     0 4px 12px rgba(0, 0, 0, 0.35),
+                           0 0 0 1px rgba(251, 191, 36, 0.1);
+  --shadow-glow:           0 0 0 3px var(--accent-glow);
+}
+
+/* Escalas de lectura accesibles */
+html[data-escala="comoda"] {
+  font-size: 106.25%;
+}
+
+html[data-escala="grande"] {
+  font-size: 112.5%;
+}
+
+/* Reducción de animaciones */
+html[data-animaciones="no"] *,
+html[data-animaciones="no"] *::before,
+html[data-animaciones="no"] *::after {
+  transition-duration: 0.001ms !important;
+  animation-duration: 0.001ms !important;
+}
+
+/* Los avisos semánticos conservan la tonalidad base, aun con papel personalizado. */
+:is(dialog.artesanal, .avisos, .globo-ayuda, dialog[aria-label="Ayuda"]) {
+  --surface-paper: #FFFFFF;
+  --surface-elevated: #FFFFFF;
+  --surface-panel: #F5F6F9;
+  --surface-canvas: #EDEEF2;
+  --ink-primary: #0C1222;
+  --ink-secondary: #4A5568;
+  --ink-tertiary: #5A6B80;
+  --trazo: #767F8C;
+  --trazo-suave: #B6BECB;
+  --accent-main: #A84D08;
+  --accent-light: #D97706;
+  --accent-surface: #FEF3C7;
+  --accent-surface-hover: #FDE68A;
+}
+body.dark-theme :is(dialog.artesanal, .avisos, .globo-ayuda, dialog[aria-label="Ayuda"]) {
+  --surface-paper: #181D27;
+  --surface-elevated: #1E2433;
+  --surface-panel: #0F1319;
+  --surface-canvas: #07090E;
+  --ink-primary: #F1F3F7;
+  --ink-secondary: #94A3B8;
+  --ink-tertiary: #7A8AA3;
+  --trazo: #6E7788;
+  --trazo-suave: #3E4757;
+  --accent-main: #FBBF24;
+  --accent-light: #F59E0B;
+  --accent-surface: rgba(251, 191, 36, 0.1);
+  --accent-surface-hover: rgba(251, 191, 36, 0.18);
+}
+
+/* Paleta editorial de los materiales: independiente del tema de la aplicación. */
+:root {
+  --recurso-cereza: #863454;
+  --recurso-azul: #34618b;
+  --recurso-jade: #22776c;
+  --recurso-ambar: #986124;
+  --recurso-violeta: #7854a0;
+  --recurso-coral: #bd5361;
+  --recurso-cian: #447b91;
+  --recurso-pista: #d9dfe740;
+  --slide-ink: #172331;
+  --slide-ink-dark: #edf1f7;
+  --slide-ink-secondary: #596779;
+  --slide-ink-secondary-dark: #bcc8d7;
+  --slide-paper: #fafaf7;
+  --slide-paper-dark: #172331;
+  --slide-on-accent: #ffffff;
+  --slide-grid: #768493;
+  --slide-divider: #bcc8d380;
+}

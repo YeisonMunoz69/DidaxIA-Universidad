@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" fill="none">
+  <style>
+    :root {
+      --color-icono: #0C1222;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --color-icono: #FFFFFF;
+      }
+    }
+    .trazo {
+      stroke: var(--color-icono);
+    }
+    .relleno {
+      fill: var(--color-icono);
+    }
+  </style>
+
+  <!-- Antennas -->
+  <path class="trazo" d="M10 8 L6 2.5" stroke-width="2.2" stroke-linecap="round"/>
+  <circle class="relleno" cx="5" cy="2" r="2"/>
+
+  <path class="trazo" d="M22 8 L26 2.5" stroke-width="2.2" stroke-linecap="round"/>
+  <circle class="relleno" cx="27" cy="2" r="2"/>
+
+  <!-- Left / Right Ears -->
+  <rect class="relleno" x="1.5" y="13" width="3" height="8" rx="1.5"/>
+  <rect class="relleno" x="27.5" y="13" width="3" height="8" rx="1.5"/>
+
+  <!-- Robot Head Outline -->
+  <rect class="trazo" x="4" y="8" width="24" height="20" rx="7" stroke-width="2.4"/>
+
+  <!-- Símbolo de Infinito ∞ puro como gafas / ojos matemáticos -->
+  <path class="trazo" d="M16 15.5 C13.3 12 8.6 12 8.6 15.5 C8.6 19 13.3 19 16 15.5 C18.7 12 23.4 12 23.4 15.5 C23.4 19 18.7 19 16 15.5 Z" stroke-width="2.2"/>
+
+  <!-- Sonrisa -->
+  <path class="trazo" d="M12.5 22.5 C14.5 25 17.5 25 19.5 22.5" stroke-width="2.2" stroke-linecap="round"/>
+</svg>

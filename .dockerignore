@@ -1,0 +1,47 @@
+# .dockerignore — Qué NO entra al contexto de construcción · `PM-B23`
+#
+# El contexto de `Dockerfile.backend` es toda `codigo/`. Sin esto, cada
+# `docker build` empaquetaría y enviaría el corpus, `node_modules/` y el
+# historial de pruebas al daemon antes de construir nada — minutos por
+# ejecución en una máquina con el corpus completo.
+
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+
+# Secretos y configuración del anfitrión. Aunque los Dockerfile no los copien,
+# tampoco deben viajar al daemon ni quedar disponibles en la caché de build.
+.env
+.env.*
+!.env.ejemplo
+*.key
+*.pem
+credenciales*.json
+secretos*.json
+*.dump
+*.dump.json
+
+# El corpus se monta como volumen (ver Dockerfile.backend); nunca hace falta
+# dentro de la imagen ni del contexto de construcción.
+contenido/
+
+# El frontend tiene su propio Dockerfile con su propio contexto (`frontend/`).
+frontend/node_modules/
+frontend/dist/
+
+# ⚠️ `pruebas/` SIGUE SIN EXCLUIRSE, y desde el 2026-08-24 por otro motivo.
+#
+# Entre el 2026-08-18 y el 2026-08-24 estaba aquí dentro del contexto porque
+# la imagen de PRODUCCIÓN copiaba la suite. Eso se retiró: la Fase 2 · sesión
+# 2A separó `Dockerfile.backend` en una etapa `runtime` sin `pytest` ni
+# `pruebas/` y una etapa `pruebas` que sí las lleva.
+#
+# El contexto de construcción es común a las dos etapas, así que `pruebas/`
+# tiene que seguir llegando al daemon: sin ella, `--target pruebas` no podría
+# copiar nada y `compose.pruebas.yaml` no tendría suite que correr. Lo que
+# decide qué acaba en la imagen del servidor es el `COPY` de cada etapa, no
+# este archivo — y `pruebas/arquitectura/test_imagen_produccion.py` lo vigila.
+
+.git/
+.ensayos-laboratorio/

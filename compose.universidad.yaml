@@ -1,0 +1,37 @@
+# Instancia institucional independiente del despliegue de investigación.
+name: didaxia-universidad
+
+services:
+  base:
+    container_name: !reset null
+  migraciones:
+    container_name: !reset null
+  ingesta:
+    container_name: !reset null
+  backend:
+    container_name: !reset null
+    environment:
+      INVESTIGADORES_PROPIETARIOS: ${INVESTIGADORES_PROPIETARIOS:?defina las cuentas propietarias de la Universidad}
+      AGENTE_PILOTO_TESIS: ${DIDAXIA_PILOTO_UNIVERSIDAD:-0}
+  frontend-build:
+    container_name: !reset null
+  caddy:
+    container_name: !reset null
+
+volumes:
+  datos-base-prod:
+    name: !reset null
+  cache-modelos:
+    name: !reset null
+  registro-turnos:
+    name: !reset null
+  autorizaciones:
+    name: !reset null
+  fotos-perfil:
+    name: !reset null
+  frontend-estatico:
+    name: !reset null
+  caddy-datos:
+    name: !reset null
+  caddy-configuracion:
+    name: !reset null

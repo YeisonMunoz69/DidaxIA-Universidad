@@ -1,0 +1,85 @@
+# Núcleo de cálculo simbólico (ADR-011, ADR-013)
+sympy>=1.13,<2
+
+# Adaptador de entrada HTTP (ADR-009) — se usa a partir del incremento 7
+fastapi>=0.115,<1
+uvicorn[standard]>=0.30,<1
+pydantic>=2.5,<3
+
+# Acceso a la base de datos (DD-19) — se usa a partir del adaptador de índice.
+# `[binary]` y no `psycopg` a secas: la variante fuente compila contra las
+# cabeceras del cliente de PostgreSQL, que en Windows hay que instalar aparte.
+# La binaria trae lo que necesita y evita la tarde que eso cuesta.
+#
+# Sin mapeador objeto-relacional, y no por gusto: `ADR-004` eligió el motor por
+# mecanismos que se expresan en SQL —exclusión sobre rangos, cascada declarada
+# en la clave foránea, cifrado de columna— y `ADR-009` descartó una plataforma
+# precisamente porque su mapeador empuja al dominio a depender de la
+# infraestructura. Ver `DD-19`.
+psycopg[binary]>=3.2,<4
+
+# Codificador del índice (ADR-002) — se usa a partir del codificador real.
+# `intfloat/multilingual-e5-base`, el modelo que E01 validó y que la guía de
+# reutilización marca como intocable. El pin es el mismo que `requirements-E01.txt`
+# para no divergir de lo que esa medición usó. Arrastra `torch`: quien solo
+# ejecute la suite sin el codificador no necesita instalarlo, y sus pruebas se
+# saltan solas si el modelo no está descargado.
+sentence-transformers>=3.0,<5
+
+# ⚠️ `pytest` y `ruff` YA NO ESTÁN AQUÍ · Fase 2 · sesión 2A, 2026-08-24.
+#
+# Se mudaron a `requirements-pruebas.txt`. Este archivo describe lo que hace
+# falta para EJECUTAR el sistema, y es el único que instala la etapa de
+# producción de `Dockerfile.backend`. Mientras `pytest` viviera aquí, la imagen
+# productiva traía el ejecutor de pruebas puesto — y dentro de ese contenedor
+# `AGENTE_BD` apunta a la base con los datos del piloto, así que un
+# `pytest` lanzado ahí por costumbre podía escribir y borrar datos reales.
+#
+# Para trabajar en el proyecto se instalan LOS DOS:
+#     python -m pip install -r requirements.txt -r requirements-pruebas.txt
+
+# Identidad delegada (DD-18, D-16 · PM-B15 A). Es la biblioteca oficial de
+# Google para verificar un id_token contra sus claves públicas — reescribir
+# esa verificación a mano sería repetir código de seguridad que ya existe y
+# está mantenido. Solo se usa `google.oauth2.id_token` y
+# `google.auth.transport.requests`, no el resto del paquete.
+#
+# ⚠️ `[requests]` es del 2026-09-01 y no es cosmético. `google.auth.transport.
+# requests` **necesita `requests`**, que `google-auth` declara como extra y no
+# como dependencia. Hasta hoy funcionaba por accidente: `sentence-transformers`
+# lo arrastra, así que en el equipo y en la imagen estaba puesto. En un entorno
+# que instale este archivo **sin el codificador** —el que basta para ejecutar la
+# suite offline— la recolección se interrumpe entera con
+# `ImportError: The requests library is not installed`, y se lleva por delante
+# los diez módulos que tocan identidad.
+#
+# Es el mismo defecto que `httpx2` tuvo el 2026-09-01: una dependencia real que
+# llegaba por otra vía y que nadie declaraba.
+google-auth[requests]>=2.28,<3
+
+# Validación estructural del PDF de la autorización del representante
+# (`EQ-021`, hito R4). Hasta el cierre V-B «PDF validado» significaba comprobar
+# cinco bytes —`%PDF-`—, y eso aceptaba un archivo truncado, uno cifrado que el
+# equipo no puede abrir o un `.txt` con la cabecera puesta. Una autorización
+# firmada por un representante legal que no se puede abrir no es evidencia de
+# nada, y descubrirlo seis meses después es descubrirlo cuando ya no hay a quién
+# pedirle otra copia.
+#
+# Se usa SÓLO para comprobar que el archivo abre y tiene páginas: no se extrae
+# texto, no se leen metadatos y no se registra nada de su contenido. Ver
+# `adaptadores/entrantes/http/pdf.py`.
+#
+# Es la biblioteca mantenida del formato; escribir a mano un analizador de tabla
+# de referencias cruzadas, objetos indirectos y flujos comprimidos —sobre un
+# archivo que llega de fuera— sería reimplementarla mal.
+pypdf>=5,<7
+
+# Informes institucionales KPI: generación vectorial y verificación estructural
+# y visual en la Fase 8. La fuente del informe vive en Python; el PDF generado
+# nunca se edita a mano.
+reportlab>=4,<5
+pdfplumber>=0.11,<1
+
+# Fotos de perfil: decodificación segura, eliminación de EXIF y recodificación
+# uniforme a WebP. El archivo original nunca se conserva.
+Pillow>=11,<13

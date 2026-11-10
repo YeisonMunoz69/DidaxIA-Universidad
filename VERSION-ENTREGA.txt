@@ -1,0 +1,5 @@
+DidaxIA entrega universitaria RC2 (entrega institucional)
+Corte académico: be576624d091a284257425a40c7e1c7229eed33f
+Base operativa remota: 44457c1e2f4b9c8017794c38cd6f9fcd24639b79
+Commit de origen de RC1: 391cf602e4fd4b4b09dc9f6d228579d2a6c25160
+SHA-256 de MANIFIESTO-CORPUS.sha256: a7cefe6ab54db4ccd4bd05da7c36c36a80c85a56b63072ec92f8ae7c8d5cc61b

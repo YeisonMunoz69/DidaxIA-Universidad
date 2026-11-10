@@ -1,0 +1,74 @@
+# requirements-pruebas.txt — Lo que hace falta para COMPROBAR, no para EJECUTAR
+# =============================================================================
+# Fase 2 · sesión 2A, 2026-08-24.
+#
+# Estas dependencias NO entran en la imagen de producción. Hasta hoy vivían en
+# `requirements.txt`, y la consecuencia estaba medida en la auditoría de la
+# sesión 1: la imagen productiva instalaba `pytest` y copiaba `pruebas/`, de
+# modo que un `docker compose ... exec backend pytest` —el gesto que la
+# costumbre del proyecto tenía por «la verificación que manda»— se ejecutaba
+# **dentro del contenedor donde `AGENTE_BD` apunta a los datos del piloto**.
+# Varias pruebas de integración hacen `INSERT` y `DELETE`.
+#
+# ⚠️ ESTE ARCHIVO NO REPITE `-r requirements.txt` A PROPÓSITO.
+#
+# Ponerlo obligaría a `Dockerfile.backend` a resolver `torch` una segunda vez
+# para la etapa de pruebas —el docstring de ese archivo cuenta lo que costó
+# aprender que dos resoluciones traen dos veces el paquete, y una de ellas con
+# CUDA—. Aquí van SOLO los añadidos, y la etapa `pruebas` de la imagen apila
+# los dos prefijos instalados.
+#
+# En el equipo, para tener el entorno completo:
+#     python -m pip install -r requirements.txt -r requirements-pruebas.txt
+
+# Ejecutor de la suite.
+pytest>=8.0,<10
+
+# Análisis estático (decisión D-A3). La regla N1 NO la comprueba esta
+# herramienta sino `pruebas/arquitectura/`: cubre estilo, errores e imports.
+ruff>=0.5,<1
+
+# El cliente HTTP que `starlette.testclient` exige para construir el
+# `TestClient` que usan siete módulos de `pruebas/unidad/`. No estaba
+# declarado: funcionaba en los equipos de los autores porque llegaba por otra
+# vía, y en un entorno limpio —el de integración continua, 2026-09-01— la
+# recolección se interrumpía entera con un solo error de importación.
+#
+# ⚠️ **Van los DOS, y no es por si acaso.** `starlette` cambió de cliente entre
+# versiones: hasta la 0.x su `testclient` hace `import httpx`, y desde la 1.0
+# `import httpx2`. `fastapi>=0.115,<1` admite las dos, así que **cuál se
+# instala depende de cómo resuelva pip ese día**: la integración continua del
+# 2026-09-02 trajo `starlette 1.6.0` y funcionó con `httpx2`, y una instalación
+# limpia del mismo archivo sobre Python 3.13 trajo `starlette 0.49.3` y **no
+# recolectó ni una prueba** — el mismo error de importación de la vez anterior,
+# con el paquete contrario.
+#
+# Declarar uno solo es apostar por la resolución de pip. Los dos son de
+# pruebas, pesan poco y quitan la apuesta; el día que el rango de `fastapi` se
+# cierre sobre una sola familia de `starlette`, sobra el otro.
+#
+# ✅ **Comprobado en la auditoría R2, 2026-09-02, y los dos siguen haciendo
+# falta.** No es una precaución: es que el mismo archivo produce hoy dos
+# resoluciones distintas según el entorno.
+#
+#   · Entorno de trabajo ya instalado · `fastapi 0.121.0` → `starlette 0.49.3`,
+#     cuyo `testclient` hace `import httpx`.
+#   · Instalación LIMPIA de `fastapi>=0.115,<1` sobre Python 3.13, hecha ese
+#     mismo día en un entorno virtual vacío · `fastapi 0.141.1` →
+#     `starlette 1.6.0`, cuyo `testclient` aborta con «The starlette.testclient
+#     module requires the httpx2 package to be installed».
+#
+# Es decir: el rango productivo `fastapi>=0.115,<1` cruza el cambio de cliente
+# de `starlette`, y de qué lado cae depende del día en que se resuelva. `pip
+# check` está limpio con los dos declarados.
+#
+# ⚠️ La causa de fondo NO se toca aquí. Cerrar `fastapi` sobre una familia de
+# `starlette` es un cambio de dependencia PRODUCTIVA y se decide con medición,
+# no de paso en una corrección de pruebas; queda anotado en el informe de la
+# revisión R2 como hallazgo abierto.
+#
+# Van aquí y no en `requirements.txt` a propósito: sólo los necesita la suite.
+# La imagen de producción no lleva `pruebas/` ni este archivo, y
+# `pruebas/arquitectura/test_imagen_produccion.py` lo vigila.
+httpx2>=2.0,<3
+httpx>=0.27,<1

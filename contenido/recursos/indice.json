@@ -1,0 +1,94 @@
+[
+  {
+    "id": "base",
+    "titulo": "Plantilla base DidaxIA",
+    "diapositivas": 3
+  },
+  {
+    "id": "viernes-calculo",
+    "titulo": "DidaxIA · Cálculo y lectura de gráficas",
+    "diapositivas": 8,
+    "descripcion": "Guía breve de ocho pasos. Ingreso y pretest, explicación común, intento propio, revisión, gráfica, fuente, historial y postest. Viernes: mismo salón e instrucciones para TDS, Multimedia, Integral y EDO."
+  },
+  {
+    "id": "semana4-1",
+    "titulo": "Taller conjunto · TDS, Ingeniería Multimedia, Integral y EDO",
+    "diapositivas": 28
+  },
+  {
+    "id": "semana4-4",
+    "titulo": "Semana 4 · 1. Miércoles - compañeros de Informática",
+    "diapositivas": 22
+  },
+  {
+    "id": "semana4-5",
+    "titulo": "Semana 4 · 2. Viernes - Multimedia quinto semestre",
+    "diapositivas": 23
+  },
+  {
+    "id": "semana4-6",
+    "titulo": "Semana 4 · 3. Viernes - Ingeniería Informática",
+    "diapositivas": 21
+  },
+  {
+    "id": "semana4-7",
+    "titulo": "Semana 4 · 4. Viernes - TDS tercer semestre",
+    "diapositivas": 21
+  },
+  {
+    "id": "encuesta-asistencia",
+    "tipo": "encuesta",
+    "titulo": "Registro de asistencia",
+    "descripcion": "Confirma la asistencia a una sesión.",
+    "preguntas": 5
+  },
+  {
+    "id": "encuesta-preguntas",
+    "tipo": "encuesta",
+    "titulo": "Preguntas de la sesión",
+    "descripcion": "Recoge dudas y temas para la próxima clase.",
+    "preguntas": 4
+  },
+  {
+    "id": "encuesta-retroalimentacion",
+    "tipo": "encuesta",
+    "titulo": "Retroalimentación del curso",
+    "descripcion": "Escala de valoración y comentarios sobre la sesión.",
+    "preguntas": 3
+  },
+  {
+    "id": "encuesta-evaluacion-docente",
+    "tipo": "encuesta",
+    "titulo": "Consulta a docentes",
+    "descripcion": "Recoge necesidades y opiniones del equipo docente.",
+    "preguntas": 3
+  },
+  {
+    "id": "encuesta-piloto-pretest",
+    "tipo": "encuesta",
+    "titulo": "DidaxIA · Antes de la actividad",
+    "descripcion": "Duración: 2 minutos. Este formulario recoge experiencia y expectativas, no califica tu desempeño. Tu cuenta institucional permite vincular de manera privada tus respuestas con la sesión y las conversaciones autorizadas; los resultados se presentarán sin identificarte. Participar es voluntario y puedes omitir los ítems opcionales. La autorización de uso de datos se gestiona en DidaxIA. Cuenta, clase de publicación y fecha de envío se registran automáticamente. Comprueba que la clase corresponda a esta actividad.",
+    "preguntas": 7
+  },
+  {
+    "id": "encuesta-piloto-postest",
+    "tipo": "encuesta",
+    "titulo": "DidaxIA · Después de la actividad",
+    "descripcion": "Duración: 3 minutos. Valora únicamente lo que viviste hoy. No es una calificación; las respuestas favorables y desfavorables son igualmente útiles. Usa la misma cuenta institucional y sesión del formulario inicial. Tu cuenta vincula de manera privada tus respuestas con las conversaciones autorizadas. NA = no utilicé/no aplica; PNR = prefiero no responder. Los resultados se presentarán sin identificarte. Cuenta, clase de publicación y fecha de envío se registran automáticamente. Comprueba que la clase corresponda a esta actividad.",
+    "preguntas": 14
+  },
+  {
+    "id": "encuesta-piloto-docente",
+    "tipo": "encuesta",
+    "titulo": "DidaxIA · Valoración docente",
+    "descripcion": "Completa una valoración al terminar la sesión, después de realizar el recorrido en las clases que gestiones. Responde por tu experiencia de hoy. La cuenta y la fecha de envío quedan registradas automáticamente. No es una escala validada ni se suma una puntuación total. El resultado de las tareas, tiempos, ayuda e incidencias lo registra el observador en su ficha por clase. Cuenta, clase de publicación y fecha de envío se registran automáticamente. Comprueba que la clase corresponda a esta actividad. Publicar únicamente para docentes.",
+    "preguntas": 10
+  },
+  {
+    "id": "encuesta-revision-docente",
+    "tipo": "encuesta",
+    "titulo": "DidaxIA · Revisión docente de respuestas y material",
+    "descripcion": "Revisión de seis respuestas y dos fragmentos, con imágenes junto a sus preguntas y una escala de acuerdo consistente. 30 preguntas.",
+    "preguntas": 30
+  }
+]

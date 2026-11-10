@@ -1,0 +1,120 @@
+{
+  "tipo": "encuesta",
+  "titulo": "DidaxIA · Antes de la actividad",
+  "descripcion": "Duración: 2 minutos. Este formulario recoge experiencia y expectativas, no califica tu desempeño. Tu cuenta institucional permite vincular de manera privada tus respuestas con la sesión y las conversaciones autorizadas; los resultados se presentarán sin identificarte. Participar es voluntario y puedes omitir los ítems opcionales. La autorización de uso de datos se gestiona en DidaxIA. Cuenta, clase de publicación y fecha de envío se registran automáticamente. Comprueba que la clase corresponda a esta actividad.",
+  "contenido": {
+    "paginas": [
+      {
+        "titulo": "Experiencia antes de la actividad",
+        "descripcion": "",
+        "preguntas": [
+          {
+            "id": "P02",
+            "titulo": "P02 · Antes de hoy, ¿habías estudiado derivadas en una clase?",
+            "tipo": "unica",
+            "obligatoria": true,
+            "ayuda": "",
+            "opciones": [
+              "Sí, ya cursé el tema",
+              "No, todavía no lo he visto",
+              "No estoy seguro/a"
+            ]
+          },
+          {
+            "id": "P03",
+            "titulo": "P03 · Antes de esta sesión, ¿cuánto habías usado DidaxIA?",
+            "tipo": "unica",
+            "obligatoria": true,
+            "ayuda": "",
+            "opciones": [
+              "Nunca",
+              "Una sesión anterior",
+              "Dos o más sesiones anteriores",
+              "No recuerdo"
+            ]
+          },
+          {
+            "id": "P04",
+            "titulo": "P04 · ¿Con qué dispositivo harás principalmente la actividad?",
+            "tipo": "unica",
+            "obligatoria": true,
+            "ayuda": "",
+            "opciones": [
+              "Celular",
+              "Computador",
+              "Tableta",
+              "Dispositivo compartido"
+            ]
+          }
+        ]
+      },
+      {
+        "titulo": "Expectativas antes de usar DidaxIA",
+        "descripcion": "",
+        "preguntas": [
+          {
+            "id": "P06-1",
+            "titulo": "P06.1 · Espero que DidaxIA me ayude a entender el razonamiento de una derivada",
+            "tipo": "desplegable",
+            "obligatoria": true,
+            "ayuda": "1 = totalmente en desacuerdo; 2 = en desacuerdo; 3 = ni de acuerdo ni en desacuerdo; 4 = de acuerdo; 5 = totalmente de acuerdo. PNR = prefiero no responder.",
+            "opciones": [
+              "1",
+              "2",
+              "3",
+              "4",
+              "5",
+              "PNR"
+            ]
+          },
+          {
+            "id": "P06-2",
+            "titulo": "P06.2 · Espero que DidaxIA me ayude a revisar mi propio procedimiento",
+            "tipo": "desplegable",
+            "obligatoria": true,
+            "ayuda": "1 = totalmente en desacuerdo; 2 = en desacuerdo; 3 = ni de acuerdo ni en desacuerdo; 4 = de acuerdo; 5 = totalmente de acuerdo. PNR = prefiero no responder.",
+            "opciones": [
+              "1",
+              "2",
+              "3",
+              "4",
+              "5",
+              "PNR"
+            ]
+          },
+          {
+            "id": "P06-3",
+            "titulo": "P06.3 · Espero poder encontrar las fuentes de una explicación",
+            "tipo": "desplegable",
+            "obligatoria": true,
+            "ayuda": "1 = totalmente en desacuerdo; 2 = en desacuerdo; 3 = ni de acuerdo ni en desacuerdo; 4 = de acuerdo; 5 = totalmente de acuerdo. PNR = prefiero no responder.",
+            "opciones": [
+              "1",
+              "2",
+              "3",
+              "4",
+              "5",
+              "PNR"
+            ]
+          },
+          {
+            "id": "P07",
+            "titulo": "P07 · En este momento, puedo explicar con mis palabras qué representa la derivada de una función en un punto.",
+            "tipo": "desplegable",
+            "obligatoria": false,
+            "ayuda": "1 = totalmente en desacuerdo; 2 = en desacuerdo; 3 = ni de acuerdo ni en desacuerdo; 4 = de acuerdo; 5 = totalmente de acuerdo. NA = no puedo valorarlo; PNR = prefiero no responder. Es una percepción propia, no una prueba de conocimientos.",
+            "opciones": [
+              "1",
+              "2",
+              "3",
+              "4",
+              "5",
+              "NA",
+              "PNR"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

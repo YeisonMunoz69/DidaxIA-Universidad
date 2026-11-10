@@ -1,0 +1,55 @@
+{
+  "tipo": "encuesta",
+  "titulo": "Registro de asistencia",
+  "descripcion": "Confirma la asistencia a una sesión.",
+  "contenido": {
+    "paginas": [
+      {
+        "titulo": "Registro de asistencia",
+        "descripcion": "",
+        "preguntas": [
+          {
+            "id": "nombre",
+            "titulo": "Nombre completo",
+            "tipo": "texto",
+            "obligatoria": true,
+            "ayuda": ""
+          },
+          {
+            "id": "correo",
+            "titulo": "Correo institucional",
+            "tipo": "correo",
+            "obligatoria": true,
+            "ayuda": ""
+          },
+          {
+            "id": "fecha",
+            "titulo": "Fecha de la sesión",
+            "tipo": "fecha",
+            "obligatoria": true,
+            "ayuda": ""
+          },
+          {
+            "id": "asistencia",
+            "titulo": "Estado de asistencia",
+            "tipo": "unica",
+            "obligatoria": true,
+            "ayuda": "",
+            "opciones": [
+              "Presente",
+              "Llegué tarde",
+              "No pude asistir"
+            ]
+          },
+          {
+            "id": "observacion",
+            "titulo": "Observaciones",
+            "tipo": "parrafo",
+            "obligatoria": false,
+            "ayuda": ""
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,60 @@
+<!doctype html>
+<!--
+  Único documento HTML de la aplicación.
+
+  Declara el idioma es, la codificación y el punto de anclaje. El título de la
+  pestaña ya identifica al sistema como automatizado, que es parte de RP-20:
+  el propósito tiene que ser reconocible desde el primer contacto, y la pestaña
+  es literalmente lo primero que se ve.
+
+  Estructura declarada en OE3-Implementacion/07-Estructura-del-Frontend.md
+  Antes de modificar, lea ANTES-DE-MODIFICAR.md en la raíz del proyecto.
+-->
+<html lang="es">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!--
+      `favicon.svg` (4,99 MB) sigue en `publico/`, sin usarse aquí: es un
+      calco automático de miles de trazos, no una imagen pensada para 32 px,
+      y servirlo entero por cada pestaña deshace el propio ahorro de esta
+      tanda. Los cuatro tamaños salen de `Didaxia.png`, el original bueno.
+    -->
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
+  <link rel="icon" href="/favicon-192.png" type="image/png" sizes="192x192" />
+  <link rel="icon" href="/favicon-512.png" type="image/png" sizes="512x512" />
+  <link rel="apple-touch-icon" href="/favicon-180.png" sizes="180x180" />
+
+  <!-- RP-20 · se declara automatizado desde el título y la descripción. -->
+  <title>DidaxIa · Tutor Inteligente de Cálculo Diferencial</title>
+  <meta name="description" content="DidaxIa: sistema de apoyo al estudio del cálculo diferencial en educación superior, con supervisión docente. No sustituye al docente." />
+  <meta name="author" content="Equipo de Investigación DidaxIa" />
+  <meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#181D27" media="(prefers-color-scheme: dark)" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="DidaxIa" />
+  <meta property="og:title" content="DidaxIa · Tutor Inteligente de Cálculo Diferencial" />
+  <meta property="og:description" content="Sistema de tutoría asistida para el aprendizaje del cálculo diferencial en educación superior. Investigación académica con supervisión docente." />
+  <meta property="og:url" content="https://didaxia.pro/" />
+  <meta property="og:image" content="https://didaxia.pro/imagen-social.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:alt" content="DidaxIa, tutor inteligente de cálculo diferencial" />
+  <meta property="og:locale" content="es_CO" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="DidaxIa · Tutor Inteligente de Cálculo Diferencial" />
+  <meta name="twitter:description" content="Apoyo interactivo al estudio del cálculo diferencial con supervisión docente y marco ético institucional." />
+  <meta name="twitter:image" content="https://didaxia.pro/imagen-social.png" />
+  <meta name="twitter:image:alt" content="DidaxIa, tutor inteligente de cálculo diferencial" />
+</head>
+
+<body>
+  <div id="aplicacion"></div>
+  <script type="module" src="/src/principal.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,20 @@
+name: didaxia-local
+
+services:
+  backend:
+    environment:
+      AGENTE_ENTORNO: produccion-local
+  frontend-build:
+    build:
+      args:
+        ORIGEN_APLICACION: http://localhost:${DIDAXIA_PUERTO_APP_LOCAL:-18080}
+        ORIGEN_PUBLICO: http://localhost:${DIDAXIA_PUERTO_PORTADA_LOCAL:-18081}
+  caddy:
+    environment:
+      DOMINIO: ":80"
+      DOMINIO_PUBLICO: ":8081"
+      DIDAXIA_ALIAS_CADDY: "http://alias.didaxia.invalid:80"
+      ORIGEN_PUBLICO: http://localhost:${DIDAXIA_PUERTO_PORTADA_LOCAL:-18081}
+    ports: !override
+      - "127.0.0.1:${DIDAXIA_PUERTO_APP_LOCAL:-18080}:80"
+      - "127.0.0.1:${DIDAXIA_PUERTO_PORTADA_LOCAL:-18081}:8081"

@@ -1,0 +1,20 @@
+{
+  "formato": 1,
+  "versiones": [
+    {
+      "codigo": "representante-menor-v0.1-20260920",
+      "alcance": "representante",
+      "archivo": "Autorizacion-representante-menor-v0.1-texto.md",
+      "finalidades": [
+        "autenticacion_y_seguridad",
+        "historial_conversacional",
+        "investigacion",
+        "perfil_conductual",
+        "personalizacion_pedagogica",
+        "visualizacion_docente"
+      ],
+      "vigente_desde": "2026-09-20T00:00:00-05:00",
+      "vigente_hasta": null
+    }
+  ]
+}

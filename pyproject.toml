@@ -1,0 +1,94 @@
+# Configuración del análisis estático (decisión D-A3)
+#
+# La regla N1 de ADR-009 §5.2 —el núcleo no importa infraestructura— NO se
+# comprueba aquí: la comprueba `pruebas/arquitectura/`, que distingue un import
+# escondido dentro de una función de una mención en un comentario. Ninguna
+# herramienta genérica lo expresa mejor.
+#
+# Esto cubre lo demás: estilo, errores, imports sin usar, complejidad.
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+exclude = ["**/__pycache__"]
+
+[tool.ruff.lint]
+select = [
+    "E", "W",    # estilo
+    "F",         # errores y nombres sin usar
+    "I",         # orden de imports
+    "B",         # fallos frecuentes
+    "UP",        # sintaxis obsoleta
+    "SIM",       # simplificaciones
+    "C901",      # complejidad ciclomática
+    "PLR0912",   # demasiadas ramas
+    "PLR0915",   # demasiadas sentencias
+    "PLR0913",   # demasiados argumentos
+]
+ignore = [
+    "E501",      # el largo de línea lo controla el formateador
+    # `StrEnum` existe desde Python 3.11 y ADR-009 fija ese mínimo, pero
+    # heredar de `str` y `Enum` funciona también en 3.10 y no cuesta nada.
+    # Se revisará cuando el entorno de despliegue quede fijado.
+    "UP042",
+]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10
+
+[tool.ruff.lint.pylint]
+max-branches = 12
+max-statements = 50
+max-args = 6
+
+[tool.ruff.lint.per-file-ignores]
+# Las pruebas declaran clases y funciones de apoyo dentro del propio caso.
+"pruebas/**" = ["B011", "SIM117"]
+
+# Deuda, no permiso — `PM-B22`, 2026-08-10-noche. Las reglas de complejidad
+# se activaron en esta sesión y estos cuatro archivos ya existían con más
+# ramas/sentencias de las que permiten. Ninguno se tocó en esta sesión salvo
+# para el arreglo puntual que su propio comentario explica; simplificarlos es
+# tarea aparte, no se mezcla con lo que trajo esta.
+"dominio/arbitraje/divulgacion.py" = ["C901"]                 # decidir(): 13 > 10
+"dominio/modelo/respuesta.py" = ["C901"]                       # desde_objeto(): 12 > 10
+"adaptadores/salientes/simbolico/adaptador.py" = ["C901"]      # _regla_dominante(): 12 > 10, heurística sin tocar desde antes de PM-B22
+# ✅ `adaptadores/entrantes/http/aplicacion.py` YA NO ESTÁ EN ESTA LISTA.
+# Tenía `C901` y `PLR0915` desde `PM-B22` porque `crear_aplicacion()` declaraba
+# las 33 rutas del sistema en 823 líneas. `PM-B27` lo repartió en
+# `rutas/` y la función bajó a componer y registrar: la excepción sobraba y se
+# quitó el mismo día, que es lo contrario de cómo una excepción temporal se
+# vuelve permanente.
+
+# Artefacto de la métrica, NO deuda — `PM-B27`, 2026-08-12. Cada módulo de
+# `rutas/` expone `crear_router(deps) -> APIRouter` con sus handlers anidados
+# dentro, que es el patrón idiomático de FastAPI para inyectar dependencias sin
+# estado global. `C901` suma la complejidad de TODOS los handlers anidados y se
+# la atribuye a la factoría, aunque `crear_router` en sí sea «crear, declarar,
+# devolver». Comprobado handler por handler: todos quedan bajo el límite de 10
+# salvo el que se anota abajo.
+#
+# `PLR0915` se añade en el hito B1 (Fase 3) por el MISMO artefacto y con la misma
+# disciplina: se midió antes de excluirlo. En `rutas/sesion.py`, la factoría
+# declara 82 sentencias de las que **3 son suyas** —crear el router, y
+# devolverlo—; las otras 79 pertenecen a ocho handlers, y el mayor tiene 24. Es
+# decir: ninguna función real del archivo se acerca al límite de 50, y lo que la
+# métrica está midiendo es la suma de ocho funciones distintas.
+#
+# ⚠️ Esta exclusión NO es permiso para que un handler crezca. `PLR0915` sobre la
+# factoría dejó de decir nada útil, pero un handler de 60 sentencias seguiría
+# siendo deuda real; lo que la vigila es la revisión del diff, no esta línea.
+# Antes de B1 la cifra era 69 y la Fase 2 · sesión 3 la dejó anotada como
+# hallazgo histórico vivo: B1 la bajó a 65 y la retira de la puerta global.
+"adaptadores/entrantes/http/rutas/*.py" = ["C901", "PLR0915"]
+
+# ✅ Y la parte de esa excepción que SÍ era deuda de verdad ya no lo es. El
+# handler `turno()` llegaba a 13 por sí solo —tres guardas de entrada más la
+# construcción del `TurnoEntrante`—; `PM-B27` la midió y la declaró aparte en vez
+# de esconderla dentro de la de arriba, y el 2026-08-13 las guardas salieron a
+# `rechazo_previo()`, con la forma que `requerir_rol()` ya tenía. Lo que queda
+# arriba es solo el artefacto de la métrica.
+
+[tool.pytest.ini_options]
+testpaths = ["pruebas"]
+pythonpath = ["."]

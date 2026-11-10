@@ -1,0 +1,12 @@
+{
+  "nombre": "Autorizacion-representante-menor-v0.1",
+  "fuente_editorial": "Autorizacion-representante-menor-v0.1.docx",
+  "sha256_fuente_editorial": "3f6567e88f115923e467b352402dc693ce07e626a811bab191b69103e46e48db",
+  "base_pdf": "Autorizacion-representante-menor-v0.1-base.pdf",
+  "sha256_base_pdf": "41e715e31fc59ff592a869210db9d8f3b7efd047d4293bbb876cae67b1bbdb22",
+  "texto_canonico": "Autorizacion-representante-menor-v0.1-texto.md",
+  "sha256_texto_canonico": "0b00e3e430b42fd951c65ffe0fa4cd6695abde7dc299f6ccbcdc8c7cf936b9e3",
+  "fecha_incorporacion": "2026-09-20",
+  "zona_fecha_descarga": "America/Bogota",
+  "nota": "La base conserva el diseño del Word aprobado; el servidor sólo estampa la fecha civil de descarga en el pie de cada página."
+}

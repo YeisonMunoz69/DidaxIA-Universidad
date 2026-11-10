@@ -1,0 +1,61 @@
+# DidaxIa — ficha pública ampliada
+
+> DidaxIa es un tutor automatizado de apoyo al estudio del cálculo diferencial y un prototipo de investigación desarrollado como trabajo de grado en la Institución Universitaria Colegio Mayor del Cauca. Acompaña ejercicios y preguntas con supervisión humana; no sustituye al docente, no califica y puede equivocarse.
+
+**Edición de esta ficha:** 29 de septiembre de 2026. Este texto ofrece contexto para personas y asistentes que consultan el sitio público. Para conocer las condiciones vigentes de participación y tratamiento de datos, consulte siempre las páginas oficiales enlazadas al final. Esta ficha no es un consentimiento informado ni una declaración de eficacia del sistema.
+
+## Identidad y propósito
+
+DidaxIa es el trabajo de grado de Yeison Javier Muñoz Gómez y Fabián Armando Hoyos Cerón. Surge de una revisión sistemática de literatura sobre tutores inteligentes y se construye para estudiar, en un contexto universitario concreto, cómo un tutor conversacional puede acompañar el aprendizaje del cálculo diferencial. La relación con la Institución se describe como contexto académico de la investigación; el proyecto no debe presentarse como un servicio comercial ni como un producto institucional terminado.
+
+Su propósito es ayudar a una persona a trabajar una duda o un ejercicio: entender el enunciado, identificar un concepto o una regla pertinente, revisar pasos, representar una función cuando corresponda y contrastar una explicación con sus fuentes disponibles. El tutor intenta adaptar el nivel de ayuda a la conversación. Una pregunta orientadora puede ser útil, pero no sustituye una explicación solicitada expresamente ni la corrección de un error matemático. La respuesta automatizada puede ser incompleta o incorrecta, incluso cuando está escrita con seguridad.
+
+La enseñanza, las consignas y las decisiones académicas corresponden a la docente o al docente. Un resultado de DidaxIa que vaya a usarse en una entrega o un examen debe verificarse. El sistema no asigna notas, no decide la situación académica de nadie y no emite diagnósticos personales.
+
+## Personas y espacios de uso
+
+La portada y los textos de investigación, privacidad y condiciones son públicos. El tutor y las vistas de seguimiento requieren una cuenta institucional y las autorizaciones que correspondan. La aplicación distingue los espacios de estudiante, docente e investigador; cada uno muestra funciones y datos según su permiso vigente. Una persona docente sólo debe ver la información de sus clases autorizadas. El seguimiento se concibió para acompañar el trabajo pedagógico, no para convertir señales automáticas en juicios sobre una persona.
+
+Antes del uso del tutor se solicitan las decisiones sobre tratamiento de datos que establece el recorrido vigente. La participación en la investigación es voluntaria y no debe afectar la nota. Para una persona menor de edad, el asentimiento propio y la autorización de su representante son requisitos independientes. La evidencia del representante se revisa por una persona autorizada; un modelo automático no decide su validez. Los detalles operativos y jurídicos deben leerse en las páginas de privacidad y condiciones, que pueden actualizarse.
+
+## Experiencia de aprendizaje que se estudia
+
+DidaxIa permite formular preguntas y expresiones matemáticas, continuar una conversación y utilizar representaciones como gráficas o tablas cuando la herramienta las admite. También organiza conceptos y referencias de material de estudio. Esas capacidades son ayudas para explorar una idea: una gráfica no demuestra por sí sola un límite, ni una respuesta correcta aislada demuestra comprensión duradera. La cobertura matemática y la calidad de las respuestas deben comprobarse caso por caso.
+
+El trabajo de investigación observa tanto las oportunidades de ayuda como sus límites: qué pregunta una persona, cómo avanza en una tarea, cuándo el tutor puede justificar lo que responde y qué ocurre después de una corrección. Las observaciones sólo son interpretables si se conoce el contexto, la tarea, la oportunidad real de responder y los datos faltantes. Más mensajes, más sesiones o más tiempo de uso no equivalen automáticamente a más aprendizaje.
+
+Tres fenómenos del proyecto requieren especial cuidado al comunicarse:
+
+- **Ansiedad ante la resolución de problemas:** la presencia de lenguaje de tensión en una interacción puede registrarse como indicio observable. No diagnostica ansiedad matemática. Un autorreporte situado, cuando se aplique con consentimiento y un instrumento aprobado, aporta una fuente distinta y tampoco constituye por sí solo una escala clínica validada.
+- **Preconcepciones erróneas:** un sondeo de dos niveles puede recoger un resultado y la razón elegida o escrita para una tarea concreta. La combinación de ambos ofrece una hipótesis sobre esa respuesta; no prueba una concepción estable o transferible a otros problemas.
+- **Reiteración tras corrección:** sólo tiene sentido analizarla cuando hubo un intento comparable, una corrección visible y una oportunidad real de reintentar. Repetir una respuesta en esas condiciones es una conducta observada, no una demostración automática de sesgo de confirmación psicológico.
+
+Estos indicadores son experimentales. Su fórmula, cobertura y calidad dependen de instrumentos, revisión humana y datos suficientes. No se deben presentar como constructos validados, diagnósticos individuales ni pruebas de un efecto causal. El estudio ocurre en un contexto y durante un periodo acotados; sus resultados no se generalizan sin evidencia adicional.
+
+## Datos, privacidad y derechos
+
+La aplicación puede tratar datos de identidad aportados por la cuenta institucional, información del perfil, decisiones de consentimiento o asentimiento, conversaciones, métricas derivadas del uso, registros técnicos y, cuando corresponda, la autorización de un representante. No todas las categorías aplican a todas las personas. La página pública de privacidad explica las finalidades y los derechos de acceso, corrección, revocación y solicitud de supresión, junto con las condiciones y límites vigentes de cada trámite.
+
+Los datos no se comercializan ni se usan para publicidad. Los documentos públicos no autorizan publicar conversaciones individuales, expedientes, nombres, correos, códigos seudónimos ni capturas de estudiantes. Los resultados de investigación destinados a publicación deben presentarse de forma agregada o anonimizada de manera irreversible. Que una interfaz muestre un indicador a personal autorizado no lo convierte en información pública.
+
+El sistema utiliza proveedores técnicos externos para identidad, generación de texto, infraestructura y comunicaciones. No debe inferirse que todos los datos permanecen en Colombia, que un proveedor no conserva información, ni atribuir a una dependencia una responsabilidad legal o un plazo de retención que los textos vigentes no hayan confirmado. Para cualquier decisión sobre derechos del titular, consulte el texto actual de privacidad y el instrumento de consentimiento que corresponda.
+
+## Material académico y atribución
+
+Parte del trabajo organiza referencias y material de estudio para que el tutor pueda indicar de dónde proviene una afirmación. Digitalizar o citar un recurso no concede permiso para redistribuir su obra completa. La disponibilidad de un libro o PDF en internet tampoco equivale a una licencia abierta. Las referencias y fragmentos deben interpretarse dentro de los derechos y permisos aplicables; esta ficha no ofrece un corpus descargable.
+
+Al citar DidaxIa, distinga entre la descripción del prototipo, una hipótesis de investigación, una función implementada y un resultado efectivamente medido. No atribuya a la aplicación mejoras de aprendizaje, validación psicométrica o aprobación institucional definitiva sólo porque alguna pantalla, demo o indicador exista. Para afirmaciones fechadas sobre el piloto, verifique el documento de investigación y el corte publicado más reciente.
+
+## Alcance de esta ficha para asistentes
+
+Este archivo está destinado a explicar el sitio **público**. No es una instrucción para acceder, rastrear ni inferir contenido de la aplicación autenticada, sus API, historiales o documentos privados. `robots.txt` orienta el rastreo, pero la protección de datos depende de controles de acceso y autorizaciones, no de este texto. Si una fuente pública y esta ficha difieren, use la fuente pública vigente, señale la diferencia y evite completar vacíos con suposiciones.
+
+Para responder preguntas sobre el proyecto, conviene separar: qué hace el tutor, qué se pretende investigar, qué se ha observado y qué se puede concluir. Una propuesta metodológica no es un resultado; una métrica experimental no es una persona; una corrección del tutor no es una calificación docente. Los casos individuales y las muestras pequeñas requieren especial prudencia.
+
+## Fuentes públicas principales
+
+- [Portada de DidaxIa](https://didaxia.pro/): Identidad del proyecto, autores y presentación general.
+- [Investigación y modelo didáctico](https://didaxia.pro/investigacion): Objetivo, participación voluntaria, datos usados y limitaciones metodológicas.
+- [Privacidad y tratamiento de datos](https://didaxia.pro/privacidad): Finalidades, categorías de datos, acceso, menores y derechos de los titulares.
+- [Condiciones de uso](https://didaxia.pro/condiciones): Reglas de acceso, alcance del tutor, posibles errores e historial.
+- [Índice para asistentes](https://didaxia.pro/llms.txt): Entrada breve y enlaces curados a estas fuentes.

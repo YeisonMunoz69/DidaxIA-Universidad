@@ -1,0 +1,912 @@
+{
+  "nodes": [
+    {
+      "id": "N01",
+      "label": "Limite",
+      "categoria": "Fundamento",
+      "apos": "proceso",
+      "sinonimos": [
+        "infinitesimal",
+        "equivalencia asintotica"
+      ],
+      "formas_de_consulta": [
+        "infinitesimal",
+        "equivalencia asintotica"
+      ]
+    },
+    {
+      "id": "N02",
+      "label": "Continuidad",
+      "categoria": "Fundamento",
+      "apos": "proceso",
+      "sinonimos": [
+        "funciones continuas",
+        "funcion continua",
+        "continua en un punto",
+        "continuidad de una funcion"
+      ],
+      "formas_de_consulta": [
+        "funciones continuas",
+        "funcion continua",
+        "continua en un punto",
+        "continuidad de una funcion"
+      ],
+      "origen": "PM-C21, 2026-08-19: se anaden formas en SINGULAR y en el habla del estudiante. Medido ese dia: «que es un limite lateral» caia en N01 porque su etiqueta «Limite» esta contenida en la pregunta y las formas de N21 estaban todas en plural o decian «unilateral»; y «cuando una funcion es continua» no enrutaba a ningun nodo, porque N02 solo ofrecia «funciones continuas». La regla 1 toma la forma MAS LARGA, asi que una forma de dos palabras gana a una etiqueta de una."
+    },
+    {
+      "id": "N03",
+      "label": "Derivabilidad",
+      "categoria": "Fundamento",
+      "apos": "objeto",
+      "sinonimos": [
+        "diferenciabilidad",
+        "derivable",
+        "diferenciable"
+      ],
+      "formas_de_consulta": [
+        "diferenciabilidad",
+        "derivable",
+        "diferenciable"
+      ]
+    },
+    {
+      "id": "N04",
+      "label": "Derivada en un punto",
+      "categoria": "Concepto central",
+      "apos": "proceso",
+      "sinonimos": [
+        "definicion de la derivada",
+        "significado de la derivada",
+        "cociente incremental",
+        "razon incremental"
+      ],
+      "formas_de_consulta": [
+        "definicion de la derivada",
+        "significado de la derivada",
+        "cociente incremental",
+        "razon incremental"
+      ]
+    },
+    {
+      "id": "N05",
+      "label": "Funcion derivada",
+      "categoria": "Concepto central",
+      "apos": "objeto",
+      "sinonimos": [
+        "diferenciacion",
+        "derivacion",
+        "derivadas notables"
+      ],
+      "formas_de_consulta": [
+        "derivadas notables"
+      ],
+      "origen": "PM-C17, 2026-08-15 (D-25 opcion A): «diferenciacion» esta SOLO en sinonimos. Cubre 11 unidades del corpus —las once apariciones de «DERIVADA Y DIFERENCIACION» de Leithold, las que desbloquearon PM-C07— y es la PEOR forma del grafo para enrutar: pesa 0,25, por debajo del piso de 0,50, porque «diferenciacion» esta ademas en N09, N10 y N13. La etiqueta «Funcion derivada» pesa 0,48 y aun asi enruta: un nodo sin forma para nombrarlo no se alcanza nunca, y PM-V13 midio lo que cuesta callarla. — PM-C19, 2026-08-18: se retira «derivacion» de formas_de_consulta, aplicando la regla de D-25 «o baja el piso con su medicion, o sacalas». Estaba en 0,50 EXACTO con dos duennos (N05, N19); al entrar N30 «derivacion implicita» paso a tres y cayo a 0,33. Sigue en sinonimos: deja de ENRUTAR, no deja de contar para cobertura. ⚠️ Es el unico nodo existente que PM-C19 modifica, y conviene que una docente lo mire: un estudiante que escriba solo «derivacion» ya no cae en N05."
+    },
+    {
+      "id": "N06",
+      "label": "Pendiente de la recta tangente",
+      "categoria": "Representacion geometrica",
+      "apos": "proceso",
+      "sinonimos": [
+        "recta tangente",
+        "linea tangente",
+        "ecuaciones de la tangente"
+      ],
+      "formas_de_consulta": [
+        "recta tangente",
+        "linea tangente",
+        "ecuaciones de la tangente"
+      ],
+      "origen": "Se RETIRO «aproximacion lineal» el 2026-08-09 (PM-V04): es palabra por palabra la mitad de la etiqueta de N16, que ademas tiene los 12 fragmentos de PUR §2.9 «Diferenciales y aproximaciones». Mientras estuvo aqui, toda pregunta por la aproximacion lineal se enrutaba al nodo de la tangente, que no tiene ese material. Los otros tres sinonimos se quedan: nombran la recta tangente y nada mas."
+    },
+    {
+      "id": "N07",
+      "label": "Tasa de cambio",
+      "categoria": "Representacion aplicada",
+      "apos": "proceso",
+      "sinonimos": [
+        "tasa de variacion",
+        "razon de cambio",
+        "velocidad instantanea",
+        "velocidad promedio",
+        "velocidad del movimiento",
+        "tasas de variacion relacionadas",
+        "movimiento rectilineo"
+      ],
+      "formas_de_consulta": [
+        "tasa de variacion",
+        "razon de cambio",
+        "velocidad instantanea",
+        "velocidad promedio",
+        "velocidad del movimiento",
+        "tasas de variacion relacionadas",
+        "movimiento rectilineo"
+      ]
+    },
+    {
+      "id": "N08",
+      "label": "Regla de la cadena",
+      "categoria": "Regla de derivacion",
+      "apos": "esquema"
+    },
+    {
+      "id": "N09",
+      "label": "Regla del producto",
+      "categoria": "Regla de derivacion",
+      "apos": "esquema",
+      "sinonimos": [
+        "regla de diferenciacion para el producto"
+      ],
+      "formas_de_consulta": [
+        "regla de diferenciacion para el producto"
+      ],
+      "origen": "PM-C16, 2026-08-14: se retiro el sinonimo «derivada del producto». No aparece como encabezado en ninguna de las cinco obras —0 de 1355— y cubre 0 unidades que «regla de diferenciacion para el producto» (Leithold 2.4.6) no cubriera ya."
+    },
+    {
+      "id": "N10",
+      "label": "Regla del cociente",
+      "categoria": "Regla de derivacion",
+      "apos": "esquema",
+      "sinonimos": [
+        "regla de diferenciacion para el cociente"
+      ],
+      "formas_de_consulta": [
+        "derivada del cociente",
+        "regla de diferenciacion para el cociente"
+      ],
+      "origen": "PM-C17, 2026-08-15 (D-25 opcion A): «derivada del cociente» esta SOLO en formas_de_consulta. No aparece como encabezado en ninguna de las cinco obras —0 de 1355—, asi que no cumple la regla de NODOS-CANDIDATOS.md §1.bis y no tiene sitio en la lista de cobertura; y gana Q77, «la derivada de un cociente es la derivada de arriba sobre la derivada de abajo», que es como lo dice un estudiante y no como lo titula un libro. Pesa 0,64: por encima del piso de 0,50, asi que enruta. PM-C16 lo dejo escrito como conflicto; aqui ya es un reparto."
+    },
+    {
+      "id": "N11",
+      "label": "Interpretacion geometrica de la derivada",
+      "categoria": "Representacion",
+      "apos": "objeto"
+    },
+    {
+      "id": "N12",
+      "label": "Maximos y minimos",
+      "categoria": "Aplicacion",
+      "apos": "esquema",
+      "sinonimos": [
+        "valores maximos y minimos",
+        "valor maximo y minimo",
+        "extremo absoluto",
+        "extremos absolutos"
+      ],
+      "formas_de_consulta": [
+        "valores maximos y minimos",
+        "valor maximo y minimo",
+        "extremo absoluto",
+        "extremos absolutos"
+      ]
+    },
+    {
+      "id": "M1",
+      "label": "La derivada ES la pendiente",
+      "categoria": "Misconception",
+      "descripcion": "Los estudiantes identifican derivada con pendiente sin distinguir que la derivada da un valor numerico que corresponde a la pendiente de la recta tangente.",
+      "indicador_observable": "Usar pendiente y derivada como sinonimos intercambiables sin distincion semantica."
+    },
+    {
+      "id": "M2",
+      "label": "El limite es el valor de la funcion",
+      "categoria": "Misconception",
+      "descripcion": "Confusion entre lim f(x) cuando x tiende a a y f(a). Asumen que si la funcion esta definida en a, el limite debe ser f(a).",
+      "indicador_observable": "Evaluar f(a) directamente cuando se pide calcular el limite, sin verificar la existencia del limite lateral."
+    },
+    {
+      "id": "M3",
+      "label": "Continua = sin huecos en la grafica",
+      "categoria": "Misconception",
+      "descripcion": "Definicion visual informal que falla en funciones con discontinuidades removibles o funciones definidas por tramos.",
+      "indicador_observable": "Describir continuidad unicamente en terminos visuales sin recurrir a la definicion formal con limites."
+    },
+    {
+      "id": "M4",
+      "label": "Derivada cero = maximo o minimo",
+      "categoria": "Misconception",
+      "descripcion": "Asumen que f'(x)=0 siempre indica extremo, sin verificar con el criterio de la segunda derivada o el cambio de signo.",
+      "indicador_observable": "Declarar automaticamente que un punto critico es maximo o minimo sin analisis adicional."
+    },
+    {
+      "id": "M5",
+      "label": "Derivar por fuera y ya",
+      "categoria": "Misconception",
+      "descripcion": "Aplican la derivada de la funcion exterior pero olvidan multiplicar por la derivada de la funcion interior.",
+      "indicador_observable": "Omitir sistematicamente el factor de la derivada interior en funciones compuestas."
+    },
+    {
+      "id": "N13",
+      "label": "Regla de la potencia",
+      "categoria": "Regla de derivacion",
+      "apos": "esquema",
+      "sinonimos": [
+        "regla de diferenciacion de potencias"
+      ],
+      "formas_de_consulta": [
+        "regla de diferenciacion de potencias"
+      ],
+      "origen": "ALCANCE §3: «Reglas de derivación: potencia, producto, cociente y cadena». Las otras tres son N08, N09 y N10; esta no tenia nodo. 18 secciones la respaldan. — PM-C16, 2026-08-14: se retiro el sinonimo «derivada de una potencia». No aparece como encabezado en ninguna de las cinco obras —0 de 1355— y cubre 0 unidades que «regla de diferenciacion de potencias» (Leithold 2.4.2 y 2.4.8) no cubriera ya."
+    },
+    {
+      "id": "N14",
+      "label": "Derivadas de funciones trigonometricas",
+      "categoria": "Regla de derivacion",
+      "apos": "esquema",
+      "sinonimos": [
+        "funciones trigonometricas",
+        "derivadas de las funciones trigonometricas"
+      ],
+      "formas_de_consulta": [
+        "funciones trigonometricas",
+        "derivadas de las funciones trigonometricas"
+      ],
+      "origen": "ALCANCE §3: «Derivadas de funciones trigonometricas, exponenciales y logaritmicas». 17 secciones, incluida «2.7 Derivadas de las funciones trigonometricas»."
+    },
+    {
+      "id": "N15",
+      "label": "Derivadas de funciones exponenciales y logaritmicas",
+      "categoria": "Regla de derivacion",
+      "apos": "esquema",
+      "sinonimos": [
+        "funcion exponencial",
+        "funcion logaritmica",
+        "logaritmos naturales"
+      ],
+      "formas_de_consulta": [
+        "funcion exponencial",
+        "funcion logaritmica",
+        "logaritmos naturales"
+      ],
+      "origen": "ALCANCE §3, misma linea que N14. Se agrupan porque el corpus las agrupa: «Funciones logaritmicas, exponenciales...». 13 secciones entre las dos."
+    },
+    {
+      "id": "N16",
+      "label": "Diferencial y aproximacion lineal",
+      "categoria": "Concepto central",
+      "apos": "objeto",
+      "sinonimos": [
+        "diferenciales",
+        "derivada y diferencial",
+        "significado geometrico de la diferencial",
+        "notacion de leibniz"
+      ],
+      "formas_de_consulta": [
+        "diferenciales",
+        "derivada y diferencial",
+        "significado geometrico de la diferencial",
+        "notacion de leibniz"
+      ],
+      "origen": "NODOS-CANDIDATOS §3.1, primer candidato. Titulos que lo respaldan: «DERIVADA Y DIFERENCIAL» ·2 y «SIGNIFICADO GEOMETRICO DE LA DIFERENCIAL» (Piskunov), «Concepto de Diferenciales» y «Formulas de Diferenciacion en Notacion de Leibniz» (Leithold), «Diferenciales y aproximaciones» (Purcell), «INCREMENTOS Y DIFERENCIALES» (Tulio Emiro). NO se uso «diferencial» a secas: casaba con «Calculo diferencial de funciones de mas de una variable», que esta fuera del alcance."
+    },
+    {
+      "id": "N17",
+      "label": "Derivadas de orden superior",
+      "categoria": "Concepto central",
+      "apos": "objeto",
+      "sinonimos": [
+        "orden superior",
+        "diversos ordenes",
+        "segunda derivada"
+      ],
+      "formas_de_consulta": [
+        "orden superior",
+        "diversos ordenes",
+        "segunda derivada"
+      ],
+      "origen": "NODOS-CANDIDATOS §3.1: «aparece en 5 obras al mirar todos los niveles». Titulos de nivel 1-2: «Derivadas de orden superior» ·2 (Purcell), «DERIVADAS DE ORDEN SUPERIOR» (Tulio Emiro), «DERIVADAS DE DIVERSOS ORDENES» e «INTERPRETACION MECANICA DE LA SEGUNDA DERIVADA» (Piskunov)."
+    },
+    {
+      "id": "N18",
+      "label": "Teorema del valor medio y teorema de Rolle",
+      "categoria": "Fundamento",
+      "apos": "esquema",
+      "sinonimos": [
+        "teorema de rolle",
+        "valor medio",
+        "teorema de lagrange",
+        "incrementos finitos",
+        "teorema de cauchy"
+      ],
+      "formas_de_consulta": [
+        "teorema de rolle",
+        "valor medio",
+        "teorema de lagrange",
+        "incrementos finitos",
+        "teorema de cauchy"
+      ],
+      "origen": "NODOS-CANDIDATOS §3.1: «presente en 6 archivos». Titulos: «TEOREMA DE ROLLE Y TEOREMA DEL VALOR MEDIO» ·2 (Leithold), «TEOREMA SOBRE LAS RAICES DE LA DERIVADA (TEOREMA DE ROLLE)» y «TEOREMA SOBRE LOS INCREMENTOS FINITOS (TEOREMA DE LAGRANGE)» (Piskunov)."
+    },
+    {
+      "id": "N19",
+      "label": "Derivada numerica y metodo de Newton",
+      "categoria": "Aplicacion",
+      "apos": "esquema",
+      "sinonimos": [
+        "derivada numerica",
+        "derivacion numerica",
+        "metodo de newton",
+        "raices reales"
+      ],
+      "formas_de_consulta": [
+        "derivada numerica",
+        "derivacion numerica",
+        "metodo de newton",
+        "raices reales"
+      ],
+      "origen": "NODOS-CANDIDATOS §3.1, dos candidatos fundidos en uno: los dos son «usar la derivada para calcular un valor aproximado» y separarlos multiplicaria nodos casi iguales, que es lo que §3.2 advierte. Titulos: «DERIVADA NUMERICA» ·2 (Leithold), «DERIVACION NUMERICA» y «CALCULO APROXIMADO DE LAS RAICES REALES DE UNA ECUACION» (Piskunov)."
+    },
+    {
+      "id": "N20",
+      "label": "Funcion: operaciones, tipos y modelos",
+      "categoria": "Fundamento",
+      "apos": "objeto",
+      "sinonimos": [
+        "operaciones con funciones",
+        "tipos de funciones",
+        "modelos matematicos",
+        "numero variable funcion",
+        "formas de expresion de funciones",
+        "funciones elementales",
+        "funciones algebraicas"
+      ],
+      "formas_de_consulta": [
+        "operaciones con funciones",
+        "tipos de funciones",
+        "modelos matematicos",
+        "numero variable funcion",
+        "formas de expresion de funciones",
+        "funciones elementales",
+        "funciones algebraicas"
+      ],
+      "origen": "NODOS-CANDIDATOS §3.1, ultimo candidato. Es PRERREQUISITO DECLARATIVO, el mismo estatus que ALCANCE §3 da a limite y continuidad: el sistema enruta a el, no se compromete a ensenarlo. Titulos: «OPERACIONES CON FUNCIONES Y TIPOS DE FUNCIONES» ·2 y «FUNCIONES COMO MODELOS MATEMATICOS» ·2 (Leithold), «NUMERO. VARIABLE. FUNCION» ·2 y «FORMAS DE EXPRESION DE FUNCIONES» (Piskunov), «Operaciones con Funciones» (Purcell). NO se uso «funciones y sus graficas»: casaba con «COMPORTAMIENTO DE LAS FUNCIONES Y DE SUS GRAFICAS», que el alcance excluye por concavidad."
+    },
+    {
+      "id": "N21",
+      "label": "Limites laterales",
+      "categoria": "Fundamento",
+      "apos": "proceso",
+      "sinonimos": [
+        "limites unilaterales",
+        "limite por la derecha",
+        "limite por la izquierda",
+        "limite lateral",
+        "limites laterales"
+      ],
+      "origen": "Microcurriculo UNIDAD 2 (limite y continuidad): «Limites laterales y propiedades de los limites». Encabezados: Purcell «Limites laterales» y «Limites unilaterales» (1-1_1-4, pags. 55-76); Leithold «1.6 LIMITES LATERALES», «1.6.1 Definicion de limite por la derecha», «1.6.2 ... por la izquierda» (1_6, pags. 49-54). — PM-C19, 2026-08-18: el grafo no cubria el pensum; nadie lo habia cruzado. · PM-C21, 2026-08-19: se anaden formas en SINGULAR y en el habla del estudiante. Medido ese dia: «que es un limite lateral» caia en N01 porque su etiqueta «Limite» esta contenida en la pregunta y las formas de N21 estaban todas en plural o decian «unilateral»; y «cuando una funcion es continua» no enrutaba a ningun nodo, porque N02 solo ofrecia «funciones continuas». La regla 1 toma la forma MAS LARGA, asi que una forma de dos palabras gana a una etiqueta de una.",
+      "formas_de_consulta": [
+        "limites unilaterales",
+        "limite por la derecha",
+        "limite por la izquierda",
+        "limite lateral",
+        "limites laterales"
+      ]
+    },
+    {
+      "id": "N22",
+      "label": "Teoremas de limites",
+      "categoria": "Fundamento",
+      "apos": "esquema",
+      "sinonimos": [
+        "teorema principal de los limites",
+        "propiedades de los limites",
+        "limite de la suma",
+        "limite del producto",
+        "limite del cociente"
+      ],
+      "origen": "Microcurriculo UNIDAD 2 (limite y continuidad): «propiedades de los limites». Encabezados: Purcell «1.3 Teoremas de limites» y «Aplicaciones del teorema principal de los limites»; Leithold «1.5 DEFINICION DE LIMITE ... Y TEOREMAS DE LIMITES», con los teoremas 1 a 11 nombrados uno a uno (1_5, pags. 38-48). — PM-C19, 2026-08-18: el grafo no cubria el pensum; nadie lo habia cruzado. ⚠️ «limite del cociente» se queda en sinonimos (COBERTURA) y NO en formas_de_consulta (ENRUTAMIENTO): el termino «cociente» ya lo usaban N04 y N10 con peso justo en el piso de D-25, y un tercer duenno hundia «derivada del cociente» de N10 a 0,44. Es la clase de forma que describe un teorema, no como pregunta un estudiante.",
+      "formas_de_consulta": [
+        "teorema principal de los limites",
+        "propiedades de los limites",
+        "limite de la suma",
+        "limite del producto"
+      ]
+    },
+    {
+      "id": "N23",
+      "label": "Limites al infinito y limites infinitos",
+      "categoria": "Fundamento",
+      "apos": "proceso",
+      "sinonimos": [
+        "limites al infinito",
+        "limites infinitos",
+        "valores de funcion que crecen sin limite",
+        "valores de funcion que decrecen sin limite"
+      ],
+      "origen": "Microcurriculo UNIDAD 2 (limite y continuidad): «Limites en infinito y limites al infinito». Encabezados: Purcell «Seccion 1.5: Limites al infinito; limites infinitos» (1-5_2-1, pags. 77-99); Leithold «1.7 LIMITES INFINITOS» y sus definiciones 1.7.1 y 1.7.2 (1_7, pags. 55-66). — PM-C19, 2026-08-18: el grafo no cubria el pensum; nadie lo habia cruzado.",
+      "formas_de_consulta": [
+        "limites al infinito",
+        "limites infinitos",
+        "valores de funcion que crecen sin limite",
+        "valores de funcion que decrecen sin limite"
+      ]
+    },
+    {
+      "id": "N24",
+      "label": "Asintotas verticales y horizontales",
+      "categoria": "Representacion geometrica",
+      "apos": "objeto",
+      "sinonimos": [
+        "asintota vertical",
+        "asintota horizontal",
+        "relacion con las asintotas"
+      ],
+      "origen": "Microcurriculo UNIDAD 2 (limite y continuidad), derivado de los limites infinitos. Encabezados: Purcell «Relacion con las asintotas»; Leithold «1.7.8 Definicion de asintota vertical». Nodo propio y no fundido con N23 porque el estudiante pregunta «que es una asintota vertical», no «que es un limite infinito». — PM-C19, 2026-08-18: el grafo no cubria el pensum; nadie lo habia cruzado.",
+      "formas_de_consulta": [
+        "asintota vertical",
+        "asintota horizontal",
+        "relacion con las asintotas"
+      ]
+    },
+    {
+      "id": "N25",
+      "label": "Tipos de discontinuidad: removible y esencial",
+      "categoria": "Fundamento",
+      "apos": "esquema",
+      "sinonimos": [
+        "discontinuidad removible",
+        "discontinuidad esencial",
+        "discontinuidad eliminable",
+        "tipos de discontinuidad"
+      ],
+      "origen": "Microcurriculo UNIDAD 2 (limite y continuidad): «Continuidad y tipos de discontinuidad de una funcion». Clasificar exige comparar los limites laterales, de ahi el prerrequisito N21. — PM-C19, 2026-08-18: el grafo no cubria el pensum; nadie lo habia cruzado.",
+      "formas_de_consulta": [
+        "discontinuidad removible",
+        "discontinuidad esencial",
+        "discontinuidad eliminable",
+        "tipos de discontinuidad"
+      ]
+    },
+    {
+      "id": "N26",
+      "label": "Teorema del valor intermedio",
+      "categoria": "Fundamento",
+      "apos": "esquema",
+      "sinonimos": [
+        "valor intermedio"
+      ],
+      "origen": "Microcurriculo UNIDAD 2 (limite y continuidad): «Teorema del valor intermedio». Encabezado: Leithold «1.9.8 Teorema del valor intermedio». — PM-C19, 2026-08-18: el grafo no cubria el pensum; nadie lo habia cruzado.",
+      "formas_de_consulta": [
+        "valor intermedio"
+      ]
+    },
+    {
+      "id": "N27",
+      "label": "Limites trigonometricos",
+      "categoria": "Fundamento",
+      "apos": "proceso",
+      "sinonimos": [
+        "limites que involucran funciones trigonometricas",
+        "continuidad de las funciones trigonometricas"
+      ],
+      "origen": "Microcurriculo UNIDAD 2 (limite y continuidad): «Limites trigonometricos». Encabezados: Purcell «1.4 Limites que involucran funciones trigonometricas»; Leithold «1.10 CONTINUIDAD DE LAS FUNCIONES TRIGONOMETRICAS Y TEOREMA DE ESTRICCION». — PM-C19, 2026-08-18: el grafo no cubria el pensum; nadie lo habia cruzado.",
+      "formas_de_consulta": [
+        "limites que involucran funciones trigonometricas",
+        "continuidad de las funciones trigonometricas"
+      ]
+    },
+    {
+      "id": "N28",
+      "label": "Teorema del sandwich",
+      "categoria": "Fundamento",
+      "apos": "esquema",
+      "sinonimos": [
+        "teorema de estriccion",
+        "teorema del sandwich",
+        "teorema del emparedado"
+      ],
+      "origen": "Microcurriculo UNIDAD 2 (limite y continuidad): «Teorema del emparedado». ⚠️ LA ETIQUETA NO DICE «emparedado» A PROPOSITO: es el termino del programa, pero en el espanol de Colombia se dice «sandwich», y sobre todo NO aparece en ningun encabezado de las cinco obras —cero de todas—, asi que incumpliria §1.bis. Los dos nombres que SI estan: «TEOREMA 1.3 (Teorema de estriccion / Sandwich)» y «1.10.1 El teorema de estriccion». Es prerrequisito de N27 y no al reves, aunque el programa los liste al contrario: con el se demuestra lim sen(x)/x = 1. — PM-C19, 2026-08-18: el grafo no cubria el pensum; nadie lo habia cruzado. · PM-C21, 2026-08-19: se anade «teorema del emparedado» como forma. La revision de PM-C19 miro ENCABEZADOS y ahi no aparece, pero en el CUERPO de Purcell si esta, ocho veces, y es el termino que usa esa obra —la que aporta 97 de los 203 fragmentos— y tambien el del microcurriculo. Sin esta forma, «que dice el teorema del emparedado» no enrutaba a ningun nodo. La etiqueta sigue diciendo «sandwich» por §1.bis, pero enrutar y etiquetar son cosas distintas.",
+      "formas_de_consulta": [
+        "teorema de estriccion",
+        "teorema del sandwich",
+        "teorema del emparedado"
+      ]
+    },
+    {
+      "id": "N29",
+      "label": "Formas indeterminadas y como se levantan",
+      "categoria": "Fundamento",
+      "apos": "esquema",
+      "sinonimos": [
+        "limites indeterminados",
+        "formas indeterminadas",
+        "calculo de limites indeterminados"
+      ],
+      "origen": "Microcurriculo UNIDAD 2 (limite y continuidad): «Limites indeterminados». Encabezados: «3.8. Calculo de limites indeterminados - Regla de L'Hospital»; Piskunov «LIMITE DE LA RAZON DE DOS INFINITESIMALES (CALCULO DE LIMITES INDETERMINADOS DEL TIPO 0/0)». Va en la unidad 2 y L'Hospital en la 3, asi que se levantan primero por factorizacion y racionalizacion: N29 es prerrequisito de N31, no al reves. — PM-C19, 2026-08-18: el grafo no cubria el pensum; nadie lo habia cruzado.",
+      "formas_de_consulta": [
+        "limites indeterminados",
+        "formas indeterminadas",
+        "calculo de limites indeterminados"
+      ]
+    },
+    {
+      "id": "N30",
+      "label": "Derivacion implicita",
+      "categoria": "Regla de derivacion",
+      "apos": "proceso",
+      "sinonimos": [
+        "derivacion implicita",
+        "funciones implicitas"
+      ],
+      "origen": "Microcurriculo UNIDAD 3 (la derivada): «Derivacion implicita». Encabezados: «2.5. Derivacion Implicita», «2.7 Derivacion implicita», «Derivacion de las funciones Implicitas», «1. Funciones implicitas». — PM-C19, 2026-08-18: el grafo no cubria el pensum; nadie lo habia cruzado.",
+      "formas_de_consulta": [
+        "derivacion implicita",
+        "funciones implicitas"
+      ]
+    },
+    {
+      "id": "N31",
+      "label": "Regla de L'Hospital",
+      "categoria": "Regla de derivacion",
+      "apos": "esquema",
+      "sinonimos": [
+        "regla de l'hospital",
+        "l'hospital"
+      ],
+      "origen": "Microcurriculo UNIDAD 3 (la derivada): «Regla de L'hopital». ⚠️ La etiqueta usa «L'Hospital» y no «L'Hopital» porque es la grafia que aparece en el corpus —«3.8. Calculo de limites indeterminados - Regla de L'Hospital»— y es la que el estudiante leera en su libro. Cero encabezados con «Hopital». — PM-C19, 2026-08-18: el grafo no cubria el pensum; nadie lo habia cruzado.",
+      "formas_de_consulta": [
+        "regla de l'hospital",
+        "l'hospital"
+      ]
+    },
+    {
+      "id": "N32",
+      "label": "Razones de cambio relacionadas",
+      "categoria": "Representacion aplicada",
+      "apos": "esquema",
+      "sinonimos": [
+        "razones de cambio relacionadas",
+        "tasas de variacion relacionadas",
+        "tasas de cambio relacionadas"
+      ],
+      "origen": "Microcurriculo UNIDAD 4 (aplicaciones de la derivada), ligada a «La derivada como razon de cambio». Encabezados: «2.8 Razones de cambio relacionadas», «2.10 TASAS DE VARIACION RELACIONADAS». — PM-C19, 2026-08-18: el grafo no cubria el pensum; nadie lo habia cruzado.",
+      "formas_de_consulta": [
+        "razones de cambio relacionadas",
+        "tasas de variacion relacionadas",
+        "tasas de cambio relacionadas"
+      ]
+    },
+    {
+      "id": "N33",
+      "label": "Monotonia y criterio de la primera derivada",
+      "categoria": "Aplicacion",
+      "apos": "esquema",
+      "sinonimos": [
+        "funciones crecientes y decrecientes",
+        "criterio de la primera derivada",
+        "funcion creciente",
+        "funcion decreciente"
+      ],
+      "origen": "Microcurriculo UNIDAD 4 (aplicaciones de la derivada): «Funciones crecientes o decrecientes - criterio de la primera derivada». Encabezados: «3.4 FUNCIONES CRECIENTES Y DECRECIENTES, Y CRITERIO DE LA PRIMERA DERIVADA», «3.4.1 Definicion de Funcion Creciente». — PM-C19, 2026-08-18: el grafo no cubria el pensum; nadie lo habia cruzado.",
+      "formas_de_consulta": [
+        "funciones crecientes y decrecientes",
+        "criterio de la primera derivada",
+        "funcion creciente",
+        "funcion decreciente"
+      ]
+    },
+    {
+      "id": "N34",
+      "label": "Concavidad, inflexion y criterio de la segunda derivada",
+      "categoria": "Aplicacion",
+      "apos": "esquema",
+      "sinonimos": [
+        "concavidad",
+        "puntos de inflexion",
+        "criterio de la segunda derivada",
+        "concavidad hacia arriba",
+        "concavidad hacia abajo"
+      ],
+      "origen": "Microcurriculo UNIDAD 4 (aplicaciones de la derivada): «Concavidad y puntos de inflexion - criterio de la segunda derivada». Encabezados: «3.5 Concavidad, Puntos de Inflexion y Criterio de la Segunda Derivada», «3.5.1 Definicion de concavidad hacia arriba», «3.5.4 Definicion de punto de inflexion». — PM-C19, 2026-08-18: el grafo no cubria el pensum; nadie lo habia cruzado.",
+      "formas_de_consulta": [
+        "concavidad",
+        "puntos de inflexion",
+        "criterio de la segunda derivada",
+        "concavidad hacia arriba",
+        "concavidad hacia abajo"
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "source": "N01",
+      "target": "N02",
+      "type": "prerrequisito_de"
+    },
+    {
+      "source": "N01",
+      "target": "N03",
+      "type": "prerrequisito_de"
+    },
+    {
+      "source": "N02",
+      "target": "N03",
+      "type": "prerrequisito_de"
+    },
+    {
+      "source": "N03",
+      "target": "N04",
+      "type": "prerrequisito_de"
+    },
+    {
+      "source": "N04",
+      "target": "N05",
+      "type": "prerrequisito_de"
+    },
+    {
+      "source": "N05",
+      "target": "N08",
+      "type": "prerrequisito_de"
+    },
+    {
+      "source": "N05",
+      "target": "N09",
+      "type": "prerrequisito_de"
+    },
+    {
+      "source": "N05",
+      "target": "N10",
+      "type": "prerrequisito_de"
+    },
+    {
+      "source": "N05",
+      "target": "N12",
+      "type": "prerrequisito_de"
+    },
+    {
+      "source": "N04",
+      "target": "N06",
+      "type": "se_confunde_con"
+    },
+    {
+      "source": "N06",
+      "target": "N04",
+      "type": "se_confunde_con"
+    },
+    {
+      "source": "N01",
+      "target": "N04",
+      "type": "se_confunde_con"
+    },
+    {
+      "source": "N04",
+      "target": "N01",
+      "type": "se_confunde_con"
+    },
+    {
+      "source": "N09",
+      "target": "N10",
+      "type": "se_confunde_con"
+    },
+    {
+      "source": "N10",
+      "target": "N09",
+      "type": "se_confunde_con"
+    },
+    {
+      "source": "N07",
+      "target": "N06",
+      "type": "representacion_alternativa_de"
+    },
+    {
+      "source": "N06",
+      "target": "N07",
+      "type": "representacion_alternativa_de"
+    },
+    {
+      "source": "N04",
+      "target": "N11",
+      "type": "representacion_alternativa_de"
+    },
+    {
+      "source": "N11",
+      "target": "N04",
+      "type": "representacion_alternativa_de"
+    },
+    {
+      "source": "N06",
+      "target": "N11",
+      "type": "caso_especial_de"
+    },
+    {
+      "source": "N10",
+      "target": "N09",
+      "type": "caso_especial_de"
+    },
+    {
+      "source": "N04",
+      "target": "M1",
+      "type": "misconception_asociada"
+    },
+    {
+      "source": "N01",
+      "target": "M2",
+      "type": "misconception_asociada"
+    },
+    {
+      "source": "N02",
+      "target": "M3",
+      "type": "misconception_asociada"
+    },
+    {
+      "source": "N12",
+      "target": "M4",
+      "type": "misconception_asociada"
+    },
+    {
+      "source": "N08",
+      "target": "M5",
+      "type": "misconception_asociada"
+    },
+    {
+      "source": "N05",
+      "target": "N13",
+      "type": "prerrequisito_de"
+    },
+    {
+      "source": "N05",
+      "target": "N14",
+      "type": "prerrequisito_de"
+    },
+    {
+      "source": "N05",
+      "target": "N15",
+      "type": "prerrequisito_de"
+    },
+    {
+      "source": "N20",
+      "target": "N01",
+      "type": "prerrequisito_de"
+    },
+    {
+      "source": "N20",
+      "target": "N02",
+      "type": "prerrequisito_de"
+    },
+    {
+      "source": "N05",
+      "target": "N16",
+      "type": "prerrequisito_de"
+    },
+    {
+      "source": "N05",
+      "target": "N17",
+      "type": "prerrequisito_de"
+    },
+    {
+      "source": "N03",
+      "target": "N18",
+      "type": "prerrequisito_de"
+    },
+    {
+      "source": "N05",
+      "target": "N18",
+      "type": "prerrequisito_de"
+    },
+    {
+      "source": "N18",
+      "target": "N12",
+      "type": "prerrequisito_de"
+    },
+    {
+      "source": "N04",
+      "target": "N19",
+      "type": "prerrequisito_de"
+    },
+    {
+      "source": "N06",
+      "target": "N16",
+      "type": "representacion_alternativa_de"
+    },
+    {
+      "source": "N16",
+      "target": "N06",
+      "type": "representacion_alternativa_de"
+    },
+    {
+      "source": "N01",
+      "target": "N21",
+      "type": "prerrequisito_de"
+    },
+    {
+      "source": "N01",
+      "target": "N22",
+      "type": "prerrequisito_de"
+    },
+    {
+      "source": "N01",
+      "target": "N23",
+      "type": "prerrequisito_de"
+    },
+    {
+      "source": "N22",
+      "target": "N23",
+      "type": "prerrequisito_de"
+    },
+    {
+      "source": "N23",
+      "target": "N24",
+      "type": "prerrequisito_de"
+    },
+    {
+      "source": "N02",
+      "target": "N25",
+      "type": "prerrequisito_de"
+    },
+    {
+      "source": "N21",
+      "target": "N25",
+      "type": "prerrequisito_de"
+    },
+    {
+      "source": "N02",
+      "target": "N26",
+      "type": "prerrequisito_de"
+    },
+    {
+      "source": "N22",
+      "target": "N27",
+      "type": "prerrequisito_de"
+    },
+    {
+      "source": "N28",
+      "target": "N27",
+      "type": "prerrequisito_de"
+    },
+    {
+      "source": "N22",
+      "target": "N28",
+      "type": "prerrequisito_de"
+    },
+    {
+      "source": "N22",
+      "target": "N29",
+      "type": "prerrequisito_de"
+    },
+    {
+      "source": "N08",
+      "target": "N30",
+      "type": "prerrequisito_de"
+    },
+    {
+      "source": "N29",
+      "target": "N31",
+      "type": "prerrequisito_de"
+    },
+    {
+      "source": "N05",
+      "target": "N31",
+      "type": "prerrequisito_de"
+    },
+    {
+      "source": "N07",
+      "target": "N32",
+      "type": "prerrequisito_de"
+    },
+    {
+      "source": "N30",
+      "target": "N32",
+      "type": "prerrequisito_de"
+    },
+    {
+      "source": "N05",
+      "target": "N33",
+      "type": "prerrequisito_de"
+    },
+    {
+      "source": "N18",
+      "target": "N33",
+      "type": "prerrequisito_de"
+    },
+    {
+      "source": "N17",
+      "target": "N34",
+      "type": "prerrequisito_de"
+    },
+    {
+      "source": "N33",
+      "target": "N34",
+      "type": "prerrequisito_de"
+    }
+  ]
+}

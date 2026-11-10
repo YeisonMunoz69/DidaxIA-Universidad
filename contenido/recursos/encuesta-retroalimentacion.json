@@ -1,0 +1,40 @@
+{
+  "tipo": "encuesta",
+  "titulo": "Retroalimentación del curso",
+  "descripcion": "Escala de valoración y comentarios sobre la sesión.",
+  "contenido": {
+    "paginas": [
+      {
+        "titulo": "Retroalimentación del curso",
+        "descripcion": "",
+        "preguntas": [
+          {
+            "id": "claridad",
+            "titulo": "Claridad de la explicación",
+            "tipo": "escala",
+            "obligatoria": true,
+            "ayuda": "",
+            "minimo": 1,
+            "maximo": 5
+          },
+          {
+            "id": "material",
+            "titulo": "Utilidad del material",
+            "tipo": "escala",
+            "obligatoria": true,
+            "ayuda": "",
+            "minimo": 1,
+            "maximo": 5
+          },
+          {
+            "id": "comentario",
+            "titulo": "¿Qué podríamos mejorar?",
+            "tipo": "parrafo",
+            "obligatoria": false,
+            "ayuda": ""
+          }
+        ]
+      }
+    ]
+  }
+}

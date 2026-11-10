@@ -1,0 +1,42 @@
+{
+  "tipo": "encuesta",
+  "titulo": "Consulta a docentes",
+  "descripcion": "Recoge necesidades y opiniones del equipo docente.",
+  "contenido": {
+    "paginas": [
+      {
+        "titulo": "Consulta a docentes",
+        "descripcion": "",
+        "preguntas": [
+          {
+            "id": "correo",
+            "titulo": "Correo institucional",
+            "tipo": "correo",
+            "obligatoria": true,
+            "ayuda": ""
+          },
+          {
+            "id": "recursos",
+            "titulo": "¿Qué recursos necesitas?",
+            "tipo": "multiple",
+            "obligatoria": true,
+            "ayuda": "",
+            "opciones": [
+              "Diapositivas",
+              "Encuestas",
+              "Guías de clase",
+              "Seguimiento"
+            ]
+          },
+          {
+            "id": "comentario",
+            "titulo": "Sugerencias para el equipo",
+            "tipo": "parrafo",
+            "obligatoria": true,
+            "ayuda": ""
+          }
+        ]
+      }
+    ]
+  }
+}

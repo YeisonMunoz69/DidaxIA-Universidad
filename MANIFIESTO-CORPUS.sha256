@@ -1,0 +1,683 @@
+9ae1eac63a230042508a169cfdad155302e76701c81de5bc49de931dacf88210  contenido/conceptos/LEEME.md
+aeb3e9fc5a6cd0c7f4dc1524de8088d6131fdbad6aa952c47f823a32f01ca596  contenido/conceptos/MAPA-M01-M24.md
+fcd48cb3180c4a322b16c2d0190ca9f03e7e08277e4a0e7e0c1480557fdb1671  contenido/conceptos/c-composicion-de-funciones.md
+617e19d2839fbcd208c162835cc6c22a975cc702f95571d8e061873aa3719819  contenido/conceptos/c-diferencia-de-potencias.md
+ea36f98985177a9e29030f5a045b7042091c94954f1eb753965d62759c7e943f  contenido/conceptos/c-identidades-trigonometricas.md
+0b9bfcb3cdaf0fcc51fc0993c3b70a70fbc6393b9dfee93bdd1ebf0997a0806e  contenido/conceptos/c-m06.md
+4c5fa5bd77c95aad40ac4e0b15c7839339a39694af9e9d1be9ff661d3f9aabde  contenido/conceptos/c-m09.md
+32c2d724ac1e2a9c8eca7b786bd39d6926c7276844d8bcbc00312ce49268d6c4  contenido/conceptos/c-m10.md
+521da196d4a3a49f7f6c6f1b64277e1d2a4e431b5f4b328ab40dd26606df0930  contenido/conceptos/c-m11.md
+eaecdbd63e27f825e8f8bb0f309ccb1601e0fe6a5a31e7d270108c87ebed1922  contenido/conceptos/c-m12.md
+ddccd13630346d6e25d6dc33da5f7630447c14fa6b8842e94c83367db24ddf41  contenido/conceptos/c-m14.md
+d1d320f3add373d1288838384b05718b55ee9deb20207b84ecbdc1df07792198  contenido/conceptos/c-m16.md
+28150f15cb0cc50cba9a6c1ef87d05b4e6ea05ca8085fdde6ad32b3bed36baea  contenido/conceptos/c-m18.md
+1ff58d4e39f9eb1d0e14335441a9be25d251f5e32c1eaf529d12e66bc681df19  contenido/conceptos/c-m21.md
+0100978e9ffe7311bd831dd6ecbe5f0301f4bc6335a054db92e192c1b085406f  contenido/conceptos/c-m22.md
+7d139b5e7222b3c2b30f1435bd8b609cce6d82245df82af08e4e313ac89bb9b2  contenido/conceptos/c-m23.md
+7c59d41cb022e881b077dff69d8f7ae66626a2d0686ef20a4e918035e76d1fad  contenido/conceptos/c-n05-derivadas-basicas.md
+ad48f7b573ec499c3eec3552de0a16a8f9284660ab252b02d7018f342ef77ba1  contenido/conceptos/c-pendiente-como-derivada.md
+edac1b74bff64b4d6a4dd984d235900ef6b5fb39d89498e51d9e855564322ca2  contenido/conceptos/c-razon-y-proporcion.md
+0173753cdd3567f927f42be4749f7630aca9078c143c16abdfe47a979873b3b8  contenido/conceptos/c-variable-de-derivacion.md
+28d5efe3a0a2a88d8aaf4153ddb214067e5c4d5cb301e352aefd6961eef1c85e  contenido/corpus/ESTRATEGIA-DE-EXTRACCION.md
+26cec191292432a8efb3d0e563ec874dd7959a1bb3ce0035a1ff1edf75037d34  contenido/corpus/FORMATO-DEL-CORPUS.md
+bec52806fa658ae0ed1dea02589e0f3177c4c0ec418f22263cbb27bb490330ce  contenido/corpus/FUENTES.md
+9ca4bc2778c536b506d01423e7ee8f25c168399422b84b981d352a849f953261  contenido/corpus/LEEME.md
+64cc1303fffaa6a7c2b5326e9cb3e0eaf45925a9f79592b33003ea7b49463bcb  contenido/corpus/PARTES.md
+a4c2957e732a230e62d4c8ced82c883ad701276c9b533b606d0f7b02ce3a5aa2  contenido/corpus/_obras-md/LEI/1_1.md
+b38ee7fc7e43acec34372e5e16ab4362c03ad3404e02be1ff221b6bbb8a55ca4  contenido/corpus/_obras-md/LEI/1_10.md
+e761fdb9901badc46eb1400c2a38c85e0407fd1243bcefa942692cd554955606  contenido/corpus/_obras-md/LEI/1_2.md
+e13f5627d778a6a868f4ca533f34f5f63811e2000811e8984481776614271d5a  contenido/corpus/_obras-md/LEI/1_3.md
+741904e4040ee277d7cf84bf458b77688087ce626fc157c593ee4b0b726506a5  contenido/corpus/_obras-md/LEI/1_4.md
+49b645bc52e8507e3497ef10e00ec5f3b9832865fe6a7e88a6b5d1f32949dbca  contenido/corpus/_obras-md/LEI/1_5.md
+a2e326a7aa822ed047d576cf49e11ee154393f5abb53f82bb98b74b8f2b50723  contenido/corpus/_obras-md/LEI/1_6.md
+257dcf43bc5014cd28d67f5473fe43fbed5fe8b620589e5e757e1910a2fdacf6  contenido/corpus/_obras-md/LEI/1_7.md
+a9aadd11c16a237f4a5a1c31e85e18823dac6878f68e2ce33909ba168830ed8a  contenido/corpus/_obras-md/LEI/1_8.md
+59db7bf24751f1f7d6c01dca5b4059d5c3ccd07b3fe76d81b46d0fa74f8e079d  contenido/corpus/_obras-md/LEI/1_9.md
+77ee9f3343c6843255497b48690a130d1c62c957dee07b305625827f44702468  contenido/corpus/_obras-md/LEI/2_1.md
+96911a1eff394260673b1854c2d0de71d52e4d2bc0abfb368d49a17f44452062  contenido/corpus/_obras-md/LEI/2_10.md
+54cad03ce0df67106d9a2c838832ca67758dc6e6f0665d1bc04db957ae5a50c9  contenido/corpus/_obras-md/LEI/2_2.md
+7f38cfed29140403e79c43610f6e6ac6b979f864d466e088c9c4cf7ba787c176  contenido/corpus/_obras-md/LEI/2_3.md
+8e2dd94150b3ec6b0e6fa2112fb10031c0b7b16bc165836b010470229a7f21f4  contenido/corpus/_obras-md/LEI/2_4.md
+6f6881564bd8af3119b5e1e2503c05d3da15a235e9d427d4c6574bee78a58a5d  contenido/corpus/_obras-md/LEI/2_5.md
+72de5af843ffa2c0edf169ea6da4ef0a6ea50341f5b9c7c4f96543e6736119f1  contenido/corpus/_obras-md/LEI/2_6.md
+cd3b987b8375e9f4274ba14ad716106762901d9eb8dc023695a8f3d0917e681d  contenido/corpus/_obras-md/LEI/2_7.md
+a24b7c3a63d2ece87493e71f0e5e674a2675a400665f5e6fc13a5f3356eeba1b  contenido/corpus/_obras-md/LEI/2_8.md
+b373197da4566471ace184bbf36189109fcdcbb7b7c591a7de2fd297f2f072b5  contenido/corpus/_obras-md/LEI/2_9.md
+16b51874eb11f0d5a7c1c4435d8d7b570ad005f7518bfa2a7e4bd09613ef4b46  contenido/corpus/_obras-md/LEI/3_1.md
+cd47be847d84e14cfa6ad4ec31a2d941fe9a013cf4df4f4d93a279bcb776fea7  contenido/corpus/_obras-md/LEI/3_10.md
+703c190f46da27f224a4da0536129ebb2c2c612098381efad22e2074d6245ad2  contenido/corpus/_obras-md/LEI/3_2.md
+462dfa70b3de68de2470f0285c90f70a3c5cc6abaeeef50833aced830a1ef648  contenido/corpus/_obras-md/LEI/3_3.md
+64dc2ea31b5a363195449dfe83efacb680802277e5e5ec79c35b6a0c1cde9e9a  contenido/corpus/_obras-md/LEI/3_4.md
+d0796c0acac38dfa589acee96b4184c69b36078535ee2f3b141c05b7395a8035  contenido/corpus/_obras-md/LEI/3_5.md
+1b0a74a87cd340402e767972bc5c7e05cd63d84ebb969767926bf41c2d881b39  contenido/corpus/_obras-md/LEI/3_6.md
+4a02d678cb38cd7cfa2dfc71bc07c29bbe67350d96136f802e1bc1028e6e9484  contenido/corpus/_obras-md/LEI/3_7.md
+5ccec1535fb95ae6bde1f7586afb545f2927e6cf123d74a89788cf3bd622bcd4  contenido/corpus/_obras-md/LEI/3_8.md
+0dd6fe1b1e2796856a465a403fd6d0aeae181c1c93e4ebbeba1027e90ed8fbb5  contenido/corpus/_obras-md/LEI/3_9.md
+66941f2fa578776c702590f2cc1b8f356be03b74c161c3c5ff225ff89bedccf3  contenido/corpus/_obras-md/LOP/1.md
+406f54ce1bbd5cf5b68aaffd4d6107fe202b9f42746de977607bec0498baaa1a  contenido/corpus/_obras-md/LOP/10.md
+baa6da9df1b9d95f8a14eba8cbb0bafcde73063a778ea14bba6757c40fa8e444  contenido/corpus/_obras-md/LOP/2.md
+23592001de29b90d2f0f6e7e1becdd55fa8103eed0f169e65937e938b4104e00  contenido/corpus/_obras-md/LOP/3.md
+1a29ca5d867a28b4123ab5eea29befddfe39c2312e21aa4fc616043785c99c5f  contenido/corpus/_obras-md/LOP/4.md
+5a9ab3114c0b5b5523810e036023892e5c215c364e877955cf56ddbe063adc84  contenido/corpus/_obras-md/LOP/5.md
+991d7c07efee56989d060852fe9e5d77e623ac4f19fb594b0bcbcfca10fd005f  contenido/corpus/_obras-md/LOP/6.md
+a7781dd0e358c9f658341d7f0b0914970a5844e953f42c55ba23ba76ef921245  contenido/corpus/_obras-md/LOP/7.md
+fe347e0b23985b4b26e76d0820c4d1ab2c59992fa4d839d6bfb6c1c79be246b9  contenido/corpus/_obras-md/LOP/8.md
+05290bc3cf341efbf016ddd10c54999fad1ea84c801971cf5bac7d6399b6f898  contenido/corpus/_obras-md/LOP/9.md
+6f128fdafc697198bad6a65b9284fa54c9d436a79eb6b15ece8b7618f134c210  contenido/corpus/_obras-md/PIS/1.md
+8f574a487e88e5310c6328dbb601dfe6728a0523270d9baf2eee31fb568770b4  contenido/corpus/_obras-md/PIS/10.md
+e4a2c7ed567d8366a6f8a13d6318da94f525725032bcf28eb4d9c5815b87d971  contenido/corpus/_obras-md/PIS/11.md
+91add6b9325b58fb2e4f0c1d0e3b6d78a64f18ff5121f66196fbd02b13c1ad8d  contenido/corpus/_obras-md/PIS/12.md
+feb71c56d3e68aa73f8312fa98d8fef455b4bbae4f417703b3c0b6b17d11a08e  contenido/corpus/_obras-md/PIS/13.md
+0f59376c7bb92f43be0976e805a95ab3d4ac564d5cdbf5d2215849b57b4998ae  contenido/corpus/_obras-md/PIS/14.md
+96e1647fe4269af002597bf95a42a2d8c3323742b8c80fc891a0458242bf2250  contenido/corpus/_obras-md/PIS/15.md
+15a6624c187a6c56f94a2cd7bf5a4cfc47bce48603304af1a6a65decb6260f90  contenido/corpus/_obras-md/PIS/16.md
+20cedeafbdc052dc00cc3c543dfda75628ced27ab3270271a5e29549ef556bda  contenido/corpus/_obras-md/PIS/17.md
+78e54bc32d41852f9eb76a8acb20e7fe11c7de96acda1c75ad85b9971d49bcae  contenido/corpus/_obras-md/PIS/18.md
+179ef88dda1e90827211cb4f338fdcce3bb8ca50c51eb7c9b2769ddf992f75d6  contenido/corpus/_obras-md/PIS/19.md
+c8c4a9a4482e0a3e13f7d80c5e28442a0c3017c1065a4596c56ba7de09523c68  contenido/corpus/_obras-md/PIS/2.md
+7606182f74288c0fd10f511697d366d17b14fd21429046cf65466026f2c74276  contenido/corpus/_obras-md/PIS/20.md
+ec397ab2dcccc429a6740e632365b39af47e8ffd5d190a4d5a5890ac499b2faa  contenido/corpus/_obras-md/PIS/21.md
+2eac8b6b175b4493719e0775dfab50d0295546e922aadc7637b75a4b07f34f09  contenido/corpus/_obras-md/PIS/22.md
+90bdb7324ef1c3f4b44c361cf6495dc9e89e54e4c3bf9e4de8d36787f9b72582  contenido/corpus/_obras-md/PIS/23.md
+1552e5f7c0adb949076d973387ef001736e94c1b3f2c1286d1e8b4da7910f634  contenido/corpus/_obras-md/PIS/24.md
+f3fb7f9bb98b93b0b5a62c859f4a511cd5088b88521afa308859113c92d29851  contenido/corpus/_obras-md/PIS/25.md
+c3fe7b2a776a495f559c4b598119a42421f79253c15fec5bcea09154af0bf408  contenido/corpus/_obras-md/PIS/26.md
+48485902822d9a4f1a19868df29baf9be270033db1a196e7cebbf9002c04c13a  contenido/corpus/_obras-md/PIS/27.md
+f6ef6788331a45e541057969d945b75186a781bf001f72fcd68049b383890766  contenido/corpus/_obras-md/PIS/28.md
+7e1f3383b461b4e7f788d2ef8bf666cd2563ac4ec5335452590c20dfca61ef81  contenido/corpus/_obras-md/PIS/29.md
+71b6eee10a07acfcf2636e8afecfb814d1be2e418bf7905f3ae1259ca4c57dc2  contenido/corpus/_obras-md/PIS/3.md
+924d78f51a044b146c5832adccb85c7ae93c479980acd688be07b70052a17c17  contenido/corpus/_obras-md/PIS/30.md
+6596d97b876b3ba203832bdeb81778b894e30f94a111b6ae85d4bdd2ee57edff  contenido/corpus/_obras-md/PIS/4.md
+0f24cedb431a423ddc38369164b3ed8bd23972a36a5d2ee2828079c41db7c2b9  contenido/corpus/_obras-md/PIS/5.md
+0bfb9c8081dd469cd0c70b82e6048ddf882a250e5777ebca50eb7c535f303de5  contenido/corpus/_obras-md/PIS/6.md
+b6b4ee56e345cdf59cffa8fe48735286abac27a9ff028ce4074477772b49d2b3  contenido/corpus/_obras-md/PIS/7.md
+d2cd161a398e89e9d9192981c4becf584c70df37dc5ea46ad6b9111ef463137b  contenido/corpus/_obras-md/PIS/8.md
+bf90426886de67a660d1d1d5c7a683dbab8c8c7ebc5fc846968e1b1dbd7564ad  contenido/corpus/_obras-md/PIS/9.md
+e960a90799f72144385cb2084ac9e2c993c8d3ffec5077e2bfaf9b4e0c15616a  contenido/corpus/_obras-md/PUR/0-1_0-3.md
+98dc2ff9fcd665719cb791ba33490dbbe728153dcce4e7e2f84c3ae24d88747c  contenido/corpus/_obras-md/PUR/0-4_0-6.md
+999274b2727677a42c0257d2c465b47fa876c37faee185321713157b6f41a3b3  contenido/corpus/_obras-md/PUR/0-7_0-8.md
+f8f1b169562a9706d92710181d5d86521fa9f6540d8cb3f559995af8de53104c  contenido/corpus/_obras-md/PUR/1-1_1-4.md
+75159d35b6415d294eb6ee05cceacd5304690a8979a6e1a42373ca387aa1aa62  contenido/corpus/_obras-md/PUR/1-5_2-1.md
+bbea8c11f4dc134c1d8322faa707acaf607af70eb4249de1b3818e3e1e251a86  contenido/corpus/_obras-md/PUR/2-2_2-5.md
+262932ca3fdd71d0ffae4e4cc116885f6e07241afe35b161f0407593801af9b3  contenido/corpus/_obras-md/PUR/2-6_2-10.md
+cc16d1c61c207a9d156450224eeb420b483af461d6c7cb3843af0fff23f39eee  contenido/corpus/_obras-md/Piskunov - Calculo Diferencial e Integral – Tomo I-Editorial Mir/Piskunov-dividido/1.pdf
+99f266fd9c435b307e71415d9a985ed7b430901002a702d61843ea9fab4e74b2  contenido/corpus/_obras-md/Piskunov - Calculo Diferencial e Integral – Tomo I-Editorial Mir/Piskunov-dividido/10.pdf
+dfd3e4bbefbda8110265604fcf9a30ce6026d7044e81a68341f0c8af61653d96  contenido/corpus/_obras-md/Piskunov - Calculo Diferencial e Integral – Tomo I-Editorial Mir/Piskunov-dividido/11.pdf
+c757da18a71d72ce2399c8a2145fd3cfb905a65b4e2b6cfa031ef0aa8c183a28  contenido/corpus/_obras-md/Piskunov - Calculo Diferencial e Integral – Tomo I-Editorial Mir/Piskunov-dividido/12.pdf
+517839af0fa61ffa5232d4efbd27dd75070c764a1396bedf25643cd6d0656caf  contenido/corpus/_obras-md/Piskunov - Calculo Diferencial e Integral – Tomo I-Editorial Mir/Piskunov-dividido/13.pdf
+7b95050ffaa1deb2150be17bd88c01e27771bad148af66206a3ff86bad1266c9  contenido/corpus/_obras-md/Piskunov - Calculo Diferencial e Integral – Tomo I-Editorial Mir/Piskunov-dividido/14.pdf
+c1e4a5794dbe65225052b685aca18f1c8c0c1d262ffb7a049ccc94bcee1f0138  contenido/corpus/_obras-md/Piskunov - Calculo Diferencial e Integral – Tomo I-Editorial Mir/Piskunov-dividido/15.pdf
+34a02b4f683fda5231fac999660f90c05b23f0c4d6f06c55f62dfb499efc8be1  contenido/corpus/_obras-md/Piskunov - Calculo Diferencial e Integral – Tomo I-Editorial Mir/Piskunov-dividido/16.pdf
+6edf699ead1ee8bad5e4946805ff0dddceafd98e1c5de22be2fa63395ea95e10  contenido/corpus/_obras-md/Piskunov - Calculo Diferencial e Integral – Tomo I-Editorial Mir/Piskunov-dividido/17.pdf
+b0ddeaa75cb53395d07c8e83db7b7ea7425260c11dddb7cc4b698e74ff5891aa  contenido/corpus/_obras-md/Piskunov - Calculo Diferencial e Integral – Tomo I-Editorial Mir/Piskunov-dividido/18.pdf
+84e736118e96d58ebf357088b2f809aaa06b03536855c2baccf7ca1374bca9d8  contenido/corpus/_obras-md/Piskunov - Calculo Diferencial e Integral – Tomo I-Editorial Mir/Piskunov-dividido/19.pdf
+88277c973ec9978fae4f2072a9acc672020b0e24ac2be407681e78a13e8bc57d  contenido/corpus/_obras-md/Piskunov - Calculo Diferencial e Integral – Tomo I-Editorial Mir/Piskunov-dividido/2.pdf
+fb89765f2cd55755989d40db49b4e4f3108cee198483684e4553b2dadb9e9de6  contenido/corpus/_obras-md/Piskunov - Calculo Diferencial e Integral – Tomo I-Editorial Mir/Piskunov-dividido/20.pdf
+92ff19d3956af17d060419b3cc4b9eac6f530d8c142e2b64a297c514c9aa69d4  contenido/corpus/_obras-md/Piskunov - Calculo Diferencial e Integral – Tomo I-Editorial Mir/Piskunov-dividido/21.pdf
+ec6a594410bb623505e1231f5db98de6f0ca278105705621022a775fa2d0f0e9  contenido/corpus/_obras-md/Piskunov - Calculo Diferencial e Integral – Tomo I-Editorial Mir/Piskunov-dividido/22.pdf
+848855835f983ca6232cf0d9ff68a825b5a2efe2e240c5596dff9c25eb4d204c  contenido/corpus/_obras-md/Piskunov - Calculo Diferencial e Integral – Tomo I-Editorial Mir/Piskunov-dividido/23.pdf
+ab8888ff30dcf961ebb2820b884d5b2cdfa155c172c188c71190fbbaa4996ea2  contenido/corpus/_obras-md/Piskunov - Calculo Diferencial e Integral – Tomo I-Editorial Mir/Piskunov-dividido/24.pdf
+37c52b470e026a16a7f1dc023ae7e73caca13a2b0cd52789fdf2b0328536dda6  contenido/corpus/_obras-md/Piskunov - Calculo Diferencial e Integral – Tomo I-Editorial Mir/Piskunov-dividido/25.pdf
+ef9719d0f46efabe2ed0d95e51b966ca72520748852ebe4c30df00262f8ce615  contenido/corpus/_obras-md/Piskunov - Calculo Diferencial e Integral – Tomo I-Editorial Mir/Piskunov-dividido/26.pdf
+336fc0e11a740bd6315e51e0c1042ba823a45eafe1e48fdf574629e5c14614c9  contenido/corpus/_obras-md/Piskunov - Calculo Diferencial e Integral – Tomo I-Editorial Mir/Piskunov-dividido/27.pdf
+cf71f63f2aaadd3c2746ca8f7f1133b172fd04314792ceab9e0e6c61e1671e7b  contenido/corpus/_obras-md/Piskunov - Calculo Diferencial e Integral – Tomo I-Editorial Mir/Piskunov-dividido/28.pdf
+a0475505b5eb4de7910e100a35f98f323bbb2ed4929e8ecf3cd38e466ed322cc  contenido/corpus/_obras-md/Piskunov - Calculo Diferencial e Integral – Tomo I-Editorial Mir/Piskunov-dividido/29.pdf
+f2acee8a0145482db96838805a07cd907826f15c895de01fe87f740d38b0e6f1  contenido/corpus/_obras-md/Piskunov - Calculo Diferencial e Integral – Tomo I-Editorial Mir/Piskunov-dividido/3.pdf
+4d61860b6ec2ef9e05efeee85d973c2a43e5a207dad1ab299256af20ef431200  contenido/corpus/_obras-md/Piskunov - Calculo Diferencial e Integral – Tomo I-Editorial Mir/Piskunov-dividido/30.pdf
+cb828c0cee3001040419bff487a49bb73dabb8714be984cddd435b0c0be80007  contenido/corpus/_obras-md/Piskunov - Calculo Diferencial e Integral – Tomo I-Editorial Mir/Piskunov-dividido/4.pdf
+69277f5dd120d4fd22ff8c39bb4ff21de6113bafec4cb456e6af32d6fe91b127  contenido/corpus/_obras-md/Piskunov - Calculo Diferencial e Integral – Tomo I-Editorial Mir/Piskunov-dividido/5.pdf
+aae9df10fc3cab3a1dda3cf0174430a9fb49e4e91624dae5201fbf1470a39154  contenido/corpus/_obras-md/Piskunov - Calculo Diferencial e Integral – Tomo I-Editorial Mir/Piskunov-dividido/6.pdf
+e0db08e98131ff4183099f9b1f426936a6a30b557df0999dd9477a6c0d4c9d9a  contenido/corpus/_obras-md/Piskunov - Calculo Diferencial e Integral – Tomo I-Editorial Mir/Piskunov-dividido/7.pdf
+1ac58e5336dbb11a54e88dfd1e647bd51f5358c27b64b9d5fd9aec7d6f9a95be  contenido/corpus/_obras-md/Piskunov - Calculo Diferencial e Integral – Tomo I-Editorial Mir/Piskunov-dividido/8.pdf
+122e38f021298e13102a9ee4443df61946a2db15d0dc30bb3279ffe5e9f1a2b8  contenido/corpus/_obras-md/Piskunov - Calculo Diferencial e Integral – Tomo I-Editorial Mir/Piskunov-dividido/9.pdf
+6f128fdafc697198bad6a65b9284fa54c9d436a79eb6b15ece8b7618f134c210  contenido/corpus/_obras-md/Piskunov - Calculo Diferencial e Integral – Tomo I-Editorial Mir/Piskunov-md/1.md
+8f574a487e88e5310c6328dbb601dfe6728a0523270d9baf2eee31fb568770b4  contenido/corpus/_obras-md/Piskunov - Calculo Diferencial e Integral – Tomo I-Editorial Mir/Piskunov-md/10.md
+e4a2c7ed567d8366a6f8a13d6318da94f525725032bcf28eb4d9c5815b87d971  contenido/corpus/_obras-md/Piskunov - Calculo Diferencial e Integral – Tomo I-Editorial Mir/Piskunov-md/11.md
+91add6b9325b58fb2e4f0c1d0e3b6d78a64f18ff5121f66196fbd02b13c1ad8d  contenido/corpus/_obras-md/Piskunov - Calculo Diferencial e Integral – Tomo I-Editorial Mir/Piskunov-md/12.md
+feb71c56d3e68aa73f8312fa98d8fef455b4bbae4f417703b3c0b6b17d11a08e  contenido/corpus/_obras-md/Piskunov - Calculo Diferencial e Integral – Tomo I-Editorial Mir/Piskunov-md/13.md
+0f59376c7bb92f43be0976e805a95ab3d4ac564d5cdbf5d2215849b57b4998ae  contenido/corpus/_obras-md/Piskunov - Calculo Diferencial e Integral – Tomo I-Editorial Mir/Piskunov-md/14.md
+96e1647fe4269af002597bf95a42a2d8c3323742b8c80fc891a0458242bf2250  contenido/corpus/_obras-md/Piskunov - Calculo Diferencial e Integral – Tomo I-Editorial Mir/Piskunov-md/15.md
+15a6624c187a6c56f94a2cd7bf5a4cfc47bce48603304af1a6a65decb6260f90  contenido/corpus/_obras-md/Piskunov - Calculo Diferencial e Integral – Tomo I-Editorial Mir/Piskunov-md/16.md
+20cedeafbdc052dc00cc3c543dfda75628ced27ab3270271a5e29549ef556bda  contenido/corpus/_obras-md/Piskunov - Calculo Diferencial e Integral – Tomo I-Editorial Mir/Piskunov-md/17.md
+78e54bc32d41852f9eb76a8acb20e7fe11c7de96acda1c75ad85b9971d49bcae  contenido/corpus/_obras-md/Piskunov - Calculo Diferencial e Integral – Tomo I-Editorial Mir/Piskunov-md/18.md
+179ef88dda1e90827211cb4f338fdcce3bb8ca50c51eb7c9b2769ddf992f75d6  contenido/corpus/_obras-md/Piskunov - Calculo Diferencial e Integral – Tomo I-Editorial Mir/Piskunov-md/19.md
+c8c4a9a4482e0a3e13f7d80c5e28442a0c3017c1065a4596c56ba7de09523c68  contenido/corpus/_obras-md/Piskunov - Calculo Diferencial e Integral – Tomo I-Editorial Mir/Piskunov-md/2.md
+7606182f74288c0fd10f511697d366d17b14fd21429046cf65466026f2c74276  contenido/corpus/_obras-md/Piskunov - Calculo Diferencial e Integral – Tomo I-Editorial Mir/Piskunov-md/20.md
+ec397ab2dcccc429a6740e632365b39af47e8ffd5d190a4d5a5890ac499b2faa  contenido/corpus/_obras-md/Piskunov - Calculo Diferencial e Integral – Tomo I-Editorial Mir/Piskunov-md/21.md
+2eac8b6b175b4493719e0775dfab50d0295546e922aadc7637b75a4b07f34f09  contenido/corpus/_obras-md/Piskunov - Calculo Diferencial e Integral – Tomo I-Editorial Mir/Piskunov-md/22.md
+90bdb7324ef1c3f4b44c361cf6495dc9e89e54e4c3bf9e4de8d36787f9b72582  contenido/corpus/_obras-md/Piskunov - Calculo Diferencial e Integral – Tomo I-Editorial Mir/Piskunov-md/23.md
+1552e5f7c0adb949076d973387ef001736e94c1b3f2c1286d1e8b4da7910f634  contenido/corpus/_obras-md/Piskunov - Calculo Diferencial e Integral – Tomo I-Editorial Mir/Piskunov-md/24.md
+f3fb7f9bb98b93b0b5a62c859f4a511cd5088b88521afa308859113c92d29851  contenido/corpus/_obras-md/Piskunov - Calculo Diferencial e Integral – Tomo I-Editorial Mir/Piskunov-md/25.md
+c3fe7b2a776a495f559c4b598119a42421f79253c15fec5bcea09154af0bf408  contenido/corpus/_obras-md/Piskunov - Calculo Diferencial e Integral – Tomo I-Editorial Mir/Piskunov-md/26.md
+48485902822d9a4f1a19868df29baf9be270033db1a196e7cebbf9002c04c13a  contenido/corpus/_obras-md/Piskunov - Calculo Diferencial e Integral – Tomo I-Editorial Mir/Piskunov-md/27.md
+f6ef6788331a45e541057969d945b75186a781bf001f72fcd68049b383890766  contenido/corpus/_obras-md/Piskunov - Calculo Diferencial e Integral – Tomo I-Editorial Mir/Piskunov-md/28.md
+7e1f3383b461b4e7f788d2ef8bf666cd2563ac4ec5335452590c20dfca61ef81  contenido/corpus/_obras-md/Piskunov - Calculo Diferencial e Integral – Tomo I-Editorial Mir/Piskunov-md/29.md
+71b6eee10a07acfcf2636e8afecfb814d1be2e418bf7905f3ae1259ca4c57dc2  contenido/corpus/_obras-md/Piskunov - Calculo Diferencial e Integral – Tomo I-Editorial Mir/Piskunov-md/3.md
+924d78f51a044b146c5832adccb85c7ae93c479980acd688be07b70052a17c17  contenido/corpus/_obras-md/Piskunov - Calculo Diferencial e Integral – Tomo I-Editorial Mir/Piskunov-md/30.md
+6596d97b876b3ba203832bdeb81778b894e30f94a111b6ae85d4bdd2ee57edff  contenido/corpus/_obras-md/Piskunov - Calculo Diferencial e Integral – Tomo I-Editorial Mir/Piskunov-md/4.md
+0f24cedb431a423ddc38369164b3ed8bd23972a36a5d2ee2828079c41db7c2b9  contenido/corpus/_obras-md/Piskunov - Calculo Diferencial e Integral – Tomo I-Editorial Mir/Piskunov-md/5.md
+0bfb9c8081dd469cd0c70b82e6048ddf882a250e5777ebca50eb7c535f303de5  contenido/corpus/_obras-md/Piskunov - Calculo Diferencial e Integral – Tomo I-Editorial Mir/Piskunov-md/6.md
+b6b4ee56e345cdf59cffa8fe48735286abac27a9ff028ce4074477772b49d2b3  contenido/corpus/_obras-md/Piskunov - Calculo Diferencial e Integral – Tomo I-Editorial Mir/Piskunov-md/7.md
+d2cd161a398e89e9d9192981c4becf584c70df37dc5ea46ad6b9111ef463137b  contenido/corpus/_obras-md/Piskunov - Calculo Diferencial e Integral – Tomo I-Editorial Mir/Piskunov-md/8.md
+bf90426886de67a660d1d1d5c7a683dbab8c8c7ebc5fc846968e1b1dbd7564ad  contenido/corpus/_obras-md/Piskunov - Calculo Diferencial e Integral – Tomo I-Editorial Mir/Piskunov-md/9.md
+271d35b0e0703652f8fb6e134364dabda9b5e6b77469d7ee0cc3c83a021572f8  contenido/corpus/_obras-md/Purcell/Libro-1-[Purcell,Varberg,Rigdon]Calculo.pdf
+35a1dee940f461fb6e4f37899f67e7258612f86676c545740249bd08a3383482  contenido/corpus/_obras-md/Purcell/Purcell-dividido/0-1_0-3.pdf
+c3eddca78abe731ce8adbbd2d5ab7a3216d785677cc4696197aa8988a40f2f52  contenido/corpus/_obras-md/Purcell/Purcell-dividido/0-4_0-6.pdf
+84bb7756ebf6fe97265d9c9dab451960e8f0b1422b5f1a843209c473bae0f2ae  contenido/corpus/_obras-md/Purcell/Purcell-dividido/0-7_0-8.pdf
+8da7c5cb75c45f869b35d366015142f378777a746fcbb29787fdc048331c40e1  contenido/corpus/_obras-md/Purcell/Purcell-dividido/1-1_1-4.pdf
+a81ae16c553509cae07da1e54be3716f8f7574623ffa5009463961bf52bc780a  contenido/corpus/_obras-md/Purcell/Purcell-dividido/1-5_2-1.pdf
+a7d72fab2aa288f5104b2b62f5bcdb346ac7c3c1cccbbabb7e68aa41803bd7be  contenido/corpus/_obras-md/Purcell/Purcell-dividido/2-2_2-5.pdf
+f8360ae1d333a45c5cbf352a889a80d5c602a2d7c9831b73b54043458ca4d4c1  contenido/corpus/_obras-md/Purcell/Purcell-dividido/2-6_2-10.pdf
+bd86956e53045e6a78566195a8aa62f88dd42ffa80e1d01fb5b65f4038e7ff1f  contenido/corpus/_obras-md/Purcell/Purcell-dividido/contenido.pdf
+e960a90799f72144385cb2084ac9e2c993c8d3ffec5077e2bfaf9b4e0c15616a  contenido/corpus/_obras-md/Purcell/Purcell-md/0-1_0-3.md
+98dc2ff9fcd665719cb791ba33490dbbe728153dcce4e7e2f84c3ae24d88747c  contenido/corpus/_obras-md/Purcell/Purcell-md/0-4_0-6.md
+999274b2727677a42c0257d2c465b47fa876c37faee185321713157b6f41a3b3  contenido/corpus/_obras-md/Purcell/Purcell-md/0-7_0-8.md
+f8f1b169562a9706d92710181d5d86521fa9f6540d8cb3f559995af8de53104c  contenido/corpus/_obras-md/Purcell/Purcell-md/1-1_1-4.md
+75159d35b6415d294eb6ee05cceacd5304690a8979a6e1a42373ca387aa1aa62  contenido/corpus/_obras-md/Purcell/Purcell-md/1-5_2-1.md
+bbea8c11f4dc134c1d8322faa707acaf607af70eb4249de1b3818e3e1e251a86  contenido/corpus/_obras-md/Purcell/Purcell-md/2-2_2-5.md
+262932ca3fdd71d0ffae4e4cc116885f6e07241afe35b161f0407593801af9b3  contenido/corpus/_obras-md/Purcell/Purcell-md/2-6_2-10.md
+970160339ddb0b579d79c5c0297041080737c9c5cafe16c0f53f584ce667aa0d  contenido/corpus/_obras-md/Purcell/Purcell-md/contenido.md
+44c851c3088e9cdd171a8cd6d4bc64fd67435b54972b691c342bcfa68f6e3830  contenido/corpus/_obras-md/SPI/1.md
+e9d2b52f401cee76976d03d40cc820789ab3b3be61ad6ea6ccf2f77236e1f3c4  contenido/corpus/_obras-md/SPI/10.md
+632e0a72c3f31024f7c889fb0851b4c3734535319782e6a88b9b6390f9eb9458  contenido/corpus/_obras-md/SPI/11.md
+49c630ab1143d3f9262ecabeeef1c345599647d47c956f5465c78ced5f4f15b8  contenido/corpus/_obras-md/SPI/12.md
+5a8e88a8342314a1f22386c16450fa123000600644dc76eb4a086b8fd8cd93d4  contenido/corpus/_obras-md/SPI/13.md
+d1d46829b7543482a0bc2cdfd396d8046534f722ff3aedd44f8e3d1cb997a3ed  contenido/corpus/_obras-md/SPI/14.md
+0a3c92b8bd8cb0feb9c1dcc07741ad7829a61f7facfad0d46742cb26fec2cc58  contenido/corpus/_obras-md/SPI/15.md
+f055023a646d30332caed6e7510a56e761cd534bac47a75d0c294090a983fafa  contenido/corpus/_obras-md/SPI/16.md
+cba7729d4ad65c1bee73ca019b4a949a3ef35098a052b590a0f3cfd5cd852e6d  contenido/corpus/_obras-md/SPI/17.md
+5a2b92d2c4cd31175c152863d8c250afb40d491eee831feb4411295fdd8d8203  contenido/corpus/_obras-md/SPI/18.md
+9fbeb357c8ffb48e1dd941acd98781394c1cf71ad183bf6c870279f436b47b9d  contenido/corpus/_obras-md/SPI/19.md
+ac74e68aec03ee16c984084bee458fb0d7b15af87220a3624e8c474eaf16b48e  contenido/corpus/_obras-md/SPI/2.md
+813652df82c4b45850a710652721ea945c7982409a2b501377564a01971c10ae  contenido/corpus/_obras-md/SPI/20.md
+ccb829a902f507bd4a7164322e58e713424d206545b85a0cd42bb88a9ef467c9  contenido/corpus/_obras-md/SPI/21.md
+d2bd85c637f4e64f0fef31583db22388e884c1591c00c48b8f413d25df13a80b  contenido/corpus/_obras-md/SPI/22.md
+b041154d6177a2a199e2ca100ec3d4cdd2ffcc4a350d3e00b5b9368b850cee2f  contenido/corpus/_obras-md/SPI/3.md
+a6899dfb7233d98617fc9f678bd88ffe68b3a1514ff4ac23eb39b2da90581f2c  contenido/corpus/_obras-md/SPI/4.md
+b3c3f9786b28989d6c924c6795fdedf455d07ffd9397b65292fc5c7d0c0a8767  contenido/corpus/_obras-md/SPI/5.md
+b5d543ac1ac7ae39c56da57749374af6c7ae3f27e242c3dcc0bdf75383c4af95  contenido/corpus/_obras-md/SPI/6.md
+caa5b805eca2b133cff6c605c576553b13463d7ef186fd1137b029a349c9a61c  contenido/corpus/_obras-md/SPI/7.md
+fd3b9d1f8acc3c069a65f182abc68704e2dd7142c7f090fe47ad0e273001c825  contenido/corpus/_obras-md/SPI/8.md
+5a496fa529998c63191291f019afd23616b9b9f4758141ed4349d71917d7ec1b  contenido/corpus/_obras-md/SPI/9.md
+9b9002edc29794a21ebed1c820916fd8dacc66c6661366daed44bec962975b9e  contenido/corpus/_obras-md/SPIVAK, MICHAEL - Calculo Infinitesimal - libgen.li/SPIVAK, MICHAEL - Calculo Infinitesimal - libgen.li.pdf
+1fd846b900d23d89ce8bfcb6c9f951dc6f4f430489687779b9d225fc88a4b3d1  contenido/corpus/_obras-md/SPIVAK, MICHAEL - Calculo Infinitesimal - libgen.li/SPIVAK-divido/1.pdf
+324d85da037a2cb878a42af157f9237c25ef5b254934df0c80f35f6324dd3614  contenido/corpus/_obras-md/SPIVAK, MICHAEL - Calculo Infinitesimal - libgen.li/SPIVAK-divido/10.pdf
+516612cd9d6b6f1fc743545ca7fb224005fcc32dd8c06fe5b89a725519ba62f2  contenido/corpus/_obras-md/SPIVAK, MICHAEL - Calculo Infinitesimal - libgen.li/SPIVAK-divido/11.pdf
+3d4fc0eaaf6a8e32a66de253196556e1eb1033fb5977f8074474127133c0dde1  contenido/corpus/_obras-md/SPIVAK, MICHAEL - Calculo Infinitesimal - libgen.li/SPIVAK-divido/12.pdf
+afe92bb2bdabd5f52b76d5435f5d2e36af82bb59fbb8694b20785d1f73c0855d  contenido/corpus/_obras-md/SPIVAK, MICHAEL - Calculo Infinitesimal - libgen.li/SPIVAK-divido/13.pdf
+d6a414024eefb2be01375cd08dbdf5338a90db8fd7a265bef6b04e9321bcbc28  contenido/corpus/_obras-md/SPIVAK, MICHAEL - Calculo Infinitesimal - libgen.li/SPIVAK-divido/14.pdf
+064429ca258027a8e9e94763e1c2cfdf64cd47b5bb1543d6dbdaa0e32970f6d5  contenido/corpus/_obras-md/SPIVAK, MICHAEL - Calculo Infinitesimal - libgen.li/SPIVAK-divido/15.pdf
+3fbfc5fe2c2a9113d9a86c72fe9f5d27f7dc0f2986ac3bb6702ce5d62a2941f8  contenido/corpus/_obras-md/SPIVAK, MICHAEL - Calculo Infinitesimal - libgen.li/SPIVAK-divido/16.pdf
+b7b45631c61aad47f412455cf83c7a646515add2401d6cd93076e899438944c6  contenido/corpus/_obras-md/SPIVAK, MICHAEL - Calculo Infinitesimal - libgen.li/SPIVAK-divido/17.pdf
+769a7efa038193097440896cae4fe5b79cecc79f4c5da2f0ef02a685d38adb15  contenido/corpus/_obras-md/SPIVAK, MICHAEL - Calculo Infinitesimal - libgen.li/SPIVAK-divido/18.pdf
+074cec7f2c575c681eb632b804e3f9ae4142e80c25c5152b4744025abbbc7749  contenido/corpus/_obras-md/SPIVAK, MICHAEL - Calculo Infinitesimal - libgen.li/SPIVAK-divido/19.pdf
+e5384c3e8de21f924c26c014f00ff7d00735bb77587296783984ed61883668a9  contenido/corpus/_obras-md/SPIVAK, MICHAEL - Calculo Infinitesimal - libgen.li/SPIVAK-divido/2.pdf
+c1775af4537e802d05e8a59d70086433ebbaa6abfcd13826ff4da4cd21cacb5c  contenido/corpus/_obras-md/SPIVAK, MICHAEL - Calculo Infinitesimal - libgen.li/SPIVAK-divido/20.pdf
+f307e2dc668407bea87db3efff02b51ef2607c515f0013466cbb86a8a1692d9d  contenido/corpus/_obras-md/SPIVAK, MICHAEL - Calculo Infinitesimal - libgen.li/SPIVAK-divido/21.pdf
+315e201dde09097545ef672febdd910288b8a79685f365d3b507e36e289378d1  contenido/corpus/_obras-md/SPIVAK, MICHAEL - Calculo Infinitesimal - libgen.li/SPIVAK-divido/22.pdf
+b9ad9b75e4bc7c35547126b585845e172deaa5456b4a9e62e203bcc5c5062bbb  contenido/corpus/_obras-md/SPIVAK, MICHAEL - Calculo Infinitesimal - libgen.li/SPIVAK-divido/3.pdf
+17781b6d56f60d272a8a17570ac531b7cc5bc9770e0cc817c9387cac805a3cc6  contenido/corpus/_obras-md/SPIVAK, MICHAEL - Calculo Infinitesimal - libgen.li/SPIVAK-divido/4.pdf
+f4610aaf9cf9d256a987a86b5a9d3799c5c7a43f3b737e67d64efa75178fd0a3  contenido/corpus/_obras-md/SPIVAK, MICHAEL - Calculo Infinitesimal - libgen.li/SPIVAK-divido/5.pdf
+0cb7d6f3fb8471dedf621dcbb198331718bfc0b6bf3064784a4f814853e8bfa7  contenido/corpus/_obras-md/SPIVAK, MICHAEL - Calculo Infinitesimal - libgen.li/SPIVAK-divido/6.pdf
+0c366a4e43119a44fda4c6a2105277fa34bca5a26b667fa5c113953fbb554c0b  contenido/corpus/_obras-md/SPIVAK, MICHAEL - Calculo Infinitesimal - libgen.li/SPIVAK-divido/7.pdf
+212fba8daafd179e99c7c7f36fc4289e23a8bd2fab5e5030c913e0d9af4367d0  contenido/corpus/_obras-md/SPIVAK, MICHAEL - Calculo Infinitesimal - libgen.li/SPIVAK-divido/8.pdf
+b906dcd462ec730e92ff9261b8fd2aae75a1d3f5f9e8d630746056f2b65504b9  contenido/corpus/_obras-md/SPIVAK, MICHAEL - Calculo Infinitesimal - libgen.li/SPIVAK-divido/9.pdf
+44c851c3088e9cdd171a8cd6d4bc64fd67435b54972b691c342bcfa68f6e3830  contenido/corpus/_obras-md/SPIVAK, MICHAEL - Calculo Infinitesimal - libgen.li/SPIVAK-md/1.md
+e9d2b52f401cee76976d03d40cc820789ab3b3be61ad6ea6ccf2f77236e1f3c4  contenido/corpus/_obras-md/SPIVAK, MICHAEL - Calculo Infinitesimal - libgen.li/SPIVAK-md/10.md
+632e0a72c3f31024f7c889fb0851b4c3734535319782e6a88b9b6390f9eb9458  contenido/corpus/_obras-md/SPIVAK, MICHAEL - Calculo Infinitesimal - libgen.li/SPIVAK-md/11.md
+49c630ab1143d3f9262ecabeeef1c345599647d47c956f5465c78ced5f4f15b8  contenido/corpus/_obras-md/SPIVAK, MICHAEL - Calculo Infinitesimal - libgen.li/SPIVAK-md/12.md
+5a8e88a8342314a1f22386c16450fa123000600644dc76eb4a086b8fd8cd93d4  contenido/corpus/_obras-md/SPIVAK, MICHAEL - Calculo Infinitesimal - libgen.li/SPIVAK-md/13.md
+d1d46829b7543482a0bc2cdfd396d8046534f722ff3aedd44f8e3d1cb997a3ed  contenido/corpus/_obras-md/SPIVAK, MICHAEL - Calculo Infinitesimal - libgen.li/SPIVAK-md/14.md
+0a3c92b8bd8cb0feb9c1dcc07741ad7829a61f7facfad0d46742cb26fec2cc58  contenido/corpus/_obras-md/SPIVAK, MICHAEL - Calculo Infinitesimal - libgen.li/SPIVAK-md/15.md
+f055023a646d30332caed6e7510a56e761cd534bac47a75d0c294090a983fafa  contenido/corpus/_obras-md/SPIVAK, MICHAEL - Calculo Infinitesimal - libgen.li/SPIVAK-md/16.md
+cba7729d4ad65c1bee73ca019b4a949a3ef35098a052b590a0f3cfd5cd852e6d  contenido/corpus/_obras-md/SPIVAK, MICHAEL - Calculo Infinitesimal - libgen.li/SPIVAK-md/17.md
+5a2b92d2c4cd31175c152863d8c250afb40d491eee831feb4411295fdd8d8203  contenido/corpus/_obras-md/SPIVAK, MICHAEL - Calculo Infinitesimal - libgen.li/SPIVAK-md/18.md
+9fbeb357c8ffb48e1dd941acd98781394c1cf71ad183bf6c870279f436b47b9d  contenido/corpus/_obras-md/SPIVAK, MICHAEL - Calculo Infinitesimal - libgen.li/SPIVAK-md/19.md
+ac74e68aec03ee16c984084bee458fb0d7b15af87220a3624e8c474eaf16b48e  contenido/corpus/_obras-md/SPIVAK, MICHAEL - Calculo Infinitesimal - libgen.li/SPIVAK-md/2.md
+813652df82c4b45850a710652721ea945c7982409a2b501377564a01971c10ae  contenido/corpus/_obras-md/SPIVAK, MICHAEL - Calculo Infinitesimal - libgen.li/SPIVAK-md/20.md
+ccb829a902f507bd4a7164322e58e713424d206545b85a0cd42bb88a9ef467c9  contenido/corpus/_obras-md/SPIVAK, MICHAEL - Calculo Infinitesimal - libgen.li/SPIVAK-md/21.md
+d2bd85c637f4e64f0fef31583db22388e884c1591c00c48b8f413d25df13a80b  contenido/corpus/_obras-md/SPIVAK, MICHAEL - Calculo Infinitesimal - libgen.li/SPIVAK-md/22.md
+b041154d6177a2a199e2ca100ec3d4cdd2ffcc4a350d3e00b5b9368b850cee2f  contenido/corpus/_obras-md/SPIVAK, MICHAEL - Calculo Infinitesimal - libgen.li/SPIVAK-md/3.md
+a6899dfb7233d98617fc9f678bd88ffe68b3a1514ff4ac23eb39b2da90581f2c  contenido/corpus/_obras-md/SPIVAK, MICHAEL - Calculo Infinitesimal - libgen.li/SPIVAK-md/4.md
+b3c3f9786b28989d6c924c6795fdedf455d07ffd9397b65292fc5c7d0c0a8767  contenido/corpus/_obras-md/SPIVAK, MICHAEL - Calculo Infinitesimal - libgen.li/SPIVAK-md/5.md
+b5d543ac1ac7ae39c56da57749374af6c7ae3f27e242c3dcc0bdf75383c4af95  contenido/corpus/_obras-md/SPIVAK, MICHAEL - Calculo Infinitesimal - libgen.li/SPIVAK-md/6.md
+caa5b805eca2b133cff6c605c576553b13463d7ef186fd1137b029a349c9a61c  contenido/corpus/_obras-md/SPIVAK, MICHAEL - Calculo Infinitesimal - libgen.li/SPIVAK-md/7.md
+fd3b9d1f8acc3c069a65f182abc68704e2dd7142c7f090fe47ad0e273001c825  contenido/corpus/_obras-md/SPIVAK, MICHAEL - Calculo Infinitesimal - libgen.li/SPIVAK-md/8.md
+5a496fa529998c63191291f019afd23616b9b9f4758141ed4349d71917d7ec1b  contenido/corpus/_obras-md/SPIVAK, MICHAEL - Calculo Infinitesimal - libgen.li/SPIVAK-md/9.md
+90942090291dc4dc2b8f239c6034080bf0e4996b4f1041d3f18e4fc5975274f4  contenido/corpus/_obras-md/TulioEmiroCalculo/Libro-2-Documento_Enero_15.pdf
+062d8aefbaff466cfe6a7d2c75f0cd2d4c9a5992212a67c10fcad733185e1a31  contenido/corpus/_obras-md/TulioEmiroCalculo/TulioEmiroCalculo -dividido/1.pdf
+d473c2ca984170f26796ea9b3c5aaab4a17b24aafb16f55d00993d80fa9b7d43  contenido/corpus/_obras-md/TulioEmiroCalculo/TulioEmiroCalculo -dividido/10.pdf
+4873ee3c52693aa7c9ffc75e200f4e6cce48ee589dbdbf4b46f7e53edf6478f5  contenido/corpus/_obras-md/TulioEmiroCalculo/TulioEmiroCalculo -dividido/2.pdf
+43a33c499944b0e5e2c2691be36459c56be11528ab64447285d97643f1eee95b  contenido/corpus/_obras-md/TulioEmiroCalculo/TulioEmiroCalculo -dividido/3.pdf
+cae13ea1cfb3dff508a379d6ca92248ff558d608da866555598144a1fc1cef7c  contenido/corpus/_obras-md/TulioEmiroCalculo/TulioEmiroCalculo -dividido/4.pdf
+70fb46a3435b979a05b3c81bf4c3048278b7b54d58947d360fc46ab14eb6d408  contenido/corpus/_obras-md/TulioEmiroCalculo/TulioEmiroCalculo -dividido/5.pdf
+996b7bca820bbaa0c940d453c346dbb1db2cdf531b21988f35d0432465687f82  contenido/corpus/_obras-md/TulioEmiroCalculo/TulioEmiroCalculo -dividido/6.pdf
+e17a7d75e47b51933775baf9149e845afd455bc415d4e2f2b73703eb689306f7  contenido/corpus/_obras-md/TulioEmiroCalculo/TulioEmiroCalculo -dividido/7.pdf
+718a328ff3ba39d9d793e21067d8c316180d57e8bb7cdd90518d398f70eab860  contenido/corpus/_obras-md/TulioEmiroCalculo/TulioEmiroCalculo -dividido/8.pdf
+2d95deb0f05b947f2da7d19a65cc3d7d95c105a55dc9a6c99176ddaa140fe1cc  contenido/corpus/_obras-md/TulioEmiroCalculo/TulioEmiroCalculo -dividido/9.pdf
+23c2e1519790191795ae9bc900b37e56075550beb676286ab99487094851a2ea  contenido/corpus/_obras-md/TulioEmiroCalculo/TulioEmiroCalculo -dividido/Contenido.pdf
+66941f2fa578776c702590f2cc1b8f356be03b74c161c3c5ff225ff89bedccf3  contenido/corpus/_obras-md/TulioEmiroCalculo/TulioEmiroCalculo-md/1.md
+406f54ce1bbd5cf5b68aaffd4d6107fe202b9f42746de977607bec0498baaa1a  contenido/corpus/_obras-md/TulioEmiroCalculo/TulioEmiroCalculo-md/10.md
+baa6da9df1b9d95f8a14eba8cbb0bafcde73063a778ea14bba6757c40fa8e444  contenido/corpus/_obras-md/TulioEmiroCalculo/TulioEmiroCalculo-md/2.md
+23592001de29b90d2f0f6e7e1becdd55fa8103eed0f169e65937e938b4104e00  contenido/corpus/_obras-md/TulioEmiroCalculo/TulioEmiroCalculo-md/3.md
+1a29ca5d867a28b4123ab5eea29befddfe39c2312e21aa4fc616043785c99c5f  contenido/corpus/_obras-md/TulioEmiroCalculo/TulioEmiroCalculo-md/4.md
+5a9ab3114c0b5b5523810e036023892e5c215c364e877955cf56ddbe063adc84  contenido/corpus/_obras-md/TulioEmiroCalculo/TulioEmiroCalculo-md/5.md
+991d7c07efee56989d060852fe9e5d77e623ac4f19fb594b0bcbcfca10fd005f  contenido/corpus/_obras-md/TulioEmiroCalculo/TulioEmiroCalculo-md/6.md
+a7781dd0e358c9f658341d7f0b0914970a5844e953f42c55ba23ba76ef921245  contenido/corpus/_obras-md/TulioEmiroCalculo/TulioEmiroCalculo-md/7.md
+fe347e0b23985b4b26e76d0820c4d1ab2c59992fa4d839d6bfb6c1c79be246b9  contenido/corpus/_obras-md/TulioEmiroCalculo/TulioEmiroCalculo-md/8.md
+05290bc3cf341efbf016ddd10c54999fad1ea84c801971cf5bac7d6399b6f898  contenido/corpus/_obras-md/TulioEmiroCalculo/TulioEmiroCalculo-md/9.md
+d10ad6fbca3689b9419615e154249b6580b9b30cd70b96682bc5e0a7024f29f4  contenido/corpus/_obras-md/TulioEmiroCalculo/TulioEmiroCalculo-md/Contenido.md
+a4c2957e732a230e62d4c8ced82c883ad701276c9b533b606d0f7b02ce3a5aa2  contenido/corpus/_obras-md/leithold/leithold-md/1_1.md
+b38ee7fc7e43acec34372e5e16ab4362c03ad3404e02be1ff221b6bbb8a55ca4  contenido/corpus/_obras-md/leithold/leithold-md/1_10.md
+e761fdb9901badc46eb1400c2a38c85e0407fd1243bcefa942692cd554955606  contenido/corpus/_obras-md/leithold/leithold-md/1_2.md
+e13f5627d778a6a868f4ca533f34f5f63811e2000811e8984481776614271d5a  contenido/corpus/_obras-md/leithold/leithold-md/1_3.md
+741904e4040ee277d7cf84bf458b77688087ce626fc157c593ee4b0b726506a5  contenido/corpus/_obras-md/leithold/leithold-md/1_4.md
+49b645bc52e8507e3497ef10e00ec5f3b9832865fe6a7e88a6b5d1f32949dbca  contenido/corpus/_obras-md/leithold/leithold-md/1_5.md
+a2e326a7aa822ed047d576cf49e11ee154393f5abb53f82bb98b74b8f2b50723  contenido/corpus/_obras-md/leithold/leithold-md/1_6.md
+257dcf43bc5014cd28d67f5473fe43fbed5fe8b620589e5e757e1910a2fdacf6  contenido/corpus/_obras-md/leithold/leithold-md/1_7.md
+a9aadd11c16a237f4a5a1c31e85e18823dac6878f68e2ce33909ba168830ed8a  contenido/corpus/_obras-md/leithold/leithold-md/1_8.md
+59db7bf24751f1f7d6c01dca5b4059d5c3ccd07b3fe76d81b46d0fa74f8e079d  contenido/corpus/_obras-md/leithold/leithold-md/1_9.md
+77ee9f3343c6843255497b48690a130d1c62c957dee07b305625827f44702468  contenido/corpus/_obras-md/leithold/leithold-md/2_1.md
+96911a1eff394260673b1854c2d0de71d52e4d2bc0abfb368d49a17f44452062  contenido/corpus/_obras-md/leithold/leithold-md/2_10.md
+54cad03ce0df67106d9a2c838832ca67758dc6e6f0665d1bc04db957ae5a50c9  contenido/corpus/_obras-md/leithold/leithold-md/2_2.md
+7f38cfed29140403e79c43610f6e6ac6b979f864d466e088c9c4cf7ba787c176  contenido/corpus/_obras-md/leithold/leithold-md/2_3.md
+8e2dd94150b3ec6b0e6fa2112fb10031c0b7b16bc165836b010470229a7f21f4  contenido/corpus/_obras-md/leithold/leithold-md/2_4.md
+6f6881564bd8af3119b5e1e2503c05d3da15a235e9d427d4c6574bee78a58a5d  contenido/corpus/_obras-md/leithold/leithold-md/2_5.md
+72de5af843ffa2c0edf169ea6da4ef0a6ea50341f5b9c7c4f96543e6736119f1  contenido/corpus/_obras-md/leithold/leithold-md/2_6.md
+cd3b987b8375e9f4274ba14ad716106762901d9eb8dc023695a8f3d0917e681d  contenido/corpus/_obras-md/leithold/leithold-md/2_7.md
+a24b7c3a63d2ece87493e71f0e5e674a2675a400665f5e6fc13a5f3356eeba1b  contenido/corpus/_obras-md/leithold/leithold-md/2_8.md
+b373197da4566471ace184bbf36189109fcdcbb7b7c591a7de2fd297f2f072b5  contenido/corpus/_obras-md/leithold/leithold-md/2_9.md
+16b51874eb11f0d5a7c1c4435d8d7b570ad005f7518bfa2a7e4bd09613ef4b46  contenido/corpus/_obras-md/leithold/leithold-md/3_1.md
+cd47be847d84e14cfa6ad4ec31a2d941fe9a013cf4df4f4d93a279bcb776fea7  contenido/corpus/_obras-md/leithold/leithold-md/3_10.md
+703c190f46da27f224a4da0536129ebb2c2c612098381efad22e2074d6245ad2  contenido/corpus/_obras-md/leithold/leithold-md/3_2.md
+462dfa70b3de68de2470f0285c90f70a3c5cc6abaeeef50833aced830a1ef648  contenido/corpus/_obras-md/leithold/leithold-md/3_3.md
+64dc2ea31b5a363195449dfe83efacb680802277e5e5ec79c35b6a0c1cde9e9a  contenido/corpus/_obras-md/leithold/leithold-md/3_4.md
+d0796c0acac38dfa589acee96b4184c69b36078535ee2f3b141c05b7395a8035  contenido/corpus/_obras-md/leithold/leithold-md/3_5.md
+1b0a74a87cd340402e767972bc5c7e05cd63d84ebb969767926bf41c2d881b39  contenido/corpus/_obras-md/leithold/leithold-md/3_6.md
+4a02d678cb38cd7cfa2dfc71bc07c29bbe67350d96136f802e1bc1028e6e9484  contenido/corpus/_obras-md/leithold/leithold-md/3_7.md
+5ccec1535fb95ae6bde1f7586afb545f2927e6cf123d74a89788cf3bd622bcd4  contenido/corpus/_obras-md/leithold/leithold-md/3_8.md
+0dd6fe1b1e2796856a465a403fd6d0aeae181c1c93e4ebbeba1027e90ed8fbb5  contenido/corpus/_obras-md/leithold/leithold-md/3_9.md
+8e6f2783e06060ba6fae31a512d6d2309b919c38e3ccf6bbae4eca084b78ac2d  contenido/corpus/_obras-md/leithold/leithold-md/contenido.md
+7603c16162fc1998e259885a97310982ab243c1818c138b5b0fcf2286bf4b0b7  contenido/corpus/_obras-md/leithold/leithold-md/rev_cap1.md
+a0f81994402cdc45f0e453cca6cb1b4ae1f82ffcdd9f4c11de711fcdf34af163  contenido/corpus/_obras-md/leithold/leithold-md/rev_cap2.md
+1e1ba82c994604ef7ffe62104c43580daa31d9e7f3ac672b421a392af1bd85cf  contenido/corpus/_obras-md/leithold/leithold-md/rev_cap3.md
+ac4b0a219dbd1d8e5a7e61ed8929866b9bad46d3095e9a24bfd61d1e0bae63fa  contenido/corpus/_obras-md/leithold/leithold.pdf
+062d8aefbaff466cfe6a7d2c75f0cd2d4c9a5992212a67c10fcad733185e1a31  contenido/corpus/_obras/LOP/1.pdf
+d473c2ca984170f26796ea9b3c5aaab4a17b24aafb16f55d00993d80fa9b7d43  contenido/corpus/_obras/LOP/10.pdf
+4873ee3c52693aa7c9ffc75e200f4e6cce48ee589dbdbf4b46f7e53edf6478f5  contenido/corpus/_obras/LOP/2.pdf
+43a33c499944b0e5e2c2691be36459c56be11528ab64447285d97643f1eee95b  contenido/corpus/_obras/LOP/3.pdf
+cae13ea1cfb3dff508a379d6ca92248ff558d608da866555598144a1fc1cef7c  contenido/corpus/_obras/LOP/4.pdf
+70fb46a3435b979a05b3c81bf4c3048278b7b54d58947d360fc46ab14eb6d408  contenido/corpus/_obras/LOP/5.pdf
+996b7bca820bbaa0c940d453c346dbb1db2cdf531b21988f35d0432465687f82  contenido/corpus/_obras/LOP/6.pdf
+e17a7d75e47b51933775baf9149e845afd455bc415d4e2f2b73703eb689306f7  contenido/corpus/_obras/LOP/7.pdf
+718a328ff3ba39d9d793e21067d8c316180d57e8bb7cdd90518d398f70eab860  contenido/corpus/_obras/LOP/8.pdf
+2d95deb0f05b947f2da7d19a65cc3d7d95c105a55dc9a6c99176ddaa140fe1cc  contenido/corpus/_obras/LOP/9.pdf
+cc16d1c61c207a9d156450224eeb420b483af461d6c7cb3843af0fff23f39eee  contenido/corpus/_obras/PIS/1.pdf
+99f266fd9c435b307e71415d9a985ed7b430901002a702d61843ea9fab4e74b2  contenido/corpus/_obras/PIS/10.pdf
+dfd3e4bbefbda8110265604fcf9a30ce6026d7044e81a68341f0c8af61653d96  contenido/corpus/_obras/PIS/11.pdf
+c757da18a71d72ce2399c8a2145fd3cfb905a65b4e2b6cfa031ef0aa8c183a28  contenido/corpus/_obras/PIS/12.pdf
+517839af0fa61ffa5232d4efbd27dd75070c764a1396bedf25643cd6d0656caf  contenido/corpus/_obras/PIS/13.pdf
+7b95050ffaa1deb2150be17bd88c01e27771bad148af66206a3ff86bad1266c9  contenido/corpus/_obras/PIS/14.pdf
+c1e4a5794dbe65225052b685aca18f1c8c0c1d262ffb7a049ccc94bcee1f0138  contenido/corpus/_obras/PIS/15.pdf
+34a02b4f683fda5231fac999660f90c05b23f0c4d6f06c55f62dfb499efc8be1  contenido/corpus/_obras/PIS/16.pdf
+6edf699ead1ee8bad5e4946805ff0dddceafd98e1c5de22be2fa63395ea95e10  contenido/corpus/_obras/PIS/17.pdf
+b0ddeaa75cb53395d07c8e83db7b7ea7425260c11dddb7cc4b698e74ff5891aa  contenido/corpus/_obras/PIS/18.pdf
+84e736118e96d58ebf357088b2f809aaa06b03536855c2baccf7ca1374bca9d8  contenido/corpus/_obras/PIS/19.pdf
+88277c973ec9978fae4f2072a9acc672020b0e24ac2be407681e78a13e8bc57d  contenido/corpus/_obras/PIS/2.pdf
+fb89765f2cd55755989d40db49b4e4f3108cee198483684e4553b2dadb9e9de6  contenido/corpus/_obras/PIS/20.pdf
+92ff19d3956af17d060419b3cc4b9eac6f530d8c142e2b64a297c514c9aa69d4  contenido/corpus/_obras/PIS/21.pdf
+ec6a594410bb623505e1231f5db98de6f0ca278105705621022a775fa2d0f0e9  contenido/corpus/_obras/PIS/22.pdf
+848855835f983ca6232cf0d9ff68a825b5a2efe2e240c5596dff9c25eb4d204c  contenido/corpus/_obras/PIS/23.pdf
+ab8888ff30dcf961ebb2820b884d5b2cdfa155c172c188c71190fbbaa4996ea2  contenido/corpus/_obras/PIS/24.pdf
+37c52b470e026a16a7f1dc023ae7e73caca13a2b0cd52789fdf2b0328536dda6  contenido/corpus/_obras/PIS/25.pdf
+ef9719d0f46efabe2ed0d95e51b966ca72520748852ebe4c30df00262f8ce615  contenido/corpus/_obras/PIS/26.pdf
+336fc0e11a740bd6315e51e0c1042ba823a45eafe1e48fdf574629e5c14614c9  contenido/corpus/_obras/PIS/27.pdf
+cf71f63f2aaadd3c2746ca8f7f1133b172fd04314792ceab9e0e6c61e1671e7b  contenido/corpus/_obras/PIS/28.pdf
+a0475505b5eb4de7910e100a35f98f323bbb2ed4929e8ecf3cd38e466ed322cc  contenido/corpus/_obras/PIS/29.pdf
+f2acee8a0145482db96838805a07cd907826f15c895de01fe87f740d38b0e6f1  contenido/corpus/_obras/PIS/3.pdf
+4d61860b6ec2ef9e05efeee85d973c2a43e5a207dad1ab299256af20ef431200  contenido/corpus/_obras/PIS/30.pdf
+cb828c0cee3001040419bff487a49bb73dabb8714be984cddd435b0c0be80007  contenido/corpus/_obras/PIS/4.pdf
+69277f5dd120d4fd22ff8c39bb4ff21de6113bafec4cb456e6af32d6fe91b127  contenido/corpus/_obras/PIS/5.pdf
+aae9df10fc3cab3a1dda3cf0174430a9fb49e4e91624dae5201fbf1470a39154  contenido/corpus/_obras/PIS/6.pdf
+e0db08e98131ff4183099f9b1f426936a6a30b557df0999dd9477a6c0d4c9d9a  contenido/corpus/_obras/PIS/7.pdf
+1ac58e5336dbb11a54e88dfd1e647bd51f5358c27b64b9d5fd9aec7d6f9a95be  contenido/corpus/_obras/PIS/8.pdf
+122e38f021298e13102a9ee4443df61946a2db15d0dc30bb3279ffe5e9f1a2b8  contenido/corpus/_obras/PIS/9.pdf
+35a1dee940f461fb6e4f37899f67e7258612f86676c545740249bd08a3383482  contenido/corpus/_obras/PUR/0-1_0-3.pdf
+c3eddca78abe731ce8adbbd2d5ab7a3216d785677cc4696197aa8988a40f2f52  contenido/corpus/_obras/PUR/0-4_0-6.pdf
+84bb7756ebf6fe97265d9c9dab451960e8f0b1422b5f1a843209c473bae0f2ae  contenido/corpus/_obras/PUR/0-7_0-8.pdf
+8da7c5cb75c45f869b35d366015142f378777a746fcbb29787fdc048331c40e1  contenido/corpus/_obras/PUR/1-1_1-4.pdf
+a81ae16c553509cae07da1e54be3716f8f7574623ffa5009463961bf52bc780a  contenido/corpus/_obras/PUR/1-5_2-1.pdf
+a7d72fab2aa288f5104b2b62f5bcdb346ac7c3c1cccbbabb7e68aa41803bd7be  contenido/corpus/_obras/PUR/2-2_2-5.pdf
+f8360ae1d333a45c5cbf352a889a80d5c602a2d7c9831b73b54043458ca4d4c1  contenido/corpus/_obras/PUR/2-6_2-10.pdf
+1fd846b900d23d89ce8bfcb6c9f951dc6f4f430489687779b9d225fc88a4b3d1  contenido/corpus/_obras/SPI/1.pdf
+324d85da037a2cb878a42af157f9237c25ef5b254934df0c80f35f6324dd3614  contenido/corpus/_obras/SPI/10.pdf
+516612cd9d6b6f1fc743545ca7fb224005fcc32dd8c06fe5b89a725519ba62f2  contenido/corpus/_obras/SPI/11.pdf
+3d4fc0eaaf6a8e32a66de253196556e1eb1033fb5977f8074474127133c0dde1  contenido/corpus/_obras/SPI/12.pdf
+afe92bb2bdabd5f52b76d5435f5d2e36af82bb59fbb8694b20785d1f73c0855d  contenido/corpus/_obras/SPI/13.pdf
+d6a414024eefb2be01375cd08dbdf5338a90db8fd7a265bef6b04e9321bcbc28  contenido/corpus/_obras/SPI/14.pdf
+064429ca258027a8e9e94763e1c2cfdf64cd47b5bb1543d6dbdaa0e32970f6d5  contenido/corpus/_obras/SPI/15.pdf
+3fbfc5fe2c2a9113d9a86c72fe9f5d27f7dc0f2986ac3bb6702ce5d62a2941f8  contenido/corpus/_obras/SPI/16.pdf
+b7b45631c61aad47f412455cf83c7a646515add2401d6cd93076e899438944c6  contenido/corpus/_obras/SPI/17.pdf
+769a7efa038193097440896cae4fe5b79cecc79f4c5da2f0ef02a685d38adb15  contenido/corpus/_obras/SPI/18.pdf
+074cec7f2c575c681eb632b804e3f9ae4142e80c25c5152b4744025abbbc7749  contenido/corpus/_obras/SPI/19.pdf
+e5384c3e8de21f924c26c014f00ff7d00735bb77587296783984ed61883668a9  contenido/corpus/_obras/SPI/2.pdf
+c1775af4537e802d05e8a59d70086433ebbaa6abfcd13826ff4da4cd21cacb5c  contenido/corpus/_obras/SPI/20.pdf
+f307e2dc668407bea87db3efff02b51ef2607c515f0013466cbb86a8a1692d9d  contenido/corpus/_obras/SPI/21.pdf
+315e201dde09097545ef672febdd910288b8a79685f365d3b507e36e289378d1  contenido/corpus/_obras/SPI/22.pdf
+b9ad9b75e4bc7c35547126b585845e172deaa5456b4a9e62e203bcc5c5062bbb  contenido/corpus/_obras/SPI/3.pdf
+17781b6d56f60d272a8a17570ac531b7cc5bc9770e0cc817c9387cac805a3cc6  contenido/corpus/_obras/SPI/4.pdf
+f4610aaf9cf9d256a987a86b5a9d3799c5c7a43f3b737e67d64efa75178fd0a3  contenido/corpus/_obras/SPI/5.pdf
+0cb7d6f3fb8471dedf621dcbb198331718bfc0b6bf3064784a4f814853e8bfa7  contenido/corpus/_obras/SPI/6.pdf
+0c366a4e43119a44fda4c6a2105277fa34bca5a26b667fa5c113953fbb554c0b  contenido/corpus/_obras/SPI/7.pdf
+212fba8daafd179e99c7c7f36fc4289e23a8bd2fab5e5030c913e0d9af4367d0  contenido/corpus/_obras/SPI/8.pdf
+b906dcd462ec730e92ff9261b8fd2aae75a1d3f5f9e8d630746056f2b65504b9  contenido/corpus/_obras/SPI/9.pdf
+ac4b0a219dbd1d8e5a7e61ed8929866b9bad46d3095e9a24bfd61d1e0bae63fa  contenido/corpus/_obras/lei.pdf
+90942090291dc4dc2b8f239c6034080bf0e4996b4f1041d3f18e4fc5975274f4  contenido/corpus/_obras/lop.pdf
+271d35b0e0703652f8fb6e134364dabda9b5e6b77469d7ee0cc3c83a021572f8  contenido/corpus/_obras/pur.pdf
+9b9002edc29794a21ebed1c820916fd8dacc66c6661366daed44bec962975b9e  contenido/corpus/_obras/spi.pdf
+9580e1eb55b32ad256c9f5528cc1e5e2b297acbc961c628e8a72efb922032756  contenido/corpus/fragmentos/f-001.md
+38e8cad3b5f839e0da74d8d9a83bc6a6ea7dba7d707101a6bbd187bfa0b42616  contenido/corpus/fragmentos/f-002.md
+24d6c76442231d86e35a0e33ae5ced886fcf53de671a088db4f46bfbf1556055  contenido/corpus/fragmentos/f-003.md
+fd0d7d05f8a1e9f34576f20b18f2991afd665c06aa02b68da11c66284e3740e5  contenido/corpus/fragmentos/f-004.md
+ee28f8f9d1c3bcbe9c036cc9462179f4d778c35ce2e9758b955e2cdf95a7e54e  contenido/corpus/fragmentos/f-005.md
+58841bda35b486e9f651c480373cc5659dcf43f65e34c9b396285263c05d62fe  contenido/corpus/fragmentos/f-006.md
+51dfc7157ecec48af211547cde18302ac66f267facaff7c7e1ada7cb926c5fed  contenido/corpus/fragmentos/f-007.md
+2b598cd9061fc4aa5e06e3d5e484fa89d66ce29595fac43b71039206b3431141  contenido/corpus/fragmentos/f-008.md
+96a9c0ddc0205e2ff15c45b5f0c04698c664eebfad43c2e3194d230ac00cb35c  contenido/corpus/fragmentos/f-009.md
+647005d5d98cc1ecf3fc447b2f11c339e1acb3da310b07acd518ac7855095415  contenido/corpus/fragmentos/f-010.md
+546ed1a33603c7a855818c67cf282e65d35961690d60545a48e42753c2e76689  contenido/corpus/fragmentos/f-011.md
+e906db779519e9df44bf739bea3604eb1303e8abcfe3a31775b2a81120e12f35  contenido/corpus/fragmentos/f-012.md
+187bd2aaa82e3124a859f9f07ec2052fb852623bde6d2b82a4330ac3b5279393  contenido/corpus/fragmentos/f-013.md
+26673f51f3bc4046ee8b51adbe732736111a72b169f7324f076eb70e1b404c23  contenido/corpus/fragmentos/f-014.md
+c049ee8fcb411b83ce03d42165062a12abc0e8cd3568898eef0a798a1910b323  contenido/corpus/fragmentos/f-015.md
+0939947a6412234dff0f7d2d46e395438a305fd79174ed7594435a428bc40765  contenido/corpus/fragmentos/f-016.md
+04566a28529a25f1c481f9ec08468dcdd37e5dcc433d2d524023ebf3e83c3dd0  contenido/corpus/fragmentos/f-017.md
+ec09f459240f93e8d77380b820dbdb2d09ebd4eae66d232affaa8fa3e0008b2b  contenido/corpus/fragmentos/f-018.md
+4004dba0d3a84ba6fd77a7cdd7440267fa12766a7aba899d67ef83d339723ccd  contenido/corpus/fragmentos/f-019.md
+eb97e70aef768534248b06a1979899c94f4ce64222e147c1f6cc91a953777abf  contenido/corpus/fragmentos/f-020.md
+f75278302d36462ce136446569dfe0c4b90565932a9463c40061ab8ffd488375  contenido/corpus/fragmentos/f-021.md
+d6e07c82177d7f513253567d02a633d69b27de700e664a9faeb02d81992b7171  contenido/corpus/fragmentos/f-022.md
+66153fb2a58dd27c0ac68d4f93c17af3cc66ed2e48320e43099ca316c5553867  contenido/corpus/fragmentos/f-023.md
+104fe6d1002079717d770161117710d20494b6dcab5206231264ee56d6c0129c  contenido/corpus/fragmentos/f-024.md
+f435d2f72ca8dc36de39baa0acc371297d2d7a75f5d30e30c95975cb830a4943  contenido/corpus/fragmentos/f-025.md
+a6c71110b8aeb91750125312409b2fd94a70ccd0ba6a33e2c99bb84ede9e171b  contenido/corpus/fragmentos/f-026.md
+7fefb60d483ce08446eb341742514a9a2b6bb65d17419a0c032a12860d8674b9  contenido/corpus/fragmentos/f-027.md
+dd9f682ca43d5bd48b5438b594b174ee62587b29e0cb1ca17925c7e75189f222  contenido/corpus/fragmentos/f-028.md
+4ac47faff38c893163708ccb309982b0db3c150f71807d140f1c851d0793f37c  contenido/corpus/fragmentos/f-029.md
+541b0304b80a00895bd47e58493a19f2477574db4359e853f84560e8d1c9a31b  contenido/corpus/fragmentos/f-030.md
+581c9f46f4e54a6248d92de5bb5ab727450b580d4dd8d666a388fb80558c4043  contenido/corpus/fragmentos/f-031.md
+ececb2baf3cf7913520d007861342b31adb78138e04a6d19698748ca4807fb94  contenido/corpus/fragmentos/f-032.md
+3963bef7ffae7df2f684f1ed399729577528393c08b6a9c38d0d48d687d67077  contenido/corpus/fragmentos/f-033.md
+00542a40473255fb7b6e93a6d22bcaf65c617b0b59d41bc2e8efd6a8e47b8f9a  contenido/corpus/fragmentos/f-034.md
+c37c70e7bc273f5273a9471e7925d02a0a2f9b06e252b3fe63454364e46ef0ce  contenido/corpus/fragmentos/f-035.md
+1fa4a3885f9e3be79ae63757bd17f0c2dbfe421ab1b798e4e3f2cd4ac3401a41  contenido/corpus/fragmentos/f-036.md
+96d03199afd43ccda3c96944adb509cbb40e027ef0d154158a50bd4fc350cd74  contenido/corpus/fragmentos/f-037.md
+aea46b60f71c39836c1794ac871dba8ef6fe258f1f83d328d9f186826c8f1513  contenido/corpus/fragmentos/f-038.md
+ffcf9220c9607770ee393948eac42a612154701d1e9c56dae2266f9f0fc41fe3  contenido/corpus/fragmentos/f-039.md
+e4c9c03c96143deee1c9aff438bf62f1b92b7baafc8a6e623c83da4b5bd980dd  contenido/corpus/fragmentos/f-040.md
+9bcc6e6692143c25ca575277f4f78224ceb37e53b6cc37a56185a9b9612194ed  contenido/corpus/fragmentos/f-041.md
+e95ef551a6dad0a32c049b8c07e372403bad0ad85487eaecbf73dabbecae4053  contenido/corpus/fragmentos/f-042.md
+9f49ff4857c02c42c5f9a267de5882ebddf5a5cb3430860e6311adad0f5526c2  contenido/corpus/fragmentos/f-043.md
+2a5220cf573121153a6fd36a32c9ecc0903e76701d8b331ffe3699274bffd0d5  contenido/corpus/fragmentos/f-044.md
+57978920b2e3933451042fa70c9daaa67fc6bd9d30c646d8f8b78163f1221be5  contenido/corpus/fragmentos/f-045.md
+58bc4a5658a8ec30906b550f9d3c991069c999650cb2b7054a5fdf2932411c06  contenido/corpus/fragmentos/f-046.md
+41defe8d0e28473538d15f782334b7877c9ad5c09028a31697f5de1330cbdbcf  contenido/corpus/fragmentos/f-047.md
+facbb7f34693befba7454f303c763d7eb28e2c0f1eb0192e4c22f96e414c5289  contenido/corpus/fragmentos/f-048.md
+3636dd563a4ad8d9856d0ac0fec86cdff3bad4891c62f3ec5b6a8093ca8778b8  contenido/corpus/fragmentos/f-049.md
+c8ab984c48c7069f733060be933aedd8822118de10c9861ad89454f475f2a6ee  contenido/corpus/fragmentos/f-050.md
+a2f5c1facf43d3af754052c062a6c20ee9d82ecca7640dda08b36a671a488227  contenido/corpus/fragmentos/f-051.md
+0f46e0dfc67c3225f20f3c04fc985d3c150c37a7121af6a1d05a1e5d0e60149a  contenido/corpus/fragmentos/f-052.md
+1c518ea5fd3704ff151fc2db6a7b6fec2d0298e007f4f99c44155052a6617b0d  contenido/corpus/fragmentos/f-053.md
+8377455c50e3ef039fb84fbde7e879288a6fba1cda0c6f52e683d280c79d1384  contenido/corpus/fragmentos/f-054.md
+cbe37f0a200a693c3f801cb24d2780dec489791134b63b908cb4129b48a457d5  contenido/corpus/fragmentos/f-055.md
+e9b4860b0fea9e6f36824d1a18e6488eee472a622f75b24f86b4c633f06bb890  contenido/corpus/fragmentos/f-056.md
+b9cc163cb70c56f4b3050edad23a641efb20bea7b09bc4257f0d673e68df3bb1  contenido/corpus/fragmentos/f-057.md
+3d6ba7fdf9cf565dba00ee6a0248f9954f5a6ab361a8a049d4f54a1e9d5ea1cc  contenido/corpus/fragmentos/f-058.md
+8c78a2e1674a0cbd5982adc3391750b32cc9d225e48269b2a55ba9007b6c52ef  contenido/corpus/fragmentos/f-059.md
+f38c51b883f4396e8524ff702f783bec160a9fa42f5b955be67fec1c6fe9dbe9  contenido/corpus/fragmentos/f-060.md
+6f825eee8846e68e83822a71e4b72233aea04009073f696a4ccc644358432e74  contenido/corpus/fragmentos/f-061.md
+2095bda8f3a114ff80c67a2ff6acb16928b2a964d97b5bb83e82800549ad626b  contenido/corpus/fragmentos/f-062.md
+a4e2d0fa1d6c3bea73f5c934613cd6dc649e0b80bff369bf1a5cc122715a0a5f  contenido/corpus/fragmentos/f-063.md
+4c990906cb7696a03a32345f964c5ce1d4755220e2b2b77b3ff3d2ca40595009  contenido/corpus/fragmentos/f-064.md
+e27c478166136e38d3bf0e805ce4539bb2ccea112927ec2313e36d72b193e97e  contenido/corpus/fragmentos/f-065.md
+342b2a9fb0482a59d627b50ba6d6ceab3217f60b7d30d90b1221c044f032f931  contenido/corpus/fragmentos/f-066.md
+5fb1fae2d69755ed8c384cf434f67273eb4991a34a624abc3b9c2e520f764039  contenido/corpus/fragmentos/f-067.md
+8a0f80b93c3971bd18f97aab8ba582d8334ad54b3c90544322a0620af9a869e5  contenido/corpus/fragmentos/f-068.md
+6f98e86783e19fbc9f0cbe5feb1ab3127ca5a5e0efb8224949fc936821da3189  contenido/corpus/fragmentos/f-069.md
+49ea68f870754a88277e6319484c921262c61a6c5103f7361d10c2886880e7ff  contenido/corpus/fragmentos/f-070.md
+4676fd702141fb46f19ac8bab0ce05d2bd5766bba0478bd9ee803740e4950970  contenido/corpus/fragmentos/f-071.md
+6cfca8673dfbd3da1af7d1deb620a8a9f7c6ce368cd337284f8fb82de7152afe  contenido/corpus/fragmentos/f-072.md
+c4aa6917da7275d3b4c4ecb0b092bca759a8b9e6c50991187be42561f75433cf  contenido/corpus/fragmentos/f-073.md
+bdc4d5ccf5e0a0a19192618f5e61ecd9e83d7398aa0148aad6cfb5702ccdb1ef  contenido/corpus/fragmentos/f-074.md
+225ace0034391cb7ceb1829dddf5084d3d5688675ba3a890140e8c018222767e  contenido/corpus/fragmentos/f-075.md
+505a388c90698cbfbd12bb684e1616712e06f5b9c3d04bcaa038cfe950d30ad1  contenido/corpus/fragmentos/f-076.md
+b18849e87c9062c1360e3cebe160a2ba49b3c6d55ad284303edb086926c74527  contenido/corpus/fragmentos/f-077.md
+21408dcf1c7906cd25cf6ae8c3d243a81c2c3e94f9b26f37768354b4e0ea8374  contenido/corpus/fragmentos/f-078.md
+95337030e53e1ea986ee8376a7d9691fac2d038234316f7dda552df3b3285593  contenido/corpus/fragmentos/f-079.md
+fa9d6e197b535a814bb43680377548abc8c3d88b0eb097753139b77d1201d904  contenido/corpus/fragmentos/f-080.md
+fd1809aa54fceb34b0821fdc9d8aab3947b02817bd5468abde0b1d7662e51d1c  contenido/corpus/fragmentos/f-081.md
+eb95feb6d671bc78fb54aa7b7d929f185c603dfb01552c2c69aeaa540f8b9814  contenido/corpus/fragmentos/f-082.md
+b97aa5d1d7c2be3a66cdea138b176b2598a7ba1a6616d07f3f5f2b4374cd9a87  contenido/corpus/fragmentos/f-083.md
+7dbdaf35e3ca9929f0154843c757b30dcf64bd7a12e4dc42a5e9673246362077  contenido/corpus/fragmentos/f-084.md
+b51d2391ffc972c27a00ed9444bb67da6f6198a6b497b731797aab2293c2cff3  contenido/corpus/fragmentos/f-085.md
+2947541b895d267d9e493c2e88235adb44e0078bb1a8c198b09722c1a4666755  contenido/corpus/fragmentos/f-086.md
+2df7d30428c310cd869d61c39e477d46093b61abcf1347d55de82b9728baeb74  contenido/corpus/fragmentos/f-087.md
+8a1136e17ce242c92ce5735b0ccb30485bddc512fa8e227b4ac14adb0bdca2cc  contenido/corpus/fragmentos/f-088.md
+6c5636bd631b0a44fc0fd1c0cc9e86119a8e8bceae43c411ee7493b19af4513d  contenido/corpus/fragmentos/f-089.md
+c13d8cb99581fb6fa4391246344fce77904164fdf7bbc592744d81b1e80b1f78  contenido/corpus/fragmentos/f-090.md
+d95c35fdd557861d90136733f260a029606e85a8bc7def3eccffd86d17e518f0  contenido/corpus/fragmentos/f-091.md
+e1721eba9185a07d2f0a26c31e4dcdf3f4108e03808e4e5747861556a3936f24  contenido/corpus/fragmentos/f-092.md
+69b9c6c905e13fa1e34bc205baa8ff26f313fcd8d9b5e39e56e53138b377a0a1  contenido/corpus/fragmentos/f-093.md
+10389f167c16c288caafac58ae079c3f6b4296f6e6139f1b04058de16e06cf46  contenido/corpus/fragmentos/f-094.md
+802dac108b0bd53101fbca2b6350daeb3deb6351451db9b26ca0eb298b42f424  contenido/corpus/fragmentos/f-095.md
+3fec2f3a980cd4f9eed2cc8641ae391e953c565b9c0dcf7dbe671b70d14fa2d9  contenido/corpus/fragmentos/f-096.md
+8f15b82d7b9a3f9839192f883f56eb320822d1c090aa0e237b4f0507e2e07b76  contenido/corpus/fragmentos/f-097.md
+56a87adc3a4c29bd3db3aa00ddc38def573e962b251d665dee39d91c85569778  contenido/corpus/fragmentos/f-098.md
+fbfb661b424a96823286c896a59391f59da2be4aa8ca9ea35070470869db6ea5  contenido/corpus/fragmentos/f-099.md
+cf3152e07fa130b75969f51d2e9de2e15188aaa7424b4f0bd9aa402bcd26ffc1  contenido/corpus/fragmentos/f-100.md
+64a24a6f80c2517b80864c9c68c61ecbdf4f35bf2d53c9a3167565ebdc50c968  contenido/corpus/fragmentos/f-101.md
+5e69c887349151d91ed7e7af8752114e3cbaf4287b8fa8f6cb658e9ae55254e0  contenido/corpus/fragmentos/f-102.md
+e037b5d6706af9d27d5f14201e33b63462f25b8f81e0ffd9540c6d1f23906811  contenido/corpus/fragmentos/f-103.md
+3feefe97b8ff2aa2b422358023fef71939cbc26e701978a676e2e506b9ef5d1b  contenido/corpus/fragmentos/f-104.md
+e0489b2a57a77ae4d253288c763a9f1945c8dfc0a9dad275acec5065598c5241  contenido/corpus/fragmentos/f-105.md
+4ab9b2143869ca5840da8d2e8a0469e775f1fece53126e78fca0b2e2498b954d  contenido/corpus/fragmentos/f-106.md
+0700bb6fe662376e9af97323cf30c56dc28671c38e59d201f46ce5c0d393b4c5  contenido/corpus/fragmentos/f-107.md
+156be90ccb5f3989bbe5c0f3e38e2112985079f074b399923c4614ea23e65bd7  contenido/corpus/fragmentos/f-108.md
+c3d45327ed421a70cb3e893e3041a996077dd67bdd4b0f5cad369735057116f4  contenido/corpus/fragmentos/f-109.md
+080b4231ee4b83154cad44c42325d7bd827d42049d142ea5dbac3178c06c97ef  contenido/corpus/fragmentos/f-110.md
+5a44759479149ced43f2793a1d1cf2aeb0b4a8ab4f116d1d3f9285bc273427ef  contenido/corpus/fragmentos/f-111.md
+c79a8bd109156349391c83c3ce7afb9a9de363c10b69d8944c691ef9262b42dc  contenido/corpus/fragmentos/f-112.md
+2ef4a2a9d57623fbad5e6d65099fd0c50a15aaff07cdc3559ead9472ae9f7e16  contenido/corpus/fragmentos/f-113.md
+fd3d309716defa0de8103c73dcda8293e7d5d015445f99619d8e9c1038ec1f3b  contenido/corpus/fragmentos/f-114.md
+454a53261f935387c7867426a427084317f0abfcef5bd09baf19ff1ac33192fd  contenido/corpus/fragmentos/f-115.md
+72185c6966560613219709ce0271a22058715cfea0b6aaa22cd072ad52f6ed2b  contenido/corpus/fragmentos/f-116.md
+00e405283f5f013259d07e5e429c1474097fa400fb8ffa4f96aae61630c99e5b  contenido/corpus/fragmentos/f-117.md
+c3612a0f922f379aad28c53e93c631dde480ccd6ddfcc7973ff0389cc000e071  contenido/corpus/fragmentos/f-118.md
+627e68261f3cc2857e2fd691b6c73dc5f0c1d41f3a88d425940e222138b88264  contenido/corpus/fragmentos/f-119.md
+007dcbef37569574c225cb0beffb1d8c5aa435f926a33e0a3296b207bf2d68a3  contenido/corpus/fragmentos/f-120.md
+9a7139f8762cdd787f215096b4dc1d010a709a94ad933a00ca924d61fc9322e5  contenido/corpus/fragmentos/f-121.md
+97573098a9813d52575973f03120452c84c247ec576f670b76f48c8b081362c9  contenido/corpus/fragmentos/f-122.md
+2ee26108a5944dc12fb4284c1532c6562b3620459fde9e79fccf00e581c697c9  contenido/corpus/fragmentos/f-123.md
+6d585289f90900d2e2250622b0f2ae6ccd9447948c499a640b0b854a55242fdf  contenido/corpus/fragmentos/f-124.md
+8e3fa4e52d17376962950e4321d78734f3e8ddc6d2a0db3ec150ff98b6b19b33  contenido/corpus/fragmentos/f-125.md
+f8cbb54f51b2accab0d57c8250d025486f7f235838423bdf0baa58f01e97f51e  contenido/corpus/fragmentos/f-126.md
+efd1ed03ba17783dafc775ed9893e1944476e219547f260418487c4bc62fc01c  contenido/corpus/fragmentos/f-127.md
+e377b9e649569c36cb8c07ecbf67e1409980abc83085fb67c4595210894bb8e9  contenido/corpus/fragmentos/f-128.md
+3c56a42558cd0afb690c59f1a38dfee13d8c9db041b687c53cbade14e7b74a5f  contenido/corpus/fragmentos/f-129.md
+db6b7739b5c4f3c105453fc53f59589a5777b24e446909e3c915147a9a1020e6  contenido/corpus/fragmentos/f-130.md
+2ab55948046ae30d3b69367b435a3cce6ef89aba1289f7f41b233eaaab9cd1d9  contenido/corpus/fragmentos/f-131.md
+ea6f2732b02d5b82a3d57adea546ba1457f4c36199affb12ce726dd951825801  contenido/corpus/fragmentos/f-132.md
+1f14f8f43a3dbf07a663852bd7b32fe90a670f26a96ad4778f5b3e380a187b3e  contenido/corpus/fragmentos/f-133.md
+36d216c2c93b8bf26ad0edf9ec980d2425dd2866cf8b3e4fc3f9e2dd5017abd5  contenido/corpus/fragmentos/f-134.md
+5c40c1ae999f83202cd3b8b8a48cb54caa82f0ae01397fdbd91483f431507444  contenido/corpus/fragmentos/f-135.md
+91d9d3f7f71edb2c67b26472fe8f6caefb16629598521e8abc6c3a319eb228b8  contenido/corpus/fragmentos/f-136.md
+cc3cb9973c26c3a450a63d7e1ff5da7f80f2b0c32521c6849067ccd5c1d841a0  contenido/corpus/fragmentos/f-137.md
+c7e5690318ceeb494c2ac8d98b2120d817b4778bfd46f2c0516021bbedb0275e  contenido/corpus/fragmentos/f-138.md
+c322b6dabc6901e54318422369a20da33922878de3949c4caf54fffa54f34f8a  contenido/corpus/fragmentos/f-139.md
+796bab6a8c89ba4d9f01f5ab150f338fd9e40ed74b1da7e83dafa06f803cb9d5  contenido/corpus/fragmentos/f-140.md
+d1aa37d173f31678e2b7c11746b4774cff178f4d1b297da218ab3874ee3096b9  contenido/corpus/fragmentos/f-141.md
+eae9caa64761f3e4f412646d5aa766628204da30a180ce965fa8c3a60f63c731  contenido/corpus/fragmentos/f-142.md
+a5882d0a5351f087d947d889e638d8347ce9d4ad8dda90a99f7575d4e8fae5e4  contenido/corpus/fragmentos/f-143.md
+73c87e5628b381e84eb6a6c880753e04c10bd53c7c5c007d1eee58130dc42b58  contenido/corpus/fragmentos/f-144.md
+9adb9ebc4949c4f4659984d96f70ac2fc8df662fbd137823f5da3e7dcd743887  contenido/corpus/fragmentos/f-145.md
+97d7bd0eb8afb5d3fd71422927c62fc8e7640548b4a45065ea4b13c5d55d4425  contenido/corpus/fragmentos/f-146.md
+847373cb7b9fb6f4fd4316c98e2a21f4ee75abb9ab2304e40b3556d2e4cc3211  contenido/corpus/fragmentos/f-147.md
+cbeb2553c0188be56a2c83f0113c32d34706e7a7cb62335a070ec5456add7099  contenido/corpus/fragmentos/f-148.md
+a2d2a45235441cb91a68d8482b874371587cfef3d8bad09a9ccdcd8966d99a2c  contenido/corpus/fragmentos/f-149.md
+d23065795460404f889301b3609b5a90f62901fe67ea69b2e5ee88307d7df217  contenido/corpus/fragmentos/f-150.md
+d9bdf56b3e8cfea913db53819570dd048f2b703df0b1b45a00b7bc160a67ff1b  contenido/corpus/fragmentos/f-151.md
+11a2a61a50e0828e9f2a793c2c06fc5ddb730e3d0fc96564ae4bd69cca21ede5  contenido/corpus/fragmentos/f-152.md
+9bbeaa18e0c43e02ef0cb56713063f37763cf2d85cceb49cce67fb49896b7f0a  contenido/corpus/fragmentos/f-153.md
+70e152ec96ec6a97d782447533b2d7be054943b4cca37ad124b0933968120e97  contenido/corpus/fragmentos/f-154.md
+03649c5b9fbd88440246750080ab5d49f73c75dec64b06ac22158f4addb3d3e7  contenido/corpus/fragmentos/f-155.md
+4ee280202fdc3e712adcdad0338c58de113069b5e558f5b9801f319b2cce7151  contenido/corpus/fragmentos/f-156.md
+e3f158294c21756bd4fb71896293ce155fbf6dd4714b48a630bca64080d4baf3  contenido/corpus/fragmentos/f-157.md
+67f490a0d2111060de405158b9367952ac47c4c1d38b8a4f1e980f5ca30236b8  contenido/corpus/fragmentos/f-158.md
+af221fd2b6f478a161e3f29609b5d0def68fadc42b7aa63b97f317c423436a99  contenido/corpus/fragmentos/f-159.md
+bba55e04db078a0df0e4c4f6e7b8ca67edc5c946430aa583da5fa8ffa4a75315  contenido/corpus/fragmentos/f-160.md
+6138fcd3afda49affbe9be499f93513504f9399aa93eb19d1051c2cce92d6387  contenido/corpus/fragmentos/f-161.md
+35827adfb985aff7c381504d2b5d6c783c81368c7374a1b75251ffb80d69e100  contenido/corpus/fragmentos/f-162.md
+1272a11bb06a23e1a3fe21e83137d10e27b358808e7a7c3eb188419e329c30db  contenido/corpus/fragmentos/f-163.md
+3a76011be5df582286667e8f244c75619b61ce9b08725c2bdb15c04f4af1798c  contenido/corpus/fragmentos/f-164.md
+7d74880b167393db78c2c4f404a9731ed928a6b6066fd23d67c02efa651707be  contenido/corpus/fragmentos/f-165.md
+a553425a7498d108fadfb8273a4bc48cc86ce6460708171edea41dd36da56cfc  contenido/corpus/fragmentos/f-166.md
+085912a2e340b9fb9f160cdf803820bb6545df980085939adcae137db5187c57  contenido/corpus/fragmentos/f-167.md
+b39964f398b88fb8b99449f04187aa05507598c61543a31e6bcdf996397a30a2  contenido/corpus/fragmentos/f-168.md
+e68213ba5bc0ed2fc7b06edba2f634fd55a8a411219180ea92b31ad86dd67dbd  contenido/corpus/fragmentos/f-169.md
+78913b07fdcb1bb066b4aff89ebbcbede937d2f691407bc5ad4f8fd7a1834d17  contenido/corpus/fragmentos/f-170.md
+c29b25af6456c9497ea3be898544b3a3e426f1eec9a019f41dc0ef5a3de98671  contenido/corpus/fragmentos/f-171.md
+2466dfbb56d456068e4870763a7320bfd4e6d8403d33d1fdc2cefb914369e762  contenido/corpus/fragmentos/f-172.md
+c07cf61625c1da501a4776284a535ebedd2243e71de3d5b56785a15ef27e61f5  contenido/corpus/fragmentos/f-173.md
+07f0dba87f6c895b7d75ecd93b6932862d7394e280aff0d72ca08324043aac4c  contenido/corpus/fragmentos/f-174.md
+97ae69c75de4fe06c2c9c7aa1154434f2d901bf1f9f2ef9286f68afa7b50a8da  contenido/corpus/fragmentos/f-175.md
+ef6f85622c10eca78db33e686537006da181a5e0a3e45f0bb6f1fa43ca64735c  contenido/corpus/fragmentos/f-176.md
+76fa5b2a14f15f7fa17c92b7a2af7e8486878af10d72d21f49aef2afa793c554  contenido/corpus/fragmentos/f-177.md
+a466dd7e050659f8b10f8bb14a651f47a0ba538c7ba5522f5975afac8d6f77a2  contenido/corpus/fragmentos/f-178.md
+11c7ae6f0aa6548bd0adf8eba46829f426dff1247027cc3fccea40ad81600eba  contenido/corpus/fragmentos/f-181.md
+ff933995e69f7cb7b13c84db5d5ed148a735806a9128237f068dc62a7f87f6d3  contenido/corpus/fragmentos/f-182.md
+dffa1ee02ca2a846c29bf57a10c6bd99dc4ffc917d7550fe722b74bc7fe33d33  contenido/corpus/fragmentos/f-183.md
+6f73fd2e2467582ce4730da78464f1a141dd5a3e8698ed9aef1676f52897ae9e  contenido/corpus/fragmentos/f-184.md
+b3c0f0c81918b0dea6b76d603dad64577b0bca3093e51a53a07a98e04c93a100  contenido/corpus/fragmentos/f-185.md
+2bc0d65100f2856d22f30a3467854d8aad8e1753129239354d47c6202ac12cf5  contenido/corpus/fragmentos/f-186.md
+aa51ba9fd16d64f22f6208270ba1f3e2436c544482a13273ff716c26df41b5f2  contenido/corpus/fragmentos/f-187.md
+4ce709fad8f085d70806b4b44a817bd849c22226c81654605955204ab3c525b5  contenido/corpus/fragmentos/f-188.md
+e3f5a192f2c90b73577aff790e70d949e153f820e6361d95ffc5488bf4bbd380  contenido/corpus/fragmentos/f-189.md
+c46e396cf0f633e1955f8b86adf30d559bc834afdfc95283ba669f0185a3ec22  contenido/corpus/fragmentos/f-190.md
+0eefcc41097cfb78a2e70851d8425f8f4aab1ab1f7d89de01d44be0fdd5b9330  contenido/corpus/fragmentos/f-191.md
+099bcef24d9d7ebe487cbef3278f549165d436c81a58508c44db6df5a6bcd0e3  contenido/corpus/fragmentos/f-192.md
+ba6baa918295a2ea0c913fe4c9e9234e63a0d2f44ac4776070eaa07fa7b8b137  contenido/corpus/fragmentos/f-193.md
+7bf145e05edf3098967e2ec54360a8baf0f2b04c86e63d7d58ea28c9d8c670f9  contenido/corpus/fragmentos/f-194.md
+1388b9ff00522e3fc8183decddf30620aba708820e8ad773d1e9099d4b038d1c  contenido/corpus/fragmentos/f-195.md
+0caf6b4553977d6200efbb352e28aa8be032805b963ddfd2d25de3c4abd253a9  contenido/corpus/fragmentos/f-196.md
+28186b9da53f429df1ab766160b4466bdd1b7203bca8c6a33ab1c7e95a8ca2da  contenido/corpus/fragmentos/f-197.md
+c41d9906b2c19cf7938e3ede6d01080762eedaed3147071ed5959914cb6da0ee  contenido/corpus/fragmentos/f-198.md
+6650b07bea30d99ca851d2731c2db842076993eef0b025030e01d7a4e1385141  contenido/corpus/fragmentos/f-199.md
+048482dd940d641f6670d9d07280736ec2c87148bad7008845d9551447f07bc1  contenido/corpus/fragmentos/f-200.md
+7bf9643aaa1a8478ee7687195f447b5ff9fdb3dcf671c15b66766072d24c6504  contenido/corpus/fragmentos/f-201.md
+2864bf175096013cfbae7249368105486d71af0715db30404148ffed04e39909  contenido/corpus/fragmentos/f-202.md
+251546fedb3ceb413bb76e88b0cc6c312b17d4503f21a59a0f7c45eacbb29b6d  contenido/corpus/fragmentos/f-203.md
+bb197a24f0fc8a7cc75607b1559ecc0eb37f6896a30d4fe113e38f8d7e4c0878  contenido/corpus/fragmentos/f-204.md
+ed575381c4ad9469dcb8670bee3c08000361f9ef0a7da1a39fb7abebc8b0ebfe  contenido/corpus/fragmentos/f-205.md
+2774610ef34bd2adc2a91d2995e2aefe921650cb5de63790230f91a022509749  contenido/corpus/fragmentos/f-206.md
+e5561ed57d39763bbf29ef5127dcae9543dcd390b6f1d01fec81d4716e7bf70f  contenido/corpus/fragmentos/f-207.md
+d1e85f7d51a0a7c92d1fde29d47d0a5b843dd962bb22f238efd72fd293afc568  contenido/corpus/fragmentos/f-208.md
+42801960147149c8d1fa5673885bd1a43befbd13e4053daebe1481352c3352b0  contenido/corpus/fragmentos/f-209.md
+79f8c8ee49e1129a6ea9750dae606a536f65dab7799ebd33d5fa5d6c1e03f0e6  contenido/corpus/fragmentos/f-210.md
+01662ebc17705c83bed27f8658ff771f573afb5dae9f0184a0f6ebeb3ae0f5a5  contenido/corpus/fragmentos/f-211.md
+77e47ca074695a641baf53197b14cfbc452835f33fdebb15033a0d32d2e6b939  contenido/corpus/fragmentos/f-212.md
+6c2bcacf350093e2fe3fb6c02a99a233cd3442991f1c1ca77c663312a9452482  contenido/corpus/fragmentos/f-213.md
+50973ab7d0e94962f3b5c760c468b2bbdd78cfec1c8a2836125e8170fdf0dd0b  contenido/corpus/fragmentos/f-214.md
+f75f535185a60e518e07c684c9ec6e625327ba513eecea14631901e7c798a3b0  contenido/corpus/fragmentos/f-215.md
+6912b74cc8198f2161efbcd3c274a2ff5f88d52192973385542e1ee7e9cc68a8  contenido/corpus/fragmentos/f-216.md
+7d206f6f98b18c8177ebd75627d5b66e397efd719683f68c1bd210e2c3234776  contenido/corpus/fragmentos/f-217.md
+c733ef2102ba0854c7d7cecb06e10c54dd448785b5fd88db5af608d75d7fa4d5  contenido/corpus/fragmentos/f-218.md
+d9f378a0cd7a1d576c1dc611e40949e884c8a40d747059093cd2f45208dd83d5  contenido/corpus/fragmentos/f-219.md
+f2deb43d1ab8b7657c99081a15f226d387d882f48c92393af171e0b920a647fc  contenido/corpus/fragmentos/f-220.md
+aef91b9be4c14c287f56c4dce7f2b6458ac2a1b6168ac98af5a7422569872cfb  contenido/corpus/fragmentos/f-221.md
+dd80ab73635ce7d0d519fb4c75d5c90c94374a85f3e089956fd2feba80b0679b  contenido/corpus/fragmentos/f-222.md
+b3b5b9b43903d0a619d03e58b5af7a71c89d4d77165ce42a795ceab1297c4834  contenido/corpus/fragmentos/f-223.md
+bceadcac036eac4b22c650b79afc9d21daf5447464c1283f738359f5437b1232  contenido/corpus/fragmentos/f-224.md
+04ab2ba6853c13e19a64f5d307f50810014a92c70f1f817ec7cb5996669a393c  contenido/corpus/fragmentos/f-225.md
+8edc81bda5dd58123aa6610b71bff8163ef5cf87e46d4e21cf1102de722099ac  contenido/corpus/fragmentos/f-226.md
+57adb8d24d9951153beeaf7fc102ffa351da18fe9fd489ce4c37851c79dd6424  contenido/corpus/fragmentos/f-227.md
+da468aa439582ff5584c493f9c7ca3840a4f47be74bb9eca2093c16577f41e1f  contenido/corpus/fragmentos/f-228.md
+28aba0e89894f1ea6572282a53e276392ba87054972e0f977464c2faaa43f2bd  contenido/corpus/fragmentos/f-229.md
+bcf0236c93e8103b2c8b57e49d1bd8b8c120fdeab5fa5846c9fcf23f8cca1155  contenido/corpus/fragmentos/f-230.md
+05142134db86430cfd0a4e773d642500d993d3319c838d60e3c674f5fcaad6c9  contenido/corpus/fragmentos/f-231.md
+574b134ffd578166454dae8844bf0c8932997a972e55a012070b2241c98d9024  contenido/corpus/fragmentos/f-232.md
+f3ea87b82f039cad390d731c3243c0902115939870a07a3b5fe34db79a94eac3  contenido/corpus/fragmentos/f-233.md
+96b6e620db4aae50a95b435f257393b9d0c420c2ec60434ba6cd2db7c4583736  contenido/corpus/fragmentos/f-234.md
+2f0a8f8ee30bafe672ad3161ce6c924f5815195be9c0ef65a9985dfae1d83aa0  contenido/corpus/fragmentos/f-235.md
+321dadc1891660e311c66d0adde745f13aeff78d92cfeaa05969ad9854a6c987  contenido/corpus/fragmentos/f-236.md
+e89e460ce9b9e6310e4746341cd3866919373a9c57334b2ca3419425eef1ff9e  contenido/corpus/fragmentos/f-237.md
+4c4711d9b5c3aeb21a966289b666975f1e0b58f4b609d4e6a3fce556f4608422  contenido/corpus/fragmentos/f-238.md
+2f5a58a156510976e56f5e9bf3531d4adf8cb32be7a28c0755cf6efb33242b8c  contenido/corpus/fragmentos/f-239.md
+4a573509291f628d95c2baf2821f421b4167c8c53006fcf22b36796a5cc9727e  contenido/corpus/fragmentos/f-240.md
+184d95b5c81e7c8ae4ef85b2121bc252632b95e153e6bf1ea8a64e243e0bf666  contenido/corpus/fragmentos/f-241.md
+7034c3875b5ee30cc008023358a733d63b2f83770d61c01d19afc1f5777b8b5e  contenido/corpus/fragmentos/f-242.md
+6798a0503a88c68b96ecfd351c8b2d4fe50d50710a08ba97ebd7e3c8cf49d620  contenido/corpus/fragmentos/f-243.md
+ae9c476ad02b30e5472f64fbe43d90e6f4e36460203fb279b0444cd95a44574a  contenido/corpus/fragmentos/f-244.md
+8f3b54afd0db706acbefa8ba79c80e8f65f53b3574f9a7d47b09de5b03cce59a  contenido/corpus/fragmentos/f-245.md
+4466f2b9fa36c78f03629bfaba9881e58dec58ccadbe67ab26fdaf64d24e8d2e  contenido/corpus/fragmentos/f-246.md
+f111e637f57f29475d7fc7b30667e90b2ea8b3dab909dd1b7124aa81f011e009  contenido/corpus/fragmentos/f-247.md
+9741e7f976175ba5d75afd38af2e4105e6a5556b9c02bde78b3ffc65996150c7  contenido/corpus/fragmentos/f-248.md
+b117a3f0a9ea860b040382794cdb1119aecbf379870e67b1a498dfe2abe7530c  contenido/corpus/fragmentos/f-249.md
+0bd2db7487226f7fbd4c1e9cccc557f2e4ac0b393f013d64bf1c9d97b1e118c1  contenido/corpus/fragmentos/f-250.md
+1bc2ece1a5645bdb71b3eb1af2fb93b9b843df2a642d0587cfee12ca9a6d16e1  contenido/corpus/fragmentos/f-251.md
+919e532340bdbf4d2f16a5b2b7de82b39efa3a190454cc01c55935f5bb25a972  contenido/corpus/fragmentos/f-252.md
+6771aac4e341cf348fb333e7474d6d59cf314b1a7c440102dbd4541b076bb598  contenido/corpus/fragmentos/f-253.md
+946ffa45d4afd7540dde9c3e70ad449d298d5146a131c02750d8e59b9a913e9f  contenido/corpus/fragmentos/f-254.md
+121d12832a1ee94ace1534552760ff80b3ab1775cfe3235a8853b4354ef77bd3  contenido/corpus/fragmentos/f-255.md
+9cca9626314c4e43ca35a320839a4ef801d0e6ea55481baea198b679fb11cddf  contenido/corpus/fragmentos/f-256.md
+f5b1f91f5d354309d282dd4314ae29dccd107a9e1a40259d4c6f98e142a7341e  contenido/corpus/fragmentos/f-257.md
+75cc4403f1b3d2703022a2442dfc2f9ab368fd6be7392055a306ef4ee770f0f2  contenido/corpus/fragmentos/f-258.md
+b8d016b34dc5f2dffc476938234d8b445f5d922e30759eaf862b733b26bb4061  contenido/corpus/fragmentos/f-259.md
+57ffc7550ae791fe948b64f26ad333d0db629dce46c2977f0dc17940bc8e9388  contenido/corpus/fragmentos/f-260.md
+d1e67e2b8daab3e5d919ea3c6758a94338adc8356eb14f6ee62a051b07d554c7  contenido/corpus/fragmentos/f-261.md
+768b1dea1ac86299ba5a7fcc49bba676afa6d23732f49e5e4ce04727136d6e04  contenido/corpus/fragmentos/f-262.md
+b3aa2fbd7b1c9a7706629c6b41d52235545e71b1ceff2330b188fe659a2cfe63  contenido/corpus/fragmentos/f-263.md
+a699bd7cd6feb350e374dd0b9589e1219793f487e9d0088de8168621abd870c5  contenido/corpus/fragmentos/f-264.md
+9a9cd22cc46543b0e5d2513e03df66423b8c028e7bd759ddf51e0378cbca042b  contenido/corpus/fragmentos/f-265.md
+304572effb963249c076def1c390860296320c729479fb4f1d2ed7455b8bd34c  contenido/corpus/fragmentos/f-266.md
+f3ca386d522a920b8114a3e520ea2b59f4dfcc677a213a19c468217809648d72  contenido/corpus/fragmentos/f-267.md
+917933df0a7b00c735364f385ca7c21e52e1524d5f27e156a312eea3c89517db  contenido/corpus/fragmentos/f-268.md
+45579cbcc8d3ddc3721c5eb2acd21c4a29f99102c4ef3a421e8ecc0edeb5dfd7  contenido/corpus/fragmentos/f-269.md
+c4da1920c3dec8aede5811bfe973e35b2decd9eafdc7597e52c580d0550c8334  contenido/corpus/fragmentos/f-270.md
+c9526091f7b183580afe2ef03d1f04e59a0847dc4b1597c66231fc1c5bbd4e50  contenido/corpus/fragmentos/f-271.md
+54cf1fbfa11d762bc0f21097f133369b80332aca7e519564cde552072e426baa  contenido/corpus/fragmentos/f-272.md
+030c0afafb7b0e241d0e00ed80c35c6723186bdf873e5fde0c93735b3daa45f1  contenido/corpus/fragmentos/f-273.md
+3e3c85597a4fa05de59ba7e5890d201f74766255cc229ad48774a84068dbb4c8  contenido/grafo/NODOS-CANDIDATOS.md
+a95fdd1eb7a443be749834dbe8712e37b868facb61ddaaa30e221e6b159d091e  contenido/grafo/grafo.json
+8c04294fc6d22be8b3aa6959ff5db934fca9041477a701b4c6f269b6f85a8632  contenido/plantillas/LEEME.md
+175b7b895838441ab09c1972dcf98826d4ed6bea75056b83c74eb7c813bc0785  contenido/plantillas/p-autorregulacion.md
+e6e7806af345c0d1c678641670e61aefdbaf48ac5d5fc637fe195d182e76a48c  contenido/plantillas/p-retroalimentacion-autoconcepto.md
+195cf5320a0cf260b89f62132dd65657d0052eaad281a0a01d505fadd471246a  contenido/plantillas/p-scaffolding-kq1-kq5.md
+bef2a0d260ab1e390cb63ce99221fae671fc78e4447df15a241a677be071168c  contenido/plantillas/p-socratica-apos.md
+898f31c3913b218f10b6e1643eae477cdba998a5dc905f7d41ba2b15fe44d31b  contenido/plantillas/p-two-tier.md
+fc81a3f29f55d77be9c4315444f027538250da40b647f06acaad6cb7de04b5e1  contenido/plantillas/s-m06.md
+385199377293a5663845568c673cf1e7f300b98ca43d9f0684e5d30ff1d0f6f4  contenido/plantillas/s-m09.md
+de84344adc570d56e2eae273aae8f39d027b08605b4e26b29dc9ac544fe91ec2  contenido/plantillas/s-m10.md
+c48d2e731ecabb2728e2a06259d2343066822eff27e2f4b58fb6cbe61f5e9202  contenido/plantillas/s-m11.md
+4d2ddb99185344267793d2474fee627720af67a0d1c379aa048df69b620fb928  contenido/plantillas/s-m12.md
+fab5add55d23bf1cd2a30c33c2709e8f0c3a82e75e81d749d6ef6cd0b640624e  contenido/plantillas/s-m14.md
+a3570933759b7fb2425024473c0d971874714aed3eff4727ac2ff608ae1dcf6f  contenido/plantillas/s-m16.md
+9d78210bcfd9b445673f9d621505a9c8ca2110c77810fda9481a74a2b9c6738a  contenido/plantillas/s-m18.md
+b0e6f2c3a993ab30d97ba10bad1a016131592ff4308a89f70818a4673cdd9857  contenido/plantillas/s-m21.md
+32fd2822360a5d139e069b542880f1effdf41be1b6cfe004861545e0d71237f3  contenido/plantillas/s-m22.md
+099a6b63173b7579897087172d0ee9a4761c8e6c20f1ffa9ade619e7cb0aa01f  contenido/plantillas/s-m23.md
+6ad1a68b115d3f5bb1a698a8df1ca106fc4ecad57caf314b00e70de2a1e7d2ca  contenido/recursos/base.json
+134dc8f4194b753ec550425066ede0e07b5095f1e0698f36cdf0d8154b4d9d35  contenido/recursos/encuesta-asistencia.json
+fb4ed9c06064ab9885321693e5ad89aded32bdc3a60a00b8e0747a8dd9ba1798  contenido/recursos/encuesta-evaluacion-docente.json
+bb3345dd52061b745e247c75342eda5ef86da52dd4ac72cf495c1fe970d2a2bb  contenido/recursos/encuesta-piloto-docente.json
+81ff7667e9c11bbcc341a6b5c38aef4461d20132d623f337fefeec496235a143  contenido/recursos/encuesta-piloto-postest.json
+1df98db1f2b39f76b62b624b6349cfcb7645e8bc62cb34ea9792ccc40f262207  contenido/recursos/encuesta-piloto-pretest.json
+f7666792a11a1d3545880579af4fe5fde4c9390eeec788f28cefe386274981a2  contenido/recursos/encuesta-preguntas.json
+59dd1bd60dec5062ebd51b414c47954d8fc341bd3420272059ef6efaaa423361  contenido/recursos/encuesta-retroalimentacion.json
+6c0b86fb6669fdb071130d331d2e08e7a958bbcebaba4e29c7837282843ef499  contenido/recursos/encuesta-revision-docente.json
+6b31db1b232eccb0d6cbcbb1a81ee5c15a97530eed26778996b9903e2687eb17  contenido/recursos/indice.json
+b21931823affd938af2d4b90266e87b66fdd738a0bc1a80aa697f3d63c2b3147  contenido/recursos/semana4-1.json
+f3ca1dcf40f931c9a724ac570c249d2c5f6b2cae8ca269a632100fc62c01f0de  contenido/recursos/semana4-4.json
+81cb72d6df7ca5792deae3471f4b0e090c88b69b8e4366e03669dbf0bcb936f3  contenido/recursos/semana4-5.json
+0be9c64f52162aaaf64ac95ac1fb5ff119e30fe951df1c3b3b3f6e407e51acdb  contenido/recursos/semana4-6.json
+c12584861a88f945143f41b5eef43e8b7bf81a801c4681fdf1a6b3e2081a5518  contenido/recursos/semana4-7.json
+9805eb0e6107c3852604e7ef4c554a460cec7155f170f66460fe3a177e54c879  contenido/recursos/viernes-calculo.json
