@@ -1,8 +1,32 @@
 # DidaxIA
 
-DidaxIA es un tutor conversacional en español para cálculo diferencial. Antes de responder, busca fragmentos de sus materiales y comprueba las expresiones que puede interpretar con un motor simbólico. La aplicación usa Svelte para la interfaz, FastAPI para la API, PostgreSQL con pgvector para los datos y el índice, y Caddy para servir la aplicación y la portada.
+**La versión oficial de DidaxIA está en funcionamiento.** La portada explica el proyecto y presenta sus espacios por rol. El tutor requiere acceso institucional.
 
-El corte técnico descrito en la monografía es `be57662`. Esta instalación corresponde al candidato universitario y su archivo `VERSION-ENTREGA.txt` identifica el commit de origen y la huella del manifiesto del corpus. Conserve ese archivo con la entrega. Los materiales se entregan para acceso institucional restringido; una distribución pública del código o de las obras requiere una revisión separada. Consulte [las fuentes y los permisos por obra](contenido/corpus/FUENTES.md).
+- [Portada oficial de DidaxIA](https://didaxia.pro/)
+- [Entrar a la plataforma](https://app.didaxia.pro/)
+
+Este repositorio privado reúne el código, el corpus y las instrucciones de instalación de la entrega universitaria. [Ver la versión de entrega](https://github.com/YeisonMunoz69/DidaxIA-Universidad/tree/entrega-universitaria).
+
+## El trabajo de grado
+
+DidaxIA es un tutor conversacional en español para cálculo diferencial universitario. Ayuda a interpretar el ejercicio, revisar un intento y decidir cuánta ayuda ofrecer. Puede recuperar fragmentos de sus materiales y comprobar expresiones matemáticas con un motor simbólico (software que opera sobre fórmulas). La monografía describe cómo una revisión sistemática de 162 informes y la consulta a docentes orientaron 30 requisitos, y cómo estos se trasladaron a la arquitectura y a la implementación.
+
+El equipo realizó un piloto formativo de cuatro semanas en la Institución Universitaria Colegio Mayor del Cauca. Se analizaron 1.473 pares completos de mensajes de 113 participantes. El piloto documentó el funcionamiento del tutor, dificultades para escribir consultas y las condiciones en que aparecieron indicios en el diálogo. La interpretación de esos indicios requiere una valoración independiente y el efecto sobre el aprendizaje queda por evaluar.
+
+## La plataforma en computador y celular
+
+Las capturas muestran cuentas, conversaciones y cifras de demostración. Los marcos conservan la pantalla completa en cada dispositivo.
+
+| En computador | En celular |
+| --- | --- |
+| [![Tutor de DidaxIA en un computador, tema claro azul eléctrico](imagenes/tutor-computador.webp)](imagenes/tutor-computador.webp) | [![Teclado matemático en un celular, tema oscuro jade](imagenes/teclado-celular.webp)](imagenes/teclado-celular.webp) |
+| **Tutor · Azul eléctrico.** El estudiante escribe una función, recibe una explicación y puede distinguir el resultado de la comprobación simbólica. | **Teclado matemático · Jade oscuro.** Permite introducir derivadas, límites y expresiones durante la consulta. |
+| [![Panel docente de DidaxIA en un computador, tema claro ámbar](imagenes/docente-computador.webp)](imagenes/docente-computador.webp) | [![Recursos de investigación en un celular, tema claro azul eléctrico](imagenes/recursos-celular.webp)](imagenes/recursos-celular.webp) |
+| **Panel docente · Ámbar.** El docente selecciona un grupo y un periodo para consultar indicadores, cada uno con su propia base de cálculo. | **Recursos de investigación · Azul eléctrico.** El investigador accede a sus encuestas y diapositivas desde el celular. |
+
+## Instalación de la entrega universitaria
+
+La instalación usa Svelte para la interfaz, FastAPI para la API, PostgreSQL con pgvector para los datos y el índice, y Caddy para servir la aplicación y la portada. El archivo `VERSION-ENTREGA.txt` identifica el corte técnico descrito en la monografía y la huella del manifiesto del corpus. Consulte [las fuentes y los permisos por obra](contenido/corpus/FUENTES.md).
 
 ## 1. Preparar el entorno
 
