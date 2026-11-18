@@ -13,16 +13,7 @@ DidaxIA es un tutor conversacional en español para cálculo diferencial univers
 
 El equipo realizó un piloto formativo de cuatro semanas en la Institución Universitaria Colegio Mayor del Cauca. Se analizaron 1.473 pares completos de mensajes de 113 participantes. El piloto documentó el funcionamiento del tutor, dificultades para escribir consultas y las condiciones en que aparecieron indicios en el diálogo. La interpretación de esos indicios requiere una valoración independiente y el efecto sobre el aprendizaje queda por evaluar.
 
-## La plataforma en computador y celular
-
-Las capturas muestran cuentas, conversaciones y cifras de demostración. Los marcos conservan la pantalla completa en cada dispositivo.
-
-| En computador | En celular |
-| --- | --- |
-| [![Tutor de DidaxIA en un computador, tema claro azul eléctrico](imagenes/tutor-computador.webp)](imagenes/tutor-computador.webp) | [![Teclado matemático en un celular, tema oscuro jade](imagenes/teclado-celular.webp)](imagenes/teclado-celular.webp) |
-| **Tutor · Azul eléctrico.** El estudiante escribe una función, recibe una explicación y puede distinguir el resultado de la comprobación simbólica. | **Teclado matemático · Jade oscuro.** Permite introducir derivadas, límites y expresiones durante la consulta. |
-| [![Panel docente de DidaxIA en un computador, tema claro ámbar](imagenes/docente-computador.webp)](imagenes/docente-computador.webp) | [![Recursos de investigación en un celular, tema claro azul eléctrico](imagenes/recursos-celular.webp)](imagenes/recursos-celular.webp) |
-| **Panel docente · Ámbar.** El docente selecciona un grupo y un periodo para consultar indicadores, cada uno con su propia base de cálculo. | **Recursos de investigación · Azul eléctrico.** El investigador accede a sus encuestas y diapositivas desde el celular. |
+>  **Recorrido visual completo:** Para explorar en detalle las capturas reales de la plataforma organizadas por rol (**Estudiante**, **Docente**, **Investigador**) en computador y dispositivos móviles Android, consulta la sección [Recorrido visual del sistema: roles, pantallas y funcionalidades](#recorrido-visual-del-sistema-roles-pantallas-y-funcionalidades) al final de este documento.
 
 ## Instalación de la entrega universitaria
 
@@ -185,3 +176,224 @@ dc run --rm --no-deps -T -v "$PAQUETE:/textos:ro" migraciones sh -ec '
   exec python -m infraestructura.operacion.publicar_consentimiento \
     --manifiesto /textos/manifiesto.json --textos /textos --confirmar-publicacion'
 ```
+
+---
+
+## Recorrido visual del sistema: roles, pantallas y funcionalidades
+
+DidaxIA ofrece una experiencia diseñada para computadores de escritorio y dispositivos móviles (Android), adaptando sus vistas, controles y niveles de acceso según el rol de la persona usuaria: **Estudiante**, **Docente** o **Investigador / Administrador**.
+
+A continuación se presenta un recorrido detallado por las capturas reales de la plataforma en funcionamiento, describiendo las funcionalidades que ofrece cada pantalla.
+
+---
+
+### 1. Espacio del Estudiante
+
+El estudiante cuenta con un entorno integral para el aprendizaje del cálculo diferencial que combina diálogo socrático guiado, digitación matemática táctil, visualización gráfica interactiva, biblioteca digital universitaria y herramientas de control sobre su privacidad.
+
+#### 1.1 Diálogo socrático y formulación matemática (PC y Android)
+
+* **En computador de escritorio:**  
+  El espacio de trabajo central reúne en una sola vista el historial de conversaciones previas (columna izquierda), el diálogo con el tutor socrático (panel central) y las referencias documentales asociadas (panel lateral derecho). El tutor orienta mediante preguntas reflexivas y pistas progresivas para que el estudiante construya su propio procedimiento, sin entregar la respuesta resuelta de manera automática. Todas las expresiones matemáticas se representan con alta fidelidad tipográfica mediante KaTeX, y el distintivo **«Verificado simbólicamente»** certifica que las operaciones algebraicas fueron contrastadas de forma determinista mediante el motor matemático SymPy, garantizando la exactitud del cálculo sin alucinaciones.
+
+  [![Espacio de trabajo del estudiante en computador](OE3/var-conversacion-computador-claro-electrico.png)](OE3/var-conversacion-computador-claro-electrico.png)
+
+* **En dispositivo móvil (Android): Flujo de consulta y exploración gráfica**  
+  En pantallas compactas, la interfaz distribuye los controles de forma táctil para mantener siempre a la vista el hilo de la consulta, permitiendo pasar de la redacción matemática a la inspección gráfica interactiva:
+
+  | 1. Redacción matemática táctil | 2. Solicitud de gráfica en el hilo | 3. Exploración visual de la curva |
+  | :---: | :---: | :---: |
+  | [![Escritura con teclado matemático en móvil](OE3/var-pregunta-telefono-claro-electrico.png)](OE3/var-pregunta-telefono-claro-electrico.png) | [![Solicitud de gráfica en el hilo conversacional](OE3/var-pregunta-telefono-claro-electrico-2.png)](OE3/var-pregunta-telefono-claro-electrico-2.png) | [![Visualización gráfica ampliada en móvil](OE3/var-pregunta-telefono-claro-electrico-3.png)](OE3/var-pregunta-telefono-claro-electrico-3.png) |
+  | **Teclado matemático (MathLive):** Permite escribir fórmulas complejas (exponentes, fracciones, raíces y derivadas) dentro de una pregunta en lenguaje natural. | **Generación contextual:** El estudiante solicita la representación gráfica de la función en estudio directamente dentro del diálogo. | **Exploración táctil:** La curva se despliega con controles táctiles de acercamiento y desplazamiento para analizar su comportamiento y puntos clave. |
+
+---
+
+#### 1.2 Graficadora matemática interactiva (PC y Android)
+
+Para apoyar la intuición geométrica, DidaxIA integra una graficadora matemática dinámica basada en JSXGraph que vincula la expresión analítica, la tabla de valores numéricos y la curva en el plano cartesiano.
+
+* **En computador:**  
+  Vista de pantalla completa donde la fórmula analítica y el plano cartesiano coexisten en el mismo campo visual, facilitando el análisis de curvas continuas, asíntotas y puntos coordenados.
+
+  [![Graficadora interactiva en computador](OE3/var-grafica-computador-claro-electrico.png)](OE3/var-grafica-computador-claro-electrico.png)
+
+* **En dispositivo móvil (Android):**  
+  La graficadora móvil organiza la interacción en tres pestañas que permiten preparar, examinar y conservar las representaciones del ejercicio:
+
+  | Funciones | Tabla de valores | Ajustes y exportación |
+  | :---: | :---: | :---: |
+  | [![Pestaña de funciones en celular](OE3/Cal-2.png)](OE3/Cal-2.png) | [![Pestaña de tabla de valores en celular](OE3/Cal-1.png)](OE3/Cal-1.png) | [![Pestaña de ajustes y exportación en celular](OE3/Cal-3.png)](OE3/Cal-3.png) |
+  | **Entrada de fórmulas:** Selección y trazado de funciones analíticas en el plano. | **Evaluación numérica:** Ingreso de valores en la variable independiente para calcular al instante su correspondencia sobre la curva. | **Configuración:** Ajustes de cuadrícula, ejes y exportación de la gráfica en imagen para respaldar tareas o apuntes. |
+
+---
+
+#### 1.3 Biblioteca digital de cálculo y consulta de fuentes (PC y Android)
+
+La plataforma integra las obras de referencia del curso universitario de cálculo, permitiendo a los estudiantes fundamentar su aprendizaje en fuentes bibliográficas oficiales.
+
+* **En computador:**
+
+  | Catálogo general de la biblioteca | Visor de lectura enfocada (Modo oscuro) |
+  | :---: | :---: |
+  | [![Catálogo general de la biblioteca en PC](OE3/var-biblioteca-computador-claro-electrico.png)](OE3/var-biblioteca-computador-claro-electrico.png) | [![Lectura enfocada en modo oscuro en PC](OE3/var-biblioteca-computador-oscuro-electrico.png)](OE3/var-biblioteca-computador-oscuro-electrico.png) |
+  | **Catálogo de obras:** Colección indexada de libros de texto de cálculo organizados por unidades temáticas y capítulos. | **Lectura libre de distracciones:** Transcripción adaptada con fórmulas tipográficas, navegación entre secciones vecinas y enlace de retorno al ejercicio. |
+
+* **En dispositivo móvil (Android):**
+
+  | Índice táctil de secciones | Visor del documento editorial original |
+  | :---: | :---: |
+  | [![Índice de capítulos en móvil](OE3/Recursos-celular-1.png)](OE3/Recursos-celular-1.png) | [![Consulta del facsímil editorial en móvil](OE3/Recursos-celular-2.png)](OE3/Recursos-celular-2.png) |
+  | **Navegación ágil:** Lista interactiva para localizar rápidamente capítulos, teoremas y ejercicios desde el teléfono. | **Facsímil en PDF:** Consulta directa de la página original del libro con su diagramación editorial, figuras y notas al pie. |
+
+---
+
+#### 1.4 Talleres interactivos y centro de recursos (PC y Android)
+
+* **Visor de talleres guiados (PC):**  
+  Permite a los estudiantes recorrer actividades estructuradas diapositiva a diapositiva (como talleres de derivación o límites), conectando cada consigna teórica o práctica con el apoyo conversacional del tutor sin perder el avance de la sesión.
+
+  [![Visor de talleres en computador](OE3/var-diapositivas-computador-claro-electrico.png)](OE3/var-diapositivas-computador-claro-electrico.png)
+
+* **Centro de recursos y notificaciones del curso (Android):**  
+  Panel emergente accesible desde la cabecera móvil que mantiene al estudiante informado sobre cuestionarios o encuestas pendientes por responder, presentaciones compartidas por sus docentes y el estado de su autorización de acceso.
+
+  | Centro de notificaciones y recursos del curso (Android) |
+  | :---: |
+  | [![Centro de notificaciones y recursos del curso en móvil](OE3/Notificaciones-estudiante.png)](OE3/Notificaciones-estudiante.png) |
+  | **Avisos y recursos activos:** Acceso directo a encuestas formativas y presentaciones de clase, con apertura en pestaña independiente para no interrumpir el trabajo en curso. |
+
+---
+
+#### 1.5 Accesibilidad visual y privacidad del estudiante (PC y Android)
+
+* **Personalización visual y contraste accesible (Android):**  
+  Diseñado bajo pautas de accesibilidad web (WCAG AA), el sistema permite a cada estudiante configurar la apariencia para una lectura cómoda y descansada:
+
+  | Ajustes de tema y tamaño tipográfico | Paletas de color accesibles |
+  | :---: | :---: |
+  | [![Ajustes de tema y tamaño de lectura](OE3/colores-1.png)](OE3/colores-1.png) | [![Selección de paletas de color de alto contraste](OE3/Colores-2.png)](OE3/Colores-2.png) |
+  | **Preferencia de lectura:** Alternancia entre modo claro y oscuro, ajuste del tamaño de letra y control de animaciones. | **Combinaciones cromáticas:** Paletas como Azul eléctrico, Jade o Ámbar, diseñadas con relaciones de contraste óptimas para cualquier iluminación. |
+
+* **Panel de privacidad y supresión voluntaria de cuenta (PC):**  
+  DidaxIA promueve el respeto a la privacidad y los derechos de los usuarios. Desde este panel, el estudiante puede solicitar una copia descargable de sus registros o gestionar la eliminación voluntaria de su cuenta, contando con reautenticación institucional mediante Google y un período de gracia de 24 horas para revocar la solicitud si así lo decide.
+
+  [![Panel de privacidad y supresión voluntaria de cuenta](OE3/eliminar-cuenta-voluntariamente.png)](OE3/eliminar-cuenta-voluntariamente.png)
+
+---
+
+### 2. Espacio del Docente
+
+El docente dispone de un conjunto de herramientas para coordinar el trabajo de sus asignaturas, monitorear la participación formativa de su grupo y participar de forma activa en la supervisión de las respuestas generadas por la plataforma.
+
+#### 2.1 Gestión de aulas y matrículas (PC y Android)
+
+* **En dispositivo móvil y computador:**  
+  Permite al docente gestionar sus asignaturas tanto desde el teléfono celular dentro del aula de clases como desde su equipo de cómputo:
+
+  | Gestión móvil de clases (Android) | Directorio formal de estudiantes (PC) |
+  | :---: | :---: |
+  | [![Gestión de clases en celular](OE3/var-docenteclases-telefono-claro-electrico.png)](OE3/var-docenteclases-telefono-claro-electrico.png) | [![Directorio de estudiantes matriculados en la clase](OE3/directorio-estudiantes-docente.png)](OE3/directorio-estudiantes-docente.png) |
+  | **Panel móvil de clase:** Visualización del código de inscripción para compartir con los alumnos, lista de inscritos y pestaña de solicitudes pendientes para autorizar ingresos con un solo toque. | **Directorio institucional de clase:** Vista detallada de los alumnos matriculados con nombre, correo institucional, estado de vinculación y enlace a su ficha individual. |
+
+---
+
+#### 2.2 Seguimiento pedagógico y analítica del grupo (PC)
+
+Panel analítico que consolida la actividad del curso por períodos seleccionados. Permite al profesor identificar el grado de participación de los estudiantes, los momentos de mayor interacción con el tutor y la frecuencia de uso de los materiales de apoyo, facilitando la planeación de refuerzos temáticos en las sesiones presenciales.
+
+[![Panel de seguimiento docente en computador](OE3/var-docente-computador-claro-electrico.png)](OE3/var-docente-computador-claro-electrico.png)
+
+---
+
+#### 2.3 Supervisión humana en el bucle y rectificación docente (PC)
+
+Como mecanismo de aseguramiento de calidad académica (*Human-in-the-Loop*), el sistema cuenta con una cola de supervisión pedagógica. Cuando una respuesta del tutor carece de material bibliográfico asociado o amerita validación docente (por ejemplo, en límites trigonométricos especiales), el intercambio se somete a revisión:
+
+[![Revisión y rectificación docente de una respuesta del tutor](OE3/docente-rectifica-respuesta.png)](OE3/docente-rectifica-respuesta.png)
+
+* **Opciones de intervención:** El docente puede **aprobar** la explicación generada, **editarla** para enriquecerla con sus propias observaciones pedagógicas, o **rechazarla y redactar una corrección**.
+* **Trazabilidad completa:** El sistema almacena tanto la propuesta inicial como la decisión final del profesor, manteniendo un registro transparente de la intervención.
+
+---
+
+### 3. Espacio del Investigador y Administración
+
+El rol de investigador y administración institucional permite supervisar la operación del sistema a nivel global, diseñar y distribuir actividades académicas, y realizar auditorías cualitativas profundas bajo estrictas consideraciones éticas.
+
+#### 3.1 Exploración matemática profesional (PC)
+
+Los docentes e investigadores tienen acceso al modo Tutor profesional para experimentar con el diálogo conversacional y utilizar una graficadora avanzada capaz de comparar simultáneamente múltiples funciones matemáticas. Todas las consultas efectuadas en este espacio quedan catalogadas como uso profesional, aisladas de los registros de actividad de los estudiantes.
+
+[![Graficadora en el espacio profesional del investigador](OE3/Graficas-docentes-investigadores.png)](OE3/Graficas-docentes-investigadores.png)
+
+---
+
+#### 3.2 Analítica institucional macro y trazabilidad documental (PC)
+
+* **Filtros de analítica institucional:**  
+  Permite acotar el análisis global de la plataforma por facultad, programa académico, período semestral o asignatura, identificando la población elegible y las condiciones de la consulta institucional.
+
+  [![Filtros de analítica institucional en computador](OE3/var-investigador-computador-claro-electrico.png)](OE3/var-investigador-computador-claro-electrico.png)
+
+* **Tablero de recuperación documental:**  
+  Evalúa la disponibilidad de pasajes de los libros de cálculo en las respuestas del tutor, el nivel de apertura de fuentes por parte de los estudiantes y las obras más consultadas de la biblioteca.
+
+  [![Detalle de indicadores de recuperación documental](OE3/var-investigadorcomputador-claro-electrico.png)](OE3/var-investigadorcomputador-claro-electrico.png)
+
+---
+
+#### 3.3 Gestión de equipo institucional y comunicaciones (PC)
+
+* **Invitaciones seguras por rol:**  
+  Generación y confirmación de enlaces únicos de invitación para vincular a nuevos docentes o investigadores, garantizando un gobierno seguro de roles y privilegios de acceso.
+
+  [![Confirmación de invitación a cuenta docente](OE3/equipo-invitacion.png)](OE3/equipo-invitacion.png)
+
+* **Compositor de correos institucionales:**  
+  Herramienta de comunicación masiva con previsualización simultánea adaptable a pantallas de escritorio y teléfonos móviles, selección de destinatarios por clase o rol, y auditoría de envíos.
+
+  [![Compositor de correo institucional con vista previa](OE3/Enviar-Correos.png)](OE3/Enviar-Correos.png)
+
+---
+
+#### 3.4 Creación y publicación de materiales pedagógicos (PC)
+
+Facilita la autoría y programación de instrumentos formativos alineados con los objetivos de aprendizaje:
+
+| Gestor de encuestas | Gestor de presentaciones y talleres |
+| :---: | :---: |
+| [![Gestor de encuestas del investigador](OE3/Captura-GestorDeEncuestas.png)](OE3/Captura-GestorDeEncuestas.png) | [![Biblioteca de presentaciones del investigador](OE3/Captura-GestorDePresentaciones.png)](OE3/Captura-GestorDePresentaciones.png) |
+| **Encuestas formativas:** Creación, importación y seguimiento de cuestionarios dirigidos a grupos o docentes específicos. | **Biblioteca de actividades:** Control del ciclo de vida de los materiales (borradores, publicados y cerrados) con seguimiento de asignaciones. |
+
+* **Editor interactivo de diapositivas de cálculo:**  
+  Entorno de diseño instruccional para estructurar talleres secuenciales, incorporar retos de predicción matemática antes de graficar y vincular consignas con el tutor conversacional.
+
+  [![Editor de una presentación de cálculo con navegación y propiedades](OE3/Captura-EditorDePresentaciones.png)](OE3/Captura-EditorDePresentaciones.png)
+
+---
+
+#### 3.5 Directorio global y fichas de seguimiento (PC)
+
+* **Directorio institucional con protección de identidad:**  
+  Listado global de participantes que incluye la posibilidad de enmascarar identificadores personales para revisiones analíticas seguras.
+
+  [![Directorio de estudiantes con identificadores ocultos](OE3/Estudiantes-listado.png)](OE3/Estudiantes-listado.png)
+
+* **Ficha individual de actividad:**  
+  Resumen consolidado de la participación de un estudiante que muestra el recuento de turnos conversacionales, sesiones realizadas y días activos, facilitando el acceso a su trayectoria con fines de acompañamiento.
+
+  [![Ficha detallada de actividad del estudiante](OE3/ficha-detallada-estudiante.png)](OE3/ficha-detallada-estudiante.png)
+
+---
+
+#### 3.6 Auditoría cualitativa e inspección profunda de conversaciones (PC)
+
+Módulo especializado de auditoría pedagógica y técnica que permite examinar turnos reales del tutor en su contexto original para contrastar la efectividad del andamiaje formativo:
+
+[![Inspección de conversación y auditoría en el espacio del investigador](OE3/Captura-conversacion-estudiante.png)](OE3/Captura-conversacion-estudiante.png)
+
+1. **Anonimización inmediata:** La casilla *«Preparar captura sin identificadores visibles»* oculta nombres y correos institucionales para obtener evidencias seguras y éticas destinadas a la investigación académica.
+2. **Nivel de andamiaje pedagógico registrado:** Señala de forma transparente la estrategia socrática asignada al turno (por ejemplo, *«Nivel 2 · te nombro la regla que aplica»*), permitiendo auditar la gradualidad de la ayuda antes de resolver el ejercicio.
+3. **Comprobación matemática simbólica:** El distintivo *«Verificado simbólicamente»* certifica que la expresión matemática obtenida (como $\frac{d}{dx}(x^2-1)=2x$) superó la validación determinista de SymPy.
+4. **Procedencia documental transparente:** El desplegable de fuentes permite abrir los pasajes bibliográficos exactos recuperados de los libros de cálculo para fundamentar la respuesta, permitiendo contrastar el texto original con la explicación generada.
+
